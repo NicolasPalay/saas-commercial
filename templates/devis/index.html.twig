@@ -1,0 +1,23 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Devis index{% endblock %}
+
+{% block body %}
+
+
+
+ <div class="w-100 p-5">
+        <h1 class="text-lg font-semibold mb-4 text-gray-700 text-center">📑 Les devis</h1>
+<button id="openModal"  type="button" data-action="click->modal#open" class="openModal btn-sand mb-4">+ Nouveau Devis</button>
+{% include 'devis/modal.html.twig' %}
+
+
+<div class="w-full bg-white rounded-4 shadow-sm py-3 px-5 mt-4">
+<twig:DevisComponent :entity='entity' :headers='headers' />
+       
+      </div>
+       </div>
+{% endblock %}
+{% block javascripts %}
+    <script src="{{ asset('assets/js/modal.js') }}"></script>
+{% endblock %}

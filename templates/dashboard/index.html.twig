@@ -1,0 +1,218 @@
+{# templates/dashboard/dirigeant.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Dashboard Dirigeant{% endblock %}
+
+{% block body %}
+<div class="min-h-screen bg-gray-100 flex">
+
+  {# ----- Sidebar (hidden on mobile) ----- #}
+  <aside id="sidebar" class="fixed inset-y-0 left-0 w-64 bg-white shadow-lg transform -translate-x-full md:translate-x-0 transition-transform duration-200 ease-in-out z-50">
+    <div class="p-6 border-b flex justify-between items-center">
+        <div>
+            <h2 class="text-xl font-bold text-indigo-600">Gestion Commerciale</h2>
+            <p>
+              <a href="{{path('app_company_edit',{'id': user.company.id})}}">{{ user.company.name }}</a>
+              <img src="/assets/images/{{ user.company.urlLogo }}" alt="">
+            </p>
+        </div>
+      <button id="closeMenu" class="md:hidden text-gray-600 hover:text-gray-900">✖</button>
+    </div>
+    <nav class="p-4 space-y-2">app_employed
+      <a href="{{ path("app_employed") }}" class="block px-4 py-2 rounded-lg hover:bg-indigo-100 text-gray-700">➕ Ajouter un employé</a>
+      <a href="{{ path("app_client_index") }}" class="block px-4 py-2 rounded-lg hover:bg-indigo-100 text-gray-700">👥 Voir tous les clients</a>
+      <a href="{{ path("app_client_new") }}" class="block px-4 py-2 rounded-lg hover:bg-indigo-100 text-gray-700">➕ Ajouter un client</a>
+      <a href="{{ path("app_product_index") }}" class="block px-4 py-2 rounded-lg hover:bg-indigo-100 text-gray-700">📦 Voir les produits</a>
+      <a href="#" class="block px-4 py-2 rounded-lg hover:bg-indigo-100 text-gray-700">➕ Ajouter un produit</a>
+      <a href="{{ path("app_devis_index") }}" class="block px-4 py-2 rounded-lg hover:bg-indigo-100 text-gray-700">📑 Voir tous les devis</a>
+      <a href="#" class="block px-4 py-2 rounded-lg hover:bg-indigo-100 text-gray-700 openModal" data-action="click->modal#open">➕ Ajouter un devis</a>
+      <a href="#" class="block px-4 py-2 rounded-lg hover:bg-indigo-100 text-gray-700">💰 Voir toutes les factures</a>
+      <a href="#" class="block px-4 py-2 rounded-lg hover:bg-indigo-100 text-gray-700">➕ Ajouter une facture</a>
+    </nav>
+    <hr>
+    <ul class="p-4 space-y-2">
+      <h3 class="px-4 py-2 text-gray-500 uppercase text-sm">Messagerie</h3>
+      {% for conversation in conversations %}
+      <li>
+        <a href="{{ path('app_conversation_show', {'id': conversation.id}) }}" class="block px-4 py-2 rounded-lg hover:bg-indigo-100 text-gray-700">
+          💬 Conversation #{{ conversation.id }}
+        </a>
+      </li>
+      {% else %}
+      <li class="px-4 py-2 text-gray-500">Aucune conversation trouvée.</li>
+      {% endfor %}
+    </ul>
+
+  </aside>
+
+  {# ----- Main Content ----- #}
+  <main class="flex-1 p-6 md:ml-64 transition-all duration-200 ease-in-out">
+
+    {# Top bar mobile ----- #}
+    <div class="flex items-center justify-between md:hidden mb-6">
+      <button id="openMenu" class="text-gray-600 text-2xl">☰</button>
+      <h1 class="text-lg font-bold text-gray-800">Dashboard</h1>
+    </div>
+
+    {# ----- Quick Actions ----- #}
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
+      <button class="bg-indigo-600 text-white p-3 rounded-lg shadow hover:bg-indigo-500 flex items-center justify-center">➕ Client</button>
+      <button class="bg-green-600 text-white p-3 rounded-lg shadow hover:bg-green-500 flex items-center justify-center">➕ Produit</button>
+      <button class="bg-yellow-500 text-white p-3 rounded-lg shadow hover:bg-yellow-400 flex items-center justify-center">➕ Devis</button>
+      <button class="bg-red-600 text-white p-3 rounded-lg shadow hover:bg-red-500 flex items-center justify-center">➕ Employé</button>
+    </div>
+
+    {# ----- Alerts ----- #}
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+      <div class="bg-yellow-100 p-4 rounded-2xl shadow">
+        <p class="text-yellow-800 font-semibold">⚠ 3 devis en attente de validation</p>
+      </div>
+      <div class="bg-red-100 p-4 rounded-2xl shadow">
+        <p class="text-red-800 font-semibold">❌ 2 factures impayées</p>
+      </div>
+    </div>
+
+    {# ----- KPI Section ----- #}
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+      <div class="bg-white p-4 rounded-2xl shadow text-center">
+        <p class="text-gray-500">CA Mensuel (HT)</p>
+        <h2 class="text-2xl font-bold text-indigo-600">12 500 €</h2>
+      </div>
+      <div class="bg-white p-4 rounded-2xl shadow text-center">
+        <p class="text-gray-500">CA Annuel (HT)</p>
+        <h2 class="text-2xl font-bold text-indigo-600">152 000 €</h2>
+      </div>
+      <div class="bg-white p-4 rounded-2xl shadow text-center">
+        <p class="text-gray-500">Employés</p>
+        <h2 class="text-2xl font-bold text-indigo-600">8</h2>
+      </div>
+      <div class="bg-white p-4 rounded-2xl shadow-sm text-center">
+        <p class="text-gray-500">Clients actifs</p>
+        <h2 class="text-2xl font-bold text-indigo-600">120</h2>
+      </div>
+    </div>
+
+    {# ----- Last Devis & Employees ----- #}
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+
+      {# Derniers devis ----- #}
+      <div class="bg-white rounded-2xl shadow-sm p-4 overflow-x-auto">
+        <h2 class="text-lg font-semibold mb-4 text-gray-700">📑 
+          <a href="{{ path('app_devis_index') }}">3 derniers devis</a> 
+        </h2>
+
+
+         {# {% include 'devis/new.html.twig' %} #}
+        <table class="w-full text-left">
+          <thead>
+            <tr class="text-gray-500 border-b">
+              <th class="py-2">N°</th>
+              <th class="py-2">Client</th>
+              <th class="py-2">Montant HT</th>
+              <th class="py-2">Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for devisOne in devis %} 
+              <tr class="hover:bg-gray-50">
+                <td class="py-2"><a href="{{ path('app_devis_details_new', {'id': devisOne.id}) }}">{{ devisOne.reference }}</a></td>
+                <td class="py-2"><a href="{{ path('app_devis_details_new', {'id': devisOne.id}) }}">{{ devisOne.client.raisonSocial}}</a></td>
+                <td class="py-2">{{ devisOne.total }} €</td>
+                <td class="py-2">{{ devisOne.createdAt|date('d/m/Y H:i') }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      {# Liste des employés ----- #}
+      <div class="bg-white rounded-2xl shadow p-4">
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="text-lg font-semibold text-gray-700">👥 Liste des employés</h2>
+          
+           <a href="{{ path("app_conversation_new") }}" class="px-4 py-2 bg-indigo-600 text-white rounded-lg shadow hover:bg-indigo-500">
+            ➕ messagerie
+          </a>
+          <a href="{{ path("app_employed") }}" class="px-4 py-2 bg-indigo-600 text-white rounded-lg shadow hover:bg-indigo-500">
+            ➕ Ajouter
+          </a>
+        </div>
+        <ul class="space-y-2 ">{% for employee in users %}
+          <li class="flex justify-between p-2 bg-gray-50 rounded-lg hover:bg-gray-100 flex flex-col">
+            <span class="text-gray-500">{{ employee.email }}</span>
+            <span>{{ employee.roles[0]}}</span> 
+          </li> {% else %}
+            <span>Aucun employé trouvé.</span>
+           {% endfor %}
+        </ul>
+      </div>
+    </div>
+
+    {# ----- Activity / Timeline ----- #}
+    <div class="bg-white rounded-2xl shadow p-4 mb-6">
+      <h2 class="text-lg font-semibold text-gray-700 mb-4">🕒 Activité récente</h2>
+      <ul class="space-y-2">
+        <li class="flex justify-between p-2 bg-gray-50 rounded-lg hover:bg-gray-100">
+          <span>Jean Dupont a créé un devis</span>
+          <span class="text-gray-500">12/09/2025</span>
+        </li>
+        <li class="flex justify-between p-2 bg-gray-50 rounded-lg hover:bg-gray-100">
+          <span>Marie Martin a ajouté un client</span>
+          <span class="text-gray-500">10/09/2025</span>
+        </li>
+        <li class="flex justify-between p-2 bg-gray-50 rounded-lg hover:bg-gray-100">
+          <span>Paul Leroy a modifié un produit</span>
+          <span class="text-gray-500">08/09/2025</span>
+        </li>
+      </ul>
+    </div>
+
+    {# ----- Notes / Messages internes ----- #}
+    <div class="bg-white rounded-2xl shadow p-4 mb-6">
+      <h2 class="text-lg font-semibold text-gray-700 mb-4">📝 Notes / Messages internes</h2>
+      <textarea class="w-full p-3 border rounded-lg resize-none h-32" placeholder="Écrire une note ou un rappel pour l'équipe..."></textarea>
+      <button class="mt-2 px-4 py-2 bg-indigo-600 text-white rounded-lg shadow hover:bg-indigo-500">💾 Enregistrer</button>
+    </div>
+
+    {# ----- Graphiques futurs ----- #}
+    <div class="bg-white rounded-2xl shadow p-4 mb-6">
+      <h2 class="text-lg font-semibold text-gray-700 mb-4">📊 Graphiques financiers</h2>
+      <p class="text-gray-500 mb-2">Exemples :</p>
+      <ul class="list-disc list-inside text-gray-500">
+        <li>Chiffre d'affaires mensuel vs annuel</li>
+        <li>Top clients / produits</li>
+        <li>Devis transformés vs refusés</li>
+        <li>Répartition clients par secteur</li>
+      </ul>
+      <div class="mt-4 h-64 bg-gray-100 rounded-lg flex items-center justify-center text-gray-400">
+        Graphique placeholder
+      </div>
+    </div>
+
+    {# ----- Timeline financière / Encaissements ----- #}
+    <div class="bg-white rounded-2xl shadow p-4 mb-6">
+      <h2 class="text-lg font-semibold text-gray-700 mb-4">💰 Timeline financière</h2>
+      <ul class="space-y-2">
+        <li class="flex justify-between p-2 bg-gray-50 rounded-lg hover:bg-gray-100">
+          <span>Facture #201 payée</span>
+          <span class="text-green-600 font-semibold">+2 500 €</span>
+        </li>
+        <li class="flex justify-between p-2 bg-gray-50 rounded-lg hover:bg-gray-100">
+          <span>Encaissement devis #102</span>
+          <span class="text-green-600 font-semibold">+3 500 €</span>
+        </li>
+        <li class="flex justify-between p-2 bg-gray-50 rounded-lg hover:bg-gray-100">
+          <span>Dépense fournisseur</span>
+          <span class="text-red-600 font-semibold">-800 €</span>
+        </li>
+      </ul>
+    </div>
+
+  </main>
+</div>
+
+{# ----- Script pour le menu mobile ----- #}
+<script src="{{ asset('assets/js/modal.js') }}">></script>
+<script src="{{ asset('assets/js/slideBar.js') }}"></script>
+{% endblock %}
+

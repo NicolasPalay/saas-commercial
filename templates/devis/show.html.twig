@@ -1,0 +1,38 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Devis{% endblock %}
+
+{% block body %}
+    <h1>Devis</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ devi.id }}</td>
+            </tr>
+            <tr>
+                <th>Reference</th>
+                <td>{{ devi.reference }}</td>
+            </tr>
+            <tr>
+                <th>Total</th>
+                <td>{{ devi.total }}</td>
+            </tr>
+            <tr>
+                <th>Taxe</th>
+                <td>{{ devi.taxe }}</td>
+            </tr>
+            <tr>
+                <th>TotalTTC</th>
+                <td>{{ devi.totalTTC }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_devis_index') }}">back to list</a>
+
+    <a href="{{ path('app_devis_edit', {'id': devi.id}) }}">edit</a>
+
+    {{ include('devis/_delete_form.html.twig') }}
+{% endblock %}

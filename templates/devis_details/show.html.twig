@@ -1,0 +1,42 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}DevisDetails{% endblock %}
+
+{% block body %}
+    <h1>DevisDetails</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ devis_detail.id }}</td>
+            </tr>
+            <tr>
+                <th>Label</th>
+                <td>{{ devis_detail.label }}</td>
+            </tr>
+            <tr>
+                <th>Price</th>
+                <td>{{ devis_detail.price }}</td>
+            </tr>
+            <tr>
+                <th>Reduce</th>
+                <td>{{ devis_detail.reduce }}</td>
+            </tr>
+            <tr>
+                <th>Quantity</th>
+                <td>{{ devis_detail.quantity }}</td>
+            </tr>
+            <tr>
+                <th>Total</th>
+                <td>{{ devis_detail.total }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_devis_details_index') }}">back to list</a>
+
+    <a href="{{ path('app_devis_details_edit', {'id': devis_detail.id}) }}">edit</a>
+
+    {{ include('devis_details/_delete_form.html.twig') }}
+{% endblock %}

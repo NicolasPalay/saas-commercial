@@ -1,0 +1,111 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Connexion{% endblock %}
+
+{% block body %}
+
+<div class="w-50 bg-white rounded shadow p-4 mx-auto mt-5 container">
+
+    <div class="text-center mb-4">
+        <h1 class="fw-semibold text-primary letter-spacing">
+            Connexion
+        </h1>
+    </div>
+
+    {# ERROR #}
+    {% if error %}
+        <div class="mb-3 text-danger text-center small">
+            {{ error.messageKey|trans(error.messageData, 'security') }}
+        </div>
+    {% endif %}
+
+    {# LOGGED #}
+    {% if app.user %}
+        <div class="mb-3 text-center text-secondary small">
+            You are logged in as
+            <strong>{{ app.user.userIdentifier }}</strong>,
+            <a href="{{ path('app_logout') }}" class="text-decoration-underline text-primary">
+                Logout
+            </a>
+        </div>
+    {% endif %}
+
+    <form method="post" class="d-grid gap-3">
+
+        {# EMAIL #}
+        <div class="position-relative">
+            <span class="position-absolute top-50 start-0 translate-middle-y ps-3 ">
+                <i class="bi bi-envelope"></i>
+
+            </span>
+            <input
+                type="email"
+                name="email"
+                value="{{ last_username }}"
+                id="inputEmail"
+                required
+                autofocus
+                autocomplete="email"
+                placeholder="E-mail"
+                class="input-ocean"
+            >
+        </div>
+
+        {# PASSWORD #}
+        <div class="position-relative">
+            <span class="position-absolute top-50 start-0 translate-middle-y ps-3">
+               <i class="bi bi-lock-fill"></i>
+            </span>
+            <input
+                type="password"
+                name="password"
+                id="inputPassword"
+                required
+                autocomplete="current-password"
+                placeholder="Password"
+                class="input-ocean"
+            >
+        </div>
+
+        <input
+            type="hidden"
+            name="_csrf_token"
+            value="{{ csrf_token('authenticate') }}"
+        >
+
+        {# REMEMBER ME #}
+        <div class="d-flex justify-content-between align-items-center small text-secondary">
+            <div class="form-check">
+                <input
+                    class="form-check-input"
+                    type="checkbox"
+                    name="_remember_me"
+                    id="rememberMe"
+                >
+                <label class="form-check-label" for="rememberMe">
+                    Remember me
+                </label>
+            </div>
+
+            <a href="#" class="">
+                Forgot password ?
+            </a>
+        </div>
+
+        {# SUBMIT #}
+        <button type="submit" class="btn-sand w-100">
+            SIGN IN
+        </button>
+
+    </form>
+
+    <p class="text-center small text-muted mt-4">
+        Don’t have an account ?
+        <a href="{{ path('app_register') }}" class="">
+            Sign up
+        </a>
+    </p>
+
+</div>
+
+{% endblock %}

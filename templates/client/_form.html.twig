@@ -1,0 +1,126 @@
+{{ form_start(form, { attr: { class: 'space-y-6' } }) }}
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+    {# RAISON SOCIALE #}
+    <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">
+            Raison sociale
+        </label>
+        {{ form_widget(form.raison_social, {
+            attr: {
+                class: 'w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-purple-500 focus:outline-none',
+                placeholder: 'Nom de l’entreprise'
+            }
+        }) }}
+        {{ form_errors(form.raison_social) }}
+    </div>
+
+    {# ADRESSE 1 #}
+    <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">
+            Adresse
+        </label>
+        {{ form_widget(form.nameStreet, {
+            attr: {
+                class: 'w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-purple-500 focus:outline-none',
+                placeholder: 'Numéro et nom de rue'
+            }
+        }) }}
+    </div>
+
+    {# ADRESSE 2 #}
+    <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">
+            Complément d’adresse
+        </label>
+        {{ form_widget(form.nameStreet2, {
+            attr: {
+                class: 'w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-purple-500 focus:outline-none',
+                placeholder: 'Bâtiment, étage, etc.'
+            }
+        }) }}
+    </div>
+
+    {# CODE POSTAL #}
+    <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">
+            Code postal
+        </label>
+        {{ form_widget(form.codePostal, {
+            attr: {
+                class: 'w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-purple-500 focus:outline-none',
+                placeholder: '75000'
+            }
+        }) }}
+    </div>
+
+    {# VILLE #}
+    <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">
+            Ville
+        </label>
+        {{ form_widget(form.ville, {
+            attr: {
+                class: 'w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-purple-500 focus:outline-none',
+                placeholder: 'Paris'
+            }
+        }) }}
+    </div>
+
+    {# TELEPHONE FIXE #}
+    <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">
+            Téléphone fixe
+        </label>
+        {{ form_widget(form.businessPhone, {
+            attr: {
+                class: 'w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-purple-500 focus:outline-none',
+                placeholder: '01 23 45 67 89'
+            }
+        }) }}
+    </div>
+
+    {# MOBILE #}
+    <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">
+            Téléphone mobile
+        </label>
+        {{ form_widget(form.mobilePhone, {
+            attr: {
+                class: 'w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-purple-500 focus:outline-none',
+                placeholder: '06 12 34 56 78'
+            }
+        }) }}
+    </div>
+
+    {# EMAIL #}
+    <div class="md:col-span-2">
+        <label class="block text-sm font-medium text-gray-700 mb-1">
+            Email
+        </label>
+        {{ form_widget(form.email, {
+            attr: {
+                class: 'w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-purple-500 focus:outline-none',
+                placeholder: 'contact@entreprise.fr'
+            }
+        }) }}
+    </div>
+
+</div>
+
+<div class="flex justify-end gap-4 pt-6">
+    <a href="{{ path('app_client_index') }}"
+       class="px-6 py-3 rounded-xl border border-gray-300 text-gray-700 hover:bg-gray-100 transition">
+        Annuler
+    </a>
+
+    <button
+        type="submit"
+        class="px-8 py-3 rounded-xl text-white font-semibold bg-gradient-to-r from-purple-600 to-indigo-600 hover:opacity-90 transition shadow-lg"
+    >
+        Enregistrer
+    </button>
+</div>
+
+{{ form_end(form) }}

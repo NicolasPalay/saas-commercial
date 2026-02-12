@@ -1,0 +1,74 @@
+<div {{ attributes }}>
+    <div class="w-100 mt-4">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body p-0">
+
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0 w-100">
+                        <thead class="table-light">
+                            <tr>
+                                {% for header in headers %}
+                                    <th class="fw-semibold w-75 text-uppercase small">
+                                        <div class="d-flex justify-content-start align-items-center">
+                                            <span>{{ header }}</span>
+
+                                            <span class="sort-icons d-flex flex-column ms-2">
+                                                <button
+                                                    class="sort-btn"
+                                                    data-action="live#action"
+                                                    data-live-action-param="sort"
+                                                    data-live-header-param="{{ header }}"
+                                                    data-live-direction-param="asc">
+                                                    <i class="bi bi-caret-up-fill"></i>
+                                                </button>
+
+                                                <button
+                                                    class="sort-btn"
+                                                    data-action="live#action"
+                                                    data-live-action-param="sort"
+                                                    data-live-header-param="{{ header }}"
+                                                    data-live-direction-param="desc">
+                                                    <i class="bi bi-caret-down-fill"></i>
+                                                </button>
+                                            </span>
+                                        </div>
+                                    </th>
+                                {% endfor %}
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            {% for devisOne in lines %}
+                                <tr class="table-row">
+                                    <td>
+                                        <a href="{{ path('app_devis_details_new', {'id': devisOne.id}) }}"
+                                           class="fw-medium text-decoration-none text-primary">
+                                            {{ devisOne.reference }}
+                                        </a>
+                                    </td>
+
+                                    <td>{{ devisOne.client.raisonSocial }}</td>
+
+                                    <td class="fw-semibold text-success">
+                                        {{ devisOne.total }} €
+                                    </td>
+
+                                    <td class="text-muted">
+                                        {{ devisOne.createdAt|date('d/m/Y H:i') }}
+                                    </td>
+                                </tr>
+                            {% else %}
+                                <tr>
+                                    <td colspan="{{ headers|length }}" class="text-center py-4 text-muted">
+                                        Aucun devis pour le moment
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>

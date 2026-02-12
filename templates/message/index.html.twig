@@ -1,0 +1,19 @@
+
+{% for message in messages %}
+
+    <div class="mb-4 max-w-xl 
+        {{ app.user and app.user.id == message.user.id 
+            ? 'bg-purple-100 self-end' 
+            : 'bg-gray-100 self-start' 
+        }} 
+        p-4 rounded-2xl shadow-sm">
+        
+        <div class="text-sm text-gray-600 mb-2">
+            {{ message.user.email }} • {{ message.createdAt|date('Y-m-d H:i') }}
+        </div>
+
+        <div class="text-gray-800">
+            {{ message.content }}
+        </div>
+    </div>
+{% endfor %}

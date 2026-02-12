@@ -1,0 +1,40 @@
+
+
+ <div class="w-full bg-white rounded-3xl shadow-2xl p-10">
+ <h1 class="mb-5 text-center h2">Devis n°{{ devis.reference }} | {{ devis.client.raisonSocial }}</h1>
+     <table class="w-full text-left devis-detail-table">
+          <thead>
+            <tr class="text-gray-500 border-b">
+              <th class="py-2 name">Nom du Produit</th>
+              <th class="py-2 qte">Qte</th>
+              <th class="py-2 pri">Prix Unit</th>
+              <th class="py-2 rem">Remise</th>
+                <th class="py-2 tt">Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for devisLine in devis.devisDetails %}
+              <tr class="hover:bg-gray-50">
+                <td class="py-2 name"><a href="{{ path('app_devis_details_edit', {'id': devisLine.id}) }}">{{ devisLine.label}}</a></td>
+                <td class="py-2 qte">{{ devisLine.quantity}}</td>
+                <td class="py-2 pri">{{ devisLine.price }} €</td>
+                <td class="py-2 rem">{{ devisLine.reduce }}</td>
+                <td class="py-2 tt">{{ devisLine.total }} €</td>
+
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+
+  <div class="w-full  bg-white rounded-3xl shadow-2xl p-10 text-indigo-700 mb-5 editAbsolute ">
+    
+    {{ form_start(form) }}
+        {{ form_widget(form) }}
+        <button class="btn-sand" type="submit"
+    >{{ button_label|default('Sélectionnez') }}</button>
+    {{ form_end(form) }}
+    </div>  
+    </div>
+
+    
+

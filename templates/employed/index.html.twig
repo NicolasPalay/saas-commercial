@@ -1,0 +1,64 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Register{% endblock %}
+
+{% block body %}
+<div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-600 to-indigo-700 px-4">
+
+    <div class="w-full max-w-3xl bg-white rounded-3xl shadow-2xl p-10">
+
+        <h1 class="text-3xl font-bold text-center text-gray-800 mb-10 p-10">
+            Nouveau employé
+        </h1>
+
+    {{ form_errors(employedForm) }}
+{{ form_start(employedForm, { attr: { class: 'space-y-6' } }) }}
+<div class="relative">
+            <span class="absolute inset-y-0 left-0 flex items-center pl-5 text-purple-600">
+                🏢
+            </span>
+            {{ form_widget(employedForm.email, {
+                attr: {
+                    class: 'w-full pl-14 pr-6 py-4 rounded-full border border-gray-200 text-purple-600 shadow-sm focus:ring-2 focus:ring-purple-500 focus:outline-none',
+                    placeholder: 'Email'
+                }
+            }) }}
+            {{ form_errors(employedForm.email) }}
+
+        </div>
+        <div class="relative">
+            <span class="absolute inset-y-0 left-0 flex items-center pl-5 text-purple-600">
+                🏢
+            </span>
+            {{ form_widget(employedForm.plainPassword, {
+                attr: {
+                    class: 'w-full pl-14 pr-6 py-4 rounded-full border border-gray-200 text-purple-600 shadow-sm focus:ring-2 focus:ring-purple-500 focus:outline-none',
+                    placeholder: 'Mot de passe'
+                }
+            }) }}
+            {{ form_errors(employedForm.plainPassword) }}
+            
+        </div>
+       
+    {# ACTIONS #}
+        <div class="flex justify-between items-center pt-8">
+
+            <a href="{{ path('app_client_index') }}"
+               class="text-sm text-gray-500 hover:underline">
+                ← Retour
+            </a>
+
+            <button
+                type="submit"
+                class="px-10 py-4 rounded-full text-white font-semibold bg-gradient-to-r from-purple-600 to-indigo-600 hover:opacity-90 transition shadow-xl"
+            >
+                Enregistrer
+            </button>
+
+        </div>
+
+    {{ form_end(employedForm) }}
+    
+    </div>
+</div>
+{% endblock %}

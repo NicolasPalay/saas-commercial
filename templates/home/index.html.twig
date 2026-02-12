@@ -1,0 +1,267 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello HomeController!{% endblock %}
+
+{% block body %}
+<header class="header-img mb-5">
+<section class="hero-section">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <h1>Gérez vos devis et factures en un clin d'œil</h1>
+                    <p class="lead">PrestoCo simplifie votre gestion commerciale. Créez, envoyez et suivez vos devis et factures en quelques clics.</p>
+                    <div class="d-flex gap-3 flex-wrap">
+                        <a href="{{ path('app_register') }}" class="btn btn-light btn-lg">Essayer gratuitement</a>
+                        <a href="#demo" class="btn btn-outline-light btn-lg">Voir une démo</a>
+                    </div>
+                </div>
+                <div class="col-lg-6 mt-5 mt-lg-0">
+                   
+                </div>
+            </div>
+        </div>
+    </section>
+</header>  
+ 
+
+    <!-- Benefits Section -->
+    <section class="benefits-section  mb-5">
+        <div class="container">
+            <h2 class="section-title">Pourquoi choisir PrestoCo ?</h2>
+            <div class="row g-4">
+                <div class="col-lg-4">
+                    <div class="benefit-card">
+                        <div class="benefit-icon">⚡</div>
+                        <h3>Gagnez du temps</h3>
+                        <p>Créez un devis professionnel en moins de 2 minutes. Fini les heures perdues sur Excel.</p>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="benefit-card">
+                        <div class="benefit-icon">🎯</div>
+                        <h3>Intuitif et facile</h3>
+                        <p>Aucune formation nécessaire. Interface claire pensée pour les entrepreneurs, pas pour les comptables.</p>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="benefit-card">
+                        <div class="benefit-icon">📊</div>
+                        <h3>Pilotez votre activité</h3>
+                        <p>Suivez vos impayés, relancez vos clients et consultez vos statistiques en temps réel.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features-section w-100  mb-5" id="fonctionnalites">
+        <div class="container">
+            <h2 class="section-title">Tout ce dont vous avez besoin, rien de superflu</h2>
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="feature-item">
+                        <i class="bi bi-check-circle-fill"></i>
+                        <div>
+                            <h4>Devis personnalisables</h4>
+                            <p>Votre logo, vos couleurs, votre identité</p>
+                        </div>
+                    </div>
+                    <div class="feature-item">
+                        <i class="bi bi-check-circle-fill"></i>
+                        <div>
+                            <h4>Facturation automatique</h4>
+                            <p>Transformez un devis accepté en facture instantanément</p>
+                        </div>
+                    </div>
+                    <div class="feature-item">
+                        <i class="bi bi-check-circle-fill"></i>
+                        <div>
+                            <h4>Relances automatiques</h4>
+                            <p>Ne perdez plus un euro avec les rappels programmés</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="feature-item">
+                        <i class="bi bi-check-circle-fill"></i>
+                        <div>
+                            <h4>Bibliothèque de produits</h4>
+                            <p>Enregistrez vos prestations pour aller encore plus vite</p>
+                        </div>
+                    </div>
+                    <div class="feature-item">
+                        <i class="bi bi-check-circle-fill"></i>
+                        <div>
+                            <h4>Tableaux de bord</h4>
+                            <p>Visualisez votre chiffre d'affaires en un coup d'œil</p>
+                        </div>
+                    </div>
+                    <div class="feature-item">
+                        <i class="bi bi-check-circle-fill"></i>
+                        <div>
+                            <h4>Export comptable</h4>
+                            <p>Compatible avec votre expert-comptable</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section 
+    <section class="testimonials-section">
+        <div class="container">
+            <h2 class="section-title">Ils nous font confiance</h2>
+            <div class="row g-4">
+                <div class="col-lg-4">
+                    <div class="testimonial-card">
+                        <p>"Depuis que j'utilise PrestoCo, je ne perds plus de temps sur ma facturation. Tout est fluide et professionnel."</p>
+                        <div class="testimonial-author">— Marie L., Consultante indépendante</div>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="testimonial-card">
+                        <p>"Enfin un outil simple ! J'ai testé 5 solutions avant, PrestoCo est la seule que j'ai gardée."</p>
+                        <div class="testimonial-author">— Thomas R., Graphiste freelance</div>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="testimonial-card">
+                        <p>"Le suivi des impayés a changé ma trésorerie. Je recommande à tous mes confrères."</p>
+                        <div class="testimonial-author">— Karim B., Plombier</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+-->
+    <!-- Pricing Section -->
+    <section class="pricing-section mb-5" id="tarifs">
+        <div class="container">
+            <h2 class="section-title text-white">Une tarification simple et transparente</h2>
+            <div class="row g-4">
+                <div class="col-lg-4">
+                    <div class="pricing-card">
+                        <h3>Starter</h3>
+                        <div class="price">9€<span>/mois</span></div>
+                        <ul class="pricing-features">
+                            <li>Jusqu'à 50 factures/an</li>
+                            <li>1 utilisateur</li>
+                            <li>Support par email</li>
+                        </ul>
+                        <a href="#essai" class="btn btn-outline-primary w-100">Commencer</a>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="pricing-card popular">
+                        <span class="popular-badge">⭐ POPULAIRE</span>
+                        <h3>Pro</h3>
+                        <div class="price">19€<span>/mois</span></div>
+                        <ul class="pricing-features">
+                            <li>Factures illimitées</li>
+                            <li>3 utilisateurs</li>
+                            <li>Relances automatiques</li>
+                            <li>Support prioritaire</li>
+                        </ul>
+                        <a href="#essai" class="btn btn-primary w-100">Commencer</a>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="pricing-card">
+                        <h3>Business</h3>
+                        <div class="price">39€<span>/mois</span></div>
+                        <ul class="pricing-features">
+                            <li>Tout Pro +</li>
+                            <li>Utilisateurs illimités</li>
+                            <li>API & intégrations</li>
+                            <li>Account manager dédié</li>
+                        </ul>
+                        <a href="#essai" class="btn btn-outline-primary w-100">Commencer</a>
+                    </div>
+                </div>
+            </div>
+            <div class="text-center mt-5">
+                <p class="text-white"><em>Essai gratuit 14 jours - Aucune carte bancaire requise</em></p>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="faq-section" id="faq">
+        <div class="container">
+            <h2 class="section-title">Questions fréquentes</h2>
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="accordion" id="faqAccordion">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
+                                    Puis-je essayer gratuitement ?
+                                </button>
+                            </h2>
+                            <div id="faq1" class="accordion-collapse collapse show" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    Oui ! 14 jours d'essai gratuit, sans engagement et sans carte bancaire.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
+                                    Mes données sont-elles sécurisées ?
+                                </button>
+                            </h2>
+                            <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    Absolument. Hébergement en France, chiffrement SSL, sauvegardes quotidiennes.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">
+                                    Puis-je changer de formule ?
+                                </button>
+                            </h2>
+                            <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    Vous pouvez upgrader ou downgrader à tout moment, sans frais.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq4">
+                                    Est-ce compatible avec mon comptable ?
+                                </button>
+                            </h2>
+                            <div id="faq4" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    Oui, export comptable aux formats standards (CSV, Excel).
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section" id="essai">
+        <div class="container">
+            <h2>Prêt à simplifier votre facturation ?</h2>
+            <p>Rejoignez les centaines d'entrepreneurs qui ont repris le contrôle de leur gestion commerciale.</p>
+            <a href="#" class="btn btn-light btn-lg px-5">Commencer gratuitement</a>
+            <div class="cta-benefits">
+                <span>✓ Pas de carte bancaire</span>
+                <span>✓ Essai 14 jours</span>
+                <span>✓ Annulation en 1 clic</span>
+            </div>
+        </div>
+    </section>
+
+
+
+{% endblock %}

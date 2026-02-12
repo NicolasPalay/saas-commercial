@@ -1,0 +1,78 @@
+ {{ form_errors(form) }}
+{{ form_start(form, { attr: { class: 'space-y-6' } }) }}
+    <div class="relative">
+        <span class="absolute inset-y-0 left-0 flex items-center pl-5 text-purple-600">
+            🏢
+        </span>
+        {{ form_widget(form.name, {
+            attr: {
+                class: 'w-full pl-14 pr-6 py-4 rounded-full border border-gray-200 text-purple-600 shadow-sm focus:ring-2 focus:ring-purple-500 focus:outline-none',
+                placeholder: 'Nom de la TVA'
+            }
+        }) }}
+        {{ form_errors(form.name) }}
+
+    </div>
+    <div class="relative">
+        <span class="absolute inset-y-0 left-0 flex items-center pl-5 text-purple-600">
+            🏢
+        </span>
+        {{ form_widget(form.contry_code, {
+            attr: {
+                class: 'w-full pl-14 pr-6 py-4 rounded-full border border-gray-200 text-purple-600 shadow-sm focus:ring-2 focus:ring-purple-500 focus:outline-none',
+                placeholder: 'Pays'
+            }
+        }) }}
+        {{ form_errors(form.contry_code) }}
+
+    </div>
+    <div class="relative">
+        <span class="absolute inset-y-0 left-0 flex items-center pl-5 text-purple-600">
+            🏢
+        </span>
+        {{ form_widget(form.rate, {
+            attr: {
+                class: 'w-full pl-14 pr-6 py-4 rounded-full border border-gray-200 text-purple-600 shadow-sm focus:ring-2 focus:ring-purple-500 focus:outline-none',
+                placeholder: 'Pourcentage'
+            }
+        }) }}
+        {{ form_errors(form.rate) }}
+
+    </div>
+    <div class="relative">
+        <span class="absolute inset-y-0 left-0 flex items-center pl-5 text-purple-600">
+            🏢
+        </span>
+        {{ form_widget(form.type, {
+            attr: {
+                class: 'w-full pl-14 pr-6 py-4 rounded-full border border-gray-200 text-purple-600 shadow-sm focus:ring-2 focus:ring-purple-500 focus:outline-none',
+                placeholder: 'type'
+            }
+        }) }}
+        {{ form_errors(form.type) }}
+
+    </div>
+    <div class="relative">
+        <span class="absolute inset-y-0 left-0 flex items-center pl-5 text-purple-600">
+            🏢
+        </span>
+        {{ form_widget(form.isActive, {
+            attr: {
+                class: 'w-full pl-14 pr-6 py-4 rounded-full border border-gray-200 text-purple-600 shadow-sm focus:ring-2 focus:ring-purple-500 focus:outline-none',
+            }
+        }) }}
+        {{ form_errors(form.isActive) }}
+
+    </div>
+
+{{ form_widget(form) }}
+    <div class="flex justify-between items-center pt-8">
+        <button
+            type="submit"
+            class="px-10 py-4 rounded-full text-white font-semibold bg-gradient-to-r from-purple-600 to-indigo-600 hover:opacity-90 transition shadow-xl"
+        >
+            Enregistrer
+        </button>
+
+    </div>
+{{ form_end(form) }}

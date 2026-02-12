@@ -1,0 +1,18 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Register{% endblock %}
+
+{% block body %}
+
+
+    <div class="w-full bg-white rounded-3xl shadow-2xl p-10">
+
+        <h1 class="text-3xl font-bold text-center text-gray-800 mb-10 p-10">
+            Nouveau TVA
+        </h1>
+
+    {{ include('taxe/_form.html.twig') }}
+ </div>
+
+    <a href="{{ path('app_taxe_index') }}">back to list</a>
+{% endblock %}
