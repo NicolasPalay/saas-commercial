@@ -1,7 +1,7 @@
 {% extends 'base.html.twig' %}
 
 {% block title %}Hello HomeController!{% endblock %}
-
+{% block class %}landing-page{% endblock %}
 {% block body %}
 <header class="header-img mb-5">
 <section class="hero-section">
@@ -137,27 +137,29 @@
     </section>
 -->
     <!-- Pricing Section -->
-    <section class="pricing-section mb-5" id="tarifs">
+    <section class="pricing-section mb-5 px-5" id="tarifs">
         <div class="container">
             <h2 class="section-title text-white">Une tarification simple et transparente</h2>
             <div class="row g-4">
-                <div class="col-lg-4">
-                    <div class="pricing-card">
-                        <h3>Starter</h3>
-                        <div class="price">9€<span>/mois</span></div>
+                <div class="col-lg-6">
+                    <div class="pricing-card d-flex flex-column justify-content-between">
+                        <div>
+                            <h3>Starter</h3>
+                            <div class="price">2€<span>/mois</span></div>
+                        </div>
                         <ul class="pricing-features">
-                            <li>Jusqu'à 50 factures/an</li>
+                            <li>Jusqu'à 30 factures/an</li>
                             <li>1 utilisateur</li>
                             <li>Support par email</li>
                         </ul>
                         <a href="#essai" class="btn btn-outline-primary w-100">Commencer</a>
                     </div>
                 </div>
-                <div class="col-lg-4">
-                    <div class="pricing-card popular">
+                <div class="col-lg-6">
+                    <div class="pricing-card popular d-flex flex-column justify-content-between">
                         <span class="popular-badge">⭐ POPULAIRE</span>
                         <h3>Pro</h3>
-                        <div class="price">19€<span>/mois</span></div>
+                        <div class="price">10€<span>/mois</span></div>
                         <ul class="pricing-features">
                             <li>Factures illimitées</li>
                             <li>3 utilisateurs</li>
@@ -167,7 +169,7 @@
                         <a href="#essai" class="btn btn-primary w-100">Commencer</a>
                     </div>
                 </div>
-                <div class="col-lg-4">
+                {# <div class="col-lg-4">
                     <div class="pricing-card">
                         <h3>Business</h3>
                         <div class="price">39€<span>/mois</span></div>
@@ -179,16 +181,16 @@
                         </ul>
                         <a href="#essai" class="btn btn-outline-primary w-100">Commencer</a>
                     </div>
-                </div>
+                </div> #}
             </div>
             <div class="text-center mt-5">
-                <p class="text-white"><em>Essai gratuit 14 jours - Aucune carte bancaire requise</em></p>
+                <p class="text-white"><em>Essai gratuit 10 factures - 20 devis  - Aucune carte bancaire requise</em></p>
             </div>
         </div>
     </section>
 
     <!-- FAQ Section -->
-    <section class="faq-section" id="faq">
+    <section class="faq-section w-100 mb-5" id="faq">
         <div class="container">
             <h2 class="section-title">Questions fréquentes</h2>
             <div class="row justify-content-center">
@@ -253,10 +255,10 @@
         <div class="container">
             <h2>Prêt à simplifier votre facturation ?</h2>
             <p>Rejoignez les centaines d'entrepreneurs qui ont repris le contrôle de leur gestion commerciale.</p>
-            <a href="#" class="btn btn-light btn-lg px-5">Commencer gratuitement</a>
+            <a href="{{path('app_register')}}" class="btn btn-light btn-lg px-5">Commencer gratuitement</a>
             <div class="cta-benefits">
                 <span>✓ Pas de carte bancaire</span>
-                <span>✓ Essai 14 jours</span>
+                <span>✓ 10 factures - 20 devis gratuits</span>
                 <span>✓ Annulation en 1 clic</span>
             </div>
         </div>

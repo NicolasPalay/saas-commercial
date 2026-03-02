@@ -23,7 +23,7 @@ class DevisDetailsTypeEdit extends AbstractType
             ->add('label', TextType::class, [
                 'label' => 'Libellé',
                 'attr' => [
-                    'class' => "input-ocean mb-2",
+                    'class' => "form-control mb-2",
                     'placeholder' => 'Libellé',
                     
                 ],
@@ -31,7 +31,7 @@ class DevisDetailsTypeEdit extends AbstractType
             ->add('quantity', NumberType::class, [
                 'label' => 'Quantité',
                 'attr' => [
-                    'class' => "input-ocean mb-2",
+                    'class' => "form-control mb-2",
                     'placeholder' => 'Quantité',
                     'min' => 1,
                 ],
@@ -39,7 +39,7 @@ class DevisDetailsTypeEdit extends AbstractType
             ->add('price', NumberType::class, [
                 'label' => 'Prix Unitaire',
                 'attr' => [
-                    'class' => "input-ocean mb-2",
+                    'class' => "form-control mb-2",
                     'placeholder' => 'Prix',
                     'step' => '0.01',
                 ],
@@ -48,7 +48,7 @@ class DevisDetailsTypeEdit extends AbstractType
                 'label' => 'Remise (%)',
                 'required' => false,
                 'attr' => [
-                    'class' => "input-ocean",
+                    'class' => "form-control",
                     'placeholder' => 'Remise (%)',
                     'min' => 0,
                 ],

@@ -1,38 +1,433 @@
-{% extends 'base.html.twig' %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Devis {{ devis.reference }}</title>
+    <style>
+        @page {
+            margin: 0;
+            padding: 0;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'DejaVu Sans', Arial, sans-serif;
+            font-size: 10pt;
+            color: #30545c;
+            line-height: 1.4;
+        }
+        
+        .pdf-header {
+            background: linear-gradient(135deg, #30545c 0%, #3a6672 100%);
+            color: #ffffff;
+            padding: 30px 40px;
+            margin-bottom: 30px;
+        }
+        
+        .devis.company-info {
+            float: left;
+            width: 50%;
+        }
+        
+        .devis.company-logo {
+            max-width: 120px;
+            max-height: 80px;
+            margin-bottom: 10px;
+        }
+        
+        .devis.company-name {
+            font-size: 18pt;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .devis.company-details {
+            font-size: 9pt;
+            line-height: 1.6;
+            color: #c4dce1;
+        }
+        
+        .devis-info {
+            float: right;
+            width: 45%;
+            text-align: right;
+        }
+        
+        .devis-title {
+            font-size: 24pt;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .devis-reference {
+            font-size: 11pt;
+            color: #c4dce1;
+        }
+        
+        .clear {
+            clear: both;
+        }
+        
+        .addresses-section {
+            margin: 0 40px 30px 40px;
+        }
+        
+        .address-box {
+            float: left;
+            width: 48%;
+            padding: 15px;
+            background: #f4f0eb;
+            border-left: 4px solid #81aeb9;
+            border-radius: 5px;
+        }
+        
+        .address-box.right {
+            float: right;
+        }
+        
+        .address-title {
+            font-size: 10pt;
+            font-weight: bold;
+            color: #30545c;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+            border-bottom: 1px solid #c4dce1;
+            padding-bottom: 5px;
+        }
+        
+        .address-content {
+            font-size: 9pt;
+            line-height: 1.6;
+            color: #30545c;
+        }
+        
+        .address-content strong {
+            color: #30545c;
+            font-weight: bold;
+        }
+        
+        .devis-meta {
+            margin: 30px 40px;
+            padding: 15px;
+            background: #c4dce1;
+            border-radius: 5px;
+        }
+        
+        .devis-meta-item {
+            display: inline-block;
+            width: 32%;
+            font-size: 9pt;
+        }
+        
+        .devis-meta-label {
+            font-weight: bold;
+            color: #30545c;
+            text-transform: uppercase;
+            font-size: 8pt;
+            letter-spacing: 0.5px;
+        }
+        
+        .devis-meta-value {
+            font-size: 10pt;
+            color: #30545c;
+            margin-top: 3px;
+        }
+        
+        .items-table {
+            width: 100%;
+            margin: 30px 40px;
+            border-collapse: collapse;
+        }
+        
+        .items-table thead {
+            background: linear-gradient(135deg, #c4dce1, #d1e5eb);
+        }
+        
+        .items-table thead th {
+            padding: 12px 10px;
+            text-align: left;
+            font-size: 8pt;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #30545c;
+            font-weight: bold;
+            border-bottom: 2px solid #81aeb9;
+        }
+        
+        .items-table thead th.text-right {
+            text-align: right;
+        }
+        
+        .items-table tbody tr {
+            border-bottom: 1px solid #f4f0eb;
+        }
+        
+        .items-table tbody tr:nth-child(even) {
+            background: #fafaf8;
+        }
+        
+        .items-table tbody td {
+            padding: 10px;
+            font-size: 9pt;
+            color: #30545c;
+        }
+        
+        .items-table tbody td.text-right {
+            text-align: right;
+        }
+        
+        .items-table tbody td.text-center {
+            text-align: center;
+        }
+        
+        .product-ref {
+            color: #81aeb9;
+            font-size: 8pt;
+        }
+        
+        .totals-section {
+            margin: 30px 40px;
+            float: right;
+            width: 45%;
+        }
+        
+        .totals-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .totals-table tr {
+            border-bottom: 1px solid #f4f0eb;
+        }
+        
+        .totals-table td {
+            padding: 8px 10px;
+            font-size: 10pt;
+        }
+        
+        .totals-table td.label {
+            text-align: left;
+            color: #a69580;
+            text-transform: uppercase;
+            font-size: 9pt;
+            letter-spacing: 0.5px;
+        }
+        
+        .totals-table td.value {
+            text-align: right;
+            color: #30545c;
+            font-weight: bold;
+        }
+        
+        .totals-table tr.total-ttc {
+            background: linear-gradient(135deg, #30545c, #3a6672);
+            color: #ffffff;
+            border: none;
+        }
+        
+        .totals-table tr.total-ttc td {
+            padding: 15px 10px;
+            font-size: 14pt;
+            font-weight: bold;
+        }
+        
+        .totals-table tr.total-ttc td.label {
+            color: #ffffff;
+        }
+        
+        .totals-table tr.total-ttc td.value {
+            color: #ffffff;
+        }
+        
+        .conditions-section {
+            clear: both;
+            margin: 30px 40px 20px 40px;
+            padding: 15px;
+            background: #fef9f0;
+            border-left: 4px solid #a69580;
+            border-radius: 5px;
+        }
+        
+        .conditions-title {
+            font-size: 10pt;
+            font-weight: bold;
+            color: #30545c;
+            margin-bottom: 8px;
+        }
+        
+        .conditions-content {
+            font-size: 8pt;
+            line-height: 1.6;
+            color: #30545c;
+        }
+        
+        .pdf-footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 50px;
+            background: #f4f0eb;
+            border-top: 2px solid #c4dce1;
+            padding: 15px 40px;
+            text-align: center;
+            font-size: 8pt;
+            color: #a69580;
+        }
+        
+        .text-right {
+            text-align: right;
+        }
+        
+        .text-center {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
 
-{% block title %}Devis{% endblock %}
+    <div class="pdf-header">
+        <div class="devis.company-info">
+            {% if devis.company.urlLogo %}
+                <img src="{{ absolute_url(asset('uploads/' ~ devis.company.id ~ '/' ~ devis.company.urlLogo)) }}" class="company-logo" alt="{{ devis.company.name }}">
+            {% endif %}
+            <div class="devis.company-name">{{ devis.company.name }}</div>
+            <div class="devis.company-details">
+                {% if devis.deliveryStreet %}{{ devis.deliveryStreet }}<br>{% endif %}
+                {% if devis.deliveryPostalCode %}{{ devis.deliveryPostalCode }} {% endif %}{% if devis.deliveryCity %}{{ devis.deliveryCity }}<br>{% endif %}
+                {% if devis.deliveryPhone %}Tel : {{ devis.deliveryPhone }}<br>{% endif %}
 
-{% block body %}
-    <h1>Devis</h1>
+            </div>
+        </div>
+        
+        <div class="devis-info">
+            <div class="devis-title">DEVIS</div>
+            <div class="devis-reference">N° {{ devis.reference }}</div>
+        </div>
+        
+        <div class="clear"></div>
+    </div>
 
-    <table class="table">
+    <div class="addresses-section">
+        <div class="address-box">
+            <div class="address-title">Adresse de facturation</div>
+            <div class="address-content">
+                <strong>{{ devis.client.raisonSocial }}</strong><br>
+                {{ devis.client.address[0].nameStreet }}<br>
+                {% if devis.client.address[0].nameStreet2 %}{{ devis.client.address[0].nameStreet2 }}<br>{% endif %}
+                {{ devis.client.address[0].codePostal}} {{ devis.client.address[0].ville }}<br>
+                {% if devis.client.address[0].email %}{{ devis.client.address[0].email }}<br>{% endif %}
+                {% if devis.client.address[0].mobilePhone %}{{ devis.client.address[0].mobilePhone }}{% endif %}
+            </div>
+        </div>
+        
+        <div class="address-box right">
+            <div class="address-title">Adresse de livraison</div>
+            <div class="address-content">
+                <strong>{{ devis.client.raisonSocial }}</strong><br>
+                {{ devis.client.address[0].nameStreet }}<br>
+                {% if devis.client.address[0].nameStreet2 %}{{ devis.client.address[0].nameStreet2 }}<br>{% endif %}
+                {{ devis.client.address[0].codePostal}} {{ devis.client.address[0].ville }}<br>
+                {% if devis.client.address[0].email %}{{ devis.client.address[0].email }}<br>{% endif %}
+                {% if devis.client.address[0].mobilePhone %}{{ devis.client.address[0].mobilePhone }}{% endif %}
+            </div>
+        </div>
+        
+        <div class="clear"></div>
+    </div>
+
+    <div class="devis-meta">
+        <div class="devis-meta-item">
+            <div class="devis-meta-label">Date du devis</div>
+            <div class="devis-meta-value">{{ devis.createdAt|date('d/m/Y') }}</div>
+        </div>
+        <div class="devis-meta-item">
+            <div class="devis-meta-label">Date de validite</div>
+            <div class="devis-meta-value">{{ devis.createdAt | date_modify('+3 months')|date('d/m/Y') }}</div>
+        </div>
+        <div class="devis-meta-item">
+            <div class="devis-meta-label">Paiement</div>
+            <div class="devis-meta-value">{{ devis.paymentTerms|default('30 jours') }}</div>
+        </div>
+    </div>
+
+    <table class="items-table">
+        <thead>
+            <tr>
+                <th style="width: 10%;">Ref.</th>
+                <th style="width: 40%;">Designation</th>
+                <th class="text-center" style="width: 10%;">Qte</th>
+                <th class="text-right" style="width: 12%;">P.U. HT</th>
+                <th class="text-center" style="width: 10%;">Remise</th>
+                <th class="text-right" style="width: 10%;">TVA</th>
+                <th class="text-right" style="width: 13%;">Total HT</th>
+            </tr>
+        </thead>
         <tbody>
+            {% for line in devis.devisDetails %}
             <tr>
-                <th>Id</th>
-                <td>{{ devi.id }}</td>
+                <td>
+                    <span class="product-ref">{{ line.product.reference }}</span>
+                </td>
+                <td>
+                    <strong>{{ line.label }}</strong>
+                 </td>
+                <td class="text-center">{{ line.quantity }}</td>
+                <td class="text-right">{{ line.price|number_format(2, ',', ' ') }} €</td>
+                <td class="text-center">
+                    {% if line.reduce > 0 %}
+                        {{ line.reduce|number_format(2, ',', ' ') }} %
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+                <td class="text-right">{{ line.tva|default(20) }} %</td>
+                <td class="text-right"><strong>{{ line.total|number_format(2, ',', ' ') }} €</strong></td>
             </tr>
-            <tr>
-                <th>Reference</th>
-                <td>{{ devi.reference }}</td>
-            </tr>
-            <tr>
-                <th>Total</th>
-                <td>{{ devi.total }}</td>
-            </tr>
-            <tr>
-                <th>Taxe</th>
-                <td>{{ devi.taxe }}</td>
-            </tr>
-            <tr>
-                <th>TotalTTC</th>
-                <td>{{ devi.totalTTC }}</td>
-            </tr>
+            {% endfor %}
         </tbody>
     </table>
 
-    <a href="{{ path('app_devis_index') }}">back to list</a>
+    <div class="totals-section">
+        <table class="totals-table">
+            <tr>
+                <td class="label">Total HT</td>
+                <td class="value">{{ devis.total|number_format(2, ',', ' ') }} €</td>
+            </tr>
+            {% set totalTVA = devis.total * 0.20 %}
+            <tr>
+                <td class="label">TVA (20%)</td>
+                <td class="value">{{ totalTVA|number_format(2, ',', ' ') }} €</td>
+            </tr>
+            {% set totalTTC = devis.total + totalTVA %}
+            <tr class="total-ttc">
+                <td class="label">Total TTC</td>
+                <td class="value">{{ totalTTC|number_format(2, ',', ' ') }} €</td>
+            </tr>
+        </table>
+    </div>
+    
+    <div class="clear"></div>
 
-    <a href="{{ path('app_devis_edit', {'id': devi.id}) }}">edit</a>
+    <div class="conditions-section" style="margin-top: 20px; background: #f0f9f5; border-left-color: #4a9f7e;">
+        <div class="conditions-title">Mentions legales</div>
+        <div class="conditions-content">
+            Ce devis est valable jusqu'au {{ devis.createdAt|date_modify('+3 months')|date('d/m/Y') }}. 
+            Passe ce delai, les prix et conditions pourront etre revises. 
+            Le reglement s'effectuera selon les modalites convenues. 
+            En cas de retard de paiement, des penalites pourront etre appliquees conformement a la loi.
+        </div>
+    </div>
 
-    {{ include('devis/_delete_form.html.twig') }}
-{% endblock %}
+    <div class="pdf-footer">
+        {{ devis.company.name }}
+    </div>
+
+</body>
+</html>

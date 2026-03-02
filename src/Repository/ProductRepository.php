@@ -2,8 +2,10 @@
 
 namespace App\Repository;
 
+use App\Entity\Company;
 use App\Entity\Product;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -25,7 +27,20 @@ class ProductRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    
+    public function createQueryBuilderForCompany(?Company $company): QueryBuilder
+{
+    $qb = $this->createQueryBuilder('p')
+        ->orderBy('p.name', 'ASC');
+
+    if ($company) {
+        $qb->andWhere('p.company = :company')
+           ->setParameter('company', $company);
+    } else {
+        $qb->andWhere('1 = 0'); // sécurité : aucun résultat
+    }
+
+    return $qb;
+}
 
     //    /**
     //     * @return Product[] Returns an array of Product objects

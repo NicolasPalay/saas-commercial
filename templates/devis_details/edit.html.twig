@@ -1,15 +1,22 @@
 {% extends 'base.html.twig' %}
 
 {% block title %}Edit DevisDetails{% endblock %}
-
+{% block class %}devis_details_edit{% endblock %}
 {% block body %}
-<div class="editDEvisDetails">
-    {{ include('devis_details/_form.html.twig', {'button_label': 'Update'}) }}
-</div>
-    <a href="{{ path('app_devis_details_index') }}">back to list</a>
+<div class="page-container">
+    {# Contenu principal #}
+  {{ include('devis_details/_form.html.twig', {
+    'button_label': 'Mettre à jour',
+    'devis': devis_detail.devis
+  }) }}
 
+  {# Actions #}
+  <div class="d-flex gap-3 mt-4">
+    <a href="{{ path('app_devis_details_new', {'id': devis_detail.devis.id}) }}" class="btn-ocean btn-ocean-secondary">
+      <i class="bi bi-arrow-left"></i> Retour à la liste
+    </a>
     {{ include('devis_details/_delete_form.html.twig') }}
-{% endblock %}
-{% block javascripts %}
-    {{ parent() }}
+  </div>
+
+</div>
 {% endblock %}

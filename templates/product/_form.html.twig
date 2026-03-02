@@ -1,42 +1,160 @@
- {{ form_errors(form) }}
-{{ form_start(form, { attr: { class: 'space-y-6' } }) }}
-    <div class="relative">
-        <span class="absolute inset-y-0 left-0 flex items-center pl-5 text-purple-600">
-            🏢
-        </span>
-        {{ form_widget(form.reference, {
+{{ form_errors(form) }}
+
+{{ form_start(form, { attr: { class: 'needs-validation', novalidate: 'novalidate' } }) }}
+
+<div class="card-ocean mb-4">
+  <div class="card-body">
+
+
+
+    {# Référence & Nom #}
+    <div class="row g-3 mb-3">
+
+      <div class="col-md-6">
+        <label class="form-label fw-semibold">🏷️ Référence</label>
+        <div class="input-group">
+          <span class="input-group-text">🏷️</span>
+          {{ form_widget(form.reference, {
             attr: {
-                class: 'w-full pl-14 pr-6 py-4 rounded-full border border-gray-200 text-purple-600 shadow-sm focus:ring-2 focus:ring-purple-500 focus:outline-none',
-                placeholder: 'Réference'
+              class: 'form-control',
+              placeholder: 'Référence produit'
             }
-        }) }}
+          }) }}
+        </div>
         {{ form_errors(form.reference) }}
+      </div>
 
-    </div>
-      
-    <div class="relative">
-        <span class="absolute inset-y-0 left-0 flex items-center pl-5 text-purple-600">
-            🏢
-        </span>
-        {{ form_widget(form.price, {
+      <div class="col-md-6">
+        <label class="form-label fw-semibold">📝 Nom</label>
+        <div class="input-group">
+          <span class="input-group-text">📝</span>
+          {{ form_widget(form.name, {
             attr: {
-                class: 'w-full pl-14 pr-6 py-4 rounded-full border border-gray-200 text-purple-600 shadow-sm focus:ring-2 focus:ring-purple-500 focus:outline-none',
-                placeholder: 'Prix'
+              class: 'form-control',
+              placeholder: 'Nom du produit'
             }
-        }) }}
+          }) }}
+        </div>
+        {{ form_errors(form.name) }}
+      </div>
+
+    </div>
+
+    {# Prix & Prix de revient #}
+    <div class="row g-3 mb-3">
+
+      <div class="col-md-6">
+        <label class="form-label fw-semibold">💶 Prix (HT)</label>
+        <div class="input-group">
+          <span class="input-group-text">€</span>
+          {{ form_widget(form.price, {
+            attr: {
+              class: 'form-control',
+              placeholder: '0.00'
+            }
+          }) }}
+        </div>
         {{ form_errors(form.price) }}
+      </div>
+
+      <div class="col-md-6">
+        <label class="form-label fw-semibold">💰 Prix de revient</label>
+        <div class="input-group">
+          <span class="input-group-text">€</span>
+          {{ form_widget(form.costPrice, {
+            attr: {
+              class: 'form-control',
+              placeholder: '0.00'
+            }
+          }) }}
+        </div>
+        {{ form_errors(form.costPrice) }}
+      </div>
 
     </div>
-    
-{{ form_widget(form) }}
-    <div class="flex justify-between items-center pt-8">
-        <button
-            type="submit"
-            class="px-10 py-4 rounded-full text-white font-semibold bg-gradient-to-r from-purple-600 to-indigo-600 hover:opacity-90 transition shadow-xl"
-        >
-            Enregistrer
-        </button>
+
+    {# Stock & Code-barres #}
+    <div class="row g-3 mb-3">
+
+      <div class="col-md-6">
+        <label class="form-label fw-semibold">📦 Stock</label>
+        <div class="input-group">
+          <span class="input-group-text">📦</span>
+          {{ form_widget(form.stock, {
+            attr: {
+              class: 'form-control',
+              placeholder: 'Quantité en stock'
+            }
+          }) }}
+        </div>
+        {{ form_errors(form.stock) }}
+      </div>
+
+      <div class="col-md-6">
+        <label class="form-label fw-semibold">🔢 Code-barres</label>
+        <div class="input-group">
+          <span class="input-group-text">🔢</span>
+          {{ form_widget(form.barcode, {
+            attr: {
+              class: 'form-control',
+              placeholder: 'Code-barres'
+            }
+          }) }}
+        </div>
+        {{ form_errors(form.barcode) }}
+      </div>
 
     </div>
+
+    {# Taxe #}
+    <div class="row g-3 mb-3">
+      <div class="col-md-12">
+        <label class="form-label fw-semibold">🧾 Taxe applicable</label>
+        {{ form_widget(form.taxe, {
+          attr: {
+            class: 'form-select'
+          }
+        }) }}
+        {{ form_errors(form.taxe) }}
+      </div>
+    </div>
+
+    {# Options : isActive & isService #}
+    <div class="row g-3 mb-4 d-flex justify-content-center">
+
+      <div class="col-md-2">
+        <div class="form-check form-switch mt-2">
+          {{ form_widget(form.isActive, {
+            attr: { class: 'form-check-input', role: 'switch', id: 'isActive' }
+          }) }}
+          <label class="form-check-label" for="isActive">✅ Produit actif</label>
+        </div>
+        {{ form_errors(form.isActive) }}
+      </div>
+
+      <div class="col-md-2">
+        <div class="form-check form-switch mt-2">
+          {{ form_widget(form.isService, {
+            attr: { class: 'form-check-input', role: 'switch', id: 'isService' }
+          }) }}
+          <label class="form-check-label" for="isService">🛠️ C'est un service</label>
+        </div>
+        {{ form_errors(form.isService) }}
+      </div>
+
+    </div>
+
+    {# Champs restants auto-générés (cachés / autres) #}
+    {{ form_rest(form) }}
+
+    {# Bouton Submit #}
+    <div class="d-flex justify-content-center pt-2">
+      <button type="submit" class="btn-sand">
+        💾 Enregistrer
+      </button>
+    </div>
+
+  </div>
+</div>
+
 {{ form_end(form) }}
-

@@ -3,11 +3,33 @@
 {% block title %}Edit Devis{% endblock %}
 
 {% block body %}
+
+
+<div class="w-100 bg-white rounded-4 shadow container p-5 mt-10">
     <h1>Edit Devis</h1>
 
-    {{ include('devis/_form.html.twig', {'button_label': 'Update'}) }}
+{{ form_start(form) }}
+
+    {{ form_row(form.reference) }}
+    {{ form_row(form.deliveryLabel) }}
+    {{ form_row(form.deliveryStreet) }}
+    <div class="d-flex address-ville justify-content-between">
+        {{ form_row(form.deliveryPostalCode) }}
+        {{ form_row(form.deliveryCity) }}
+    </div>
+    {{ form_row(form.deliveryPhone) }}
+     <div class="d-flex justify-content-center">
+        {{ form_row(form.isInvoiceDefault) }}
+    </div>
+         <div class="w-25">
+ {{ form_row(form.isInvoiced) }}
+   </div>
+    <button class="btn-sand mt-2" >{{ button_label|default('Save') }}</button>
+
+{{ form_end(form) }}
 
     <a href="{{ path('app_devis_index') }}">back to list</a>
 
     {{ include('devis/_delete_form.html.twig') }}
+</div>
 {% endblock %}

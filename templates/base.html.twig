@@ -18,7 +18,7 @@
    <link rel="stylesheet" href="{{ asset('assets/styles/style.css') }}">
 {% block importmap %}{{ importmap('app') }}{% endblock %}
 </head>
-<body class="min-vh-100 d-flex flex-column align-items-center w-100 body"> 
+<body class="min-vh-100 d-flex flex-column align-items-center w-100 body {% block class %}{% endblock %}"> 
 
       {% include '_includes/navigation.html.twig' %}
 
@@ -26,5 +26,22 @@
 
     {% block javascripts %}{% endblock %}
      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+   <script >
+  (function() {
+        const messages = document.querySelectorAll('.flash-message');
+        
+        messages.forEach(message => {
+            setTimeout(() => {
+                message.style.opacity = '0';
+                message.style.transform = 'translateY(-20px)';
+                message.style.transition = 'all 0.3s ease';
+                
+                setTimeout(() => {
+                    message.remove();
+                }, 300);
+            }, 3000);
+        });
+    })();
+   </script>
 </body>
 </html>

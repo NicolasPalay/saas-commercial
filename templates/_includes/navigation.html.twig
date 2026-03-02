@@ -1,4 +1,4 @@
-<nav class="navbar navbar-expand-lg w-100 mb-5 px-4">
+<nav class="navbar navbar-expand-lg w-100 px-4">
   <div class="container-fluid">
     <a class="navbar-brand" href="{{ path('app_home') }}"><img class="logo" src="{{asset('images/logo.png')}}" alt=""></a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
@@ -6,22 +6,42 @@
     </button>
     <div class="collapse navbar-collapse" id="navbarNavDropdown">
       <ul class="navbar-nav">
+      {% if app.user is null %}
+        
+     
         <li class="nav-item">
           <a class="nav-link" href="{{ path('app_login') }}">login</a>
         </li>
         <li class="nav-item">
           <a class="nav-link" href="{{ path('app_register') }}">inscription</a>
         </li>
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            Dropdown link
-          </a>
-          <ul class="dropdown-menu">
-            <li><a class="dropdown-item" href="#">Action</a></li>
-            <li><a class="dropdown-item" href="#">Another action</a></li>
-            <li><a class="dropdown-item" href="#">Something else here</a></li>
-          </ul>
+        {% endif %}
+        {% if app.user %}
+          <li class="nav-item">
+            <a class="nav-link" href="{{ path('app_dashboard') }}">Dashboard</a>
+          </li>
+       
+        <li class="nav-item">
+          <a class="nav-link" href="{{ path('app_client_index') }}"><i class="bi bi-people"></i> Les clients</a>
         </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{{ path('app_product_index') }}"><i class="bi bi-box-seam"></i>
+ Les produits</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{{ path('app_devis_index') }}"><i class="bi bi-file-ruled"></i>
+ Les devis</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">Les factures</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{{ path('app_employed') }}"><i class="bi bi-plus-square"></i> Ajouter un employé</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{{ path('app_subscription_index') }}"><i class="bi bi-plus-square"></i> Abandement</a>
+        </li>
+         {% endif %}
       </ul>
     </div>
   </div>

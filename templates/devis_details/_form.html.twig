@@ -1,40 +1,87 @@
+<div class="card-ocean">
+  {# Header avec infos du devis #}
+  <div class="card-ocean-header" style="padding: 32px 40px;">
+    <h1 style="color: var(--white); font-size: 24px; margin-bottom: 8px; text-align: center;">
+      <a href="{{ path('app_devis_edit', {'id': devis.id}) }}" style="color: var(--white); text-decoration: none;">
+        Devis n°{{ devis.reference }}
+      </a>
+    </h1>
+    <p style="color: var(--sky-shell);" class="text-center mb-25">
+      {{ devis.deliveryLabel }}
+    </p>
+      {# Bouton retour vers l'édition du devis #}
+    <div class="text-center mb-4">
+      <a href="{{ path('app_devis_edit', {'id': devis.id}) }}" class="btn-ocean btn-ocean-secondary btn-ocean-sm">
+        <i class="bi bi-pencil"></i> Modifier l'adresse
+      </a>
+    </div>
 
+  </div>
+  <div class="card-ocean-body">
+    
+  
+    <div class="divider"></div>
 
- <div class="w-full bg-white rounded-3xl shadow-2xl p-10">
- <h1 class="mb-5 text-center h2">Devis n°{{ devis.reference }} | {{ devis.client.raisonSocial }}</h1>
-     <table class="w-full text-left devis-detail-table">
+    {# Tableau des lignes de devis #}
+    <div class="table-card mb-4">
+      <div class="table-responsive">
+        <table class="table-ocean">
           <thead>
-            <tr class="text-gray-500 border-b">
-              <th class="py-2 name">Nom du Produit</th>
-              <th class="py-2 qte">Qte</th>
-              <th class="py-2 pri">Prix Unit</th>
-              <th class="py-2 rem">Remise</th>
-                <th class="py-2 tt">Total</th>
+            <tr>
+              <th>Réf. Prod</th>
+              <th>Nom du Produit</th>
+              <th>Qté</th>
+              <th>Prix Unit</th>
+              <th>Remise</th>
+              <th>Total</th>
+              <th></th>
             </tr>
           </thead>
           <tbody>
             {% for devisLine in devis.devisDetails %}
-              <tr class="hover:bg-gray-50">
-                <td class="py-2 name"><a href="{{ path('app_devis_details_edit', {'id': devisLine.id}) }}">{{ devisLine.label}}</a></td>
-                <td class="py-2 qte">{{ devisLine.quantity}}</td>
-                <td class="py-2 pri">{{ devisLine.price }} €</td>
-                <td class="py-2 rem">{{ devisLine.reduce }}</td>
-                <td class="py-2 tt">{{ devisLine.total }} €</td>
-
+              <tr>
+                <td>
+                  <a href="{{ path('app_devis_details_edit', {'id': devisLine.id}) }}">
+                    {{ devisLine.product.reference }}
+                  </a>
+                </td>
+                <td>
+                  <a href="{{ path('app_devis_details_edit', {'id': devisLine.id}) }}">
+                    {{ devisLine.label }}
+                  </a>
+                </td>
+                <td>{{ devisLine.quantity }}</td>
+                <td>{{ devisLine.price | number_format(2, ',', ' ') }} €</td>
+                <td>{{ devisLine.reduce | number_format(2, ',', ' ') }} %</td>
+                <td><strong>{{ devisLine.total | number_format(2, ',', ' ') }} €</strong></td>
+                <td>
+                  {{ include('devis_details/_delete_form.html.twig', { devis_detail: devisLine }) }}
+                </td>
+              </tr>
+            {% else %}
+              <tr>
+                <td colspan="7" style="text-align: center; padding: 40px; color: var(--dune);">
+                  <i class="bi bi-inbox" style="font-size: 48px; display: block; margin-bottom: 12px; opacity: 0.5;"></i>
+                  Aucune ligne de devis
+                </td>
               </tr>
             {% endfor %}
           </tbody>
         </table>
-
-  <div class="w-full  bg-white rounded-3xl shadow-2xl p-10 text-indigo-700 mb-5 editAbsolute ">
-    
-    {{ form_start(form) }}
-        {{ form_widget(form) }}
-        <button class="btn-sand" type="submit"
-    >{{ button_label|default('Sélectionnez') }}</button>
-    {{ form_end(form) }}
-    </div>  
+      </div>
     </div>
 
     
 
+    {# Formulaire d'ajout/édition #}
+    <div class="bg-light p-4 form-edit-detail-devis editAbsolute" style="border-radius: var(--radius-lg); border: 1.5px solid var(--sky-shell);">
+      </h3>
+{{ form_start(form) }}
+        {{ form_widget(form) }}
+        <button class="btn-ocean btn-ocean-secondary btn-ocean-sm" type="submit"
+    >{{ button_label|default('Sélectionnez') }}</button>
+    {{ form_end(form) }}
+    </div>
+<div class="divider"></div>
+  </div>
+</div>

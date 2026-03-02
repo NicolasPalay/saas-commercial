@@ -14,6 +14,8 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Authentication\UserAuthenticatorInterface;
 use App\Security\AppCustomAuthenticator;
+use App\Services\JwtService;
+use App\Services\SendMailService;
 
 final class EmployedController extends AbstractController
 {
@@ -22,15 +24,17 @@ final class EmployedController extends AbstractController
     UserAuthenticatorInterface $userAuthenticator,
     AppCustomAuthenticator $authenticator,
     UserPasswordHasherInterface $userPasswordHasher, 
-    EntityManagerInterface $entityManager): Response
+    EntityManagerInterface $entityManager,
+    JwtService $jwt, 
+    SendMailService $mail): Response
     {
         
-        $dirigeant= $this->getUser();
+       $dirigeant= $this->getUser();
        if (!$this->isGranted('ROLE_DIRIGEANT')) {
-    return $this->redirectToRoute('app_login');
-}
+            return $this->redirectToRoute('app_login');
+        }
 
-$user = new User();
+        $user = new User();
         
      
         $form = $this->createForm(EmployedFormType::class, $user);
@@ -46,7 +50,32 @@ $user = new User();
                  
             $entityManager->persist($user);
             $entityManager->flush();
+ // do anything else you need here, like send an email
 
+            // Générer le token
+            // Header
+            $header = [
+                'typ' => 'JWT',
+                'alg' => 'HS256'
+            ];
+
+            // Payload
+            $payload = [
+                'user_id' => $user->getId()
+            ];
+
+            // On génère le token
+            $token = $jwt->generate($header, $payload, $this->getParameter('app.jwt_secret'));
+
+            // Envoyer l'e-mail
+            $mail->send(
+                'no-reply@openblog.test',
+                $user->getEmail(),
+                'Activation de votre compte sur le site OpenBlog',
+                'register',
+                compact('user', 'token') // ['user' => $user, 'token'=>$token]
+            );
+            $this->addFlash('success', 'Votre compte a été créé avec succès. Veuillez vérifier votre boîte e-mail pour l\'activation de votre compte.');
 
             return $this->redirectToRoute('app_dashboard');
 

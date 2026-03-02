@@ -4,10 +4,11 @@
 
 {% block body %}
     <h1>Edit Product</h1>
-
+ <div class="container w-100 p-5 bg-white border-info-subtle rounded-4 shadow-sm">
     {{ include('product/_form.html.twig', {'button_label': 'Update'}) }}
 
-    <a href="{{ path('app_product_index') }}">back to list</a>
+    <a  class="btn-stand" href="{{ path('app_product_index') }}">back to list</a>
 
     {{ include('product/_delete_form.html.twig') }}
+    </div>
 {% endblock %}

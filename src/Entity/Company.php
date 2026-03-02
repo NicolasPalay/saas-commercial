@@ -66,6 +66,18 @@ class Company
     #[ORM\OneToMany(targetEntity: Taxe::class, mappedBy: 'company')]
     private Collection $taxes;
 
+    #[ORM\Column(length: 255)]
+    private ?string $refDevis = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $refFacture = null;
+
+    /**
+     * @var Collection<int, Subscription>
+     */
+    #[ORM\OneToMany(targetEntity: Subscription::class, mappedBy: 'company')]
+    private Collection $subscriptions;
+
     public function __construct() {
         $this->createdAt = new \DateTimeImmutable();
         $this->user = new ArrayCollection();
@@ -75,6 +87,7 @@ class Company
         $this->conversations = new ArrayCollection();
         $this->devis = new ArrayCollection();
         $this->taxes = new ArrayCollection();
+        $this->subscriptions = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -318,6 +331,60 @@ class Company
             // set the owning side to null (unless already changed)
             if ($tax->getCompany() === $this) {
                 $tax->setCompany(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getRefDevis(): ?string
+    {
+        return $this->refDevis;
+    }
+
+    public function setRefDevis(string $refDevis): static
+    {
+        $this->refDevis = $refDevis;
+
+        return $this;
+    }
+
+    public function getRefFacture(): ?string
+    {
+        return $this->refFacture;
+    }
+
+    public function setRefFacture(string $refFacture): static
+    {
+        $this->refFacture = $refFacture;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Subscription>
+     */
+    public function getSubscriptions(): Collection
+    {
+        return $this->subscriptions;
+    }
+
+    public function addSubscription(Subscription $subscription): static
+    {
+        if (!$this->subscriptions->contains($subscription)) {
+            $this->subscriptions->add($subscription);
+            $subscription->setCompany($this);
+        }
+
+        return $this;
+    }
+
+    public function removeSubscription(Subscription $subscription): static
+    {
+        if ($this->subscriptions->removeElement($subscription)) {
+            // set the owning side to null (unless already changed)
+            if ($subscription->getCompany() === $this) {
+                $subscription->setCompany(null);
             }
         }
 

@@ -1,111 +1,86 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Connexion{% endblock %}
+{% block title %}Log in!{% endblock %}
 
 {% block body %}
-
-<div class="w-50 bg-white rounded shadow p-4 mx-auto mt-5 container">
-
-    <div class="text-center mb-4">
-        <h1 class="fw-semibold text-primary letter-spacing">
-            Connexion
-        </h1>
+<div class="login-container">
+  <div class="login-card">
+    
+    <div class="login-header">
+      <div class="login-logo">🌊</div>
+      <h1>Connexion</h1>
+      <p>Accédez à votre espace de gestion</p>
     </div>
 
-    {# ERROR #}
-    {% if error %}
-        <div class="mb-3 text-danger text-center small">
-            {{ error.messageKey|trans(error.messageData, 'security') }}
-        </div>
-    {% endif %}
+    <div class="wave-divider">
+      <svg viewBox="0 0 520 30" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M0,30 C70,2 150,30 260,15 C370,0 450,28 520,12 L520,30 Z" fill="#fff"/>
+      </svg>
+    </div>
 
-    {# LOGGED #}
-    {% if app.user %}
-        <div class="mb-3 text-center text-secondary small">
-            You are logged in as
-            <strong>{{ app.user.userIdentifier }}</strong>,
-            <a href="{{ path('app_logout') }}" class="text-decoration-underline text-primary">
-                Logout
-            </a>
-        </div>
-    {% endif %}
+    <div class="login-body">
+      
+      {% if error %}
+      <div class="alert-ocean error">
+        ⚠ {{ error.messageKey|trans(error.messageData, 'security') }}
+      </div>
+      {% endif %}
 
-    <form method="post" class="d-grid gap-3">
+      {% if app.user %}
+      <div class="alert-ocean success">
+        ✓ Vous êtes connecté en tant que {{ app.user.email }}
+      </div>
+      {% endif %}
 
-        {# EMAIL #}
-        <div class="position-relative">
-            <span class="position-absolute top-50 start-0 translate-middle-y ps-3 ">
-                <i class="bi bi-envelope"></i>
-
-            </span>
-            <input
-                type="email"
-                name="email"
-                value="{{ last_username }}"
-                id="inputEmail"
-                required
-                autofocus
-                autocomplete="email"
-                placeholder="E-mail"
-                class="input-ocean"
-            >
+      <form method="post">
+        
+        <div class="form-group">
+          <label for="username" class="form-label">Email</label>
+          <input type="email" value="{{ last_username }}" name="email" id="inputEmail" class="form-control" autocomplete="email" required autofocus>
         </div>
 
-        {# PASSWORD #}
-        <div class="position-relative">
-            <span class="position-absolute top-50 start-0 translate-middle-y ps-3">
-               <i class="bi bi-lock-fill"></i>
-            </span>
-            <input
-                type="password"
-                name="password"
-                id="inputPassword"
-                required
-                autocomplete="current-password"
-                placeholder="Password"
-                class="input-ocean"
-            >
+        <div class="form-group">
+          <label for="password" class="form-label">Mot de passe</label>
+          <div class="password-toggle">
+               <input type="password" name="password" id="inputPassword" class="form-control" autocomplete="current-password" required>
+            <button type="button" class="password-toggle-btn" onclick="togglePassword()">👁</button>
+          </div>
         </div>
 
-        <input
-            type="hidden"
-            name="_csrf_token"
-            value="{{ csrf_token('authenticate') }}"
-        >
-
-        {# REMEMBER ME #}
-        <div class="d-flex justify-content-between align-items-center small text-secondary">
-            <div class="form-check">
-                <input
-                    class="form-check-input"
-                    type="checkbox"
-                    name="_remember_me"
-                    id="rememberMe"
-                >
-                <label class="form-check-label" for="rememberMe">
-                    Remember me
-                </label>
-            </div>
-
-            <a href="#" class="">
-                Forgot password ?
-            </a>
+        <div class="form-check">
+          <input type="checkbox" id="remember_me" name="_remember_me">
+          <label for="remember_me">Se souvenir de moi</label>
         </div>
 
-        {# SUBMIT #}
-        <button type="submit" class="btn-sand w-100">
-            SIGN IN
-        </button>
+        <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
 
-    </form>
+        <button type="submit" class="btn-submit">Se connecter</button>
 
-    <p class="text-center small text-muted mt-4">
-        Don’t have an account ?
-        <a href="{{ path('app_register') }}" class="">
-            Sign up
+      </form>
+
+      <div class="divider"></div>
+
+      <div style="text-align: center;">
+        <a href="{{ path('forgotten_password') }}" style="color: var(--cloudy-ocean); text-decoration: none; font-size: 13px;">
+          Mot de passe oublié ?
         </a>
-    </p>
+      </div>
 
+    </div>
+
+    <div class="login-footer">
+      <p>Vous n'avez pas de compte ?</p>
+      <a href="{{ path('app_register') }}">Créer un compte</a>
+    </div>
+
+  </div>
 </div>
 
+<script>
+function togglePassword() {
+  const passwordInput = document.getElementById('password');
+  const type = passwordInput.type === 'password' ? 'text' : 'password';
+  passwordInput.type = type;
+}
+</script>
 {% endblock %}

@@ -16,6 +16,7 @@ class DevisDetailsRepository extends ServiceEntityRepository
         parent::__construct($registry, DevisDetails::class);
     }
 
+    
     //    /**
     //     * @return DevisDetails[] Returns an array of DevisDetails objects
     //     */

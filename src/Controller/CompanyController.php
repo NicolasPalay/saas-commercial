@@ -6,6 +6,7 @@ use App\Entity\Company;
 use App\Form\CompanyType;
 use App\Repository\CompanyRepository;
 use App\Services\ImageService;
+use App\Services\uploadService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -30,8 +31,10 @@ final class CompanyController extends AbstractController
     public function edit(Request $request, 
                         Company $company, 
                         EntityManagerInterface $entityManager, 
-                        ImageService $imageService
-): Response
+                        ImageService $imageService,
+                        uploadService $uploadService
+    ): Response
+
     {
         $user= $this->getUser();
         if (!in_array('ROLE_DIRIGEANT', $user->getRoles(), true)) {
@@ -42,20 +45,18 @@ final class CompanyController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-           $slug=trim($company->getName());
-             $file = $form->get('urlLogo')->getData();
+             /**@var UploadedFile $ file */
+            $file = $form->get('urlLogo')->getData();
+            
             if ($file) {
-            $filename = $imageService->uploadFile(
-                $slug, 
-                'company', 
-                $file,
-                "120",
-                "120", 
-                $company
-            );
-            // Enregistrer le nom dans ton entité
-            $company->setUrlLogo($filename);
-        }
+                if ($company->getUrlLogo()) {
+                    $uploadService->delete($company->getUrlLogo(), $company);
+                }
+                $filename = $uploadService->upload($file, $company);
+                $company->setUrlLogo($filename);
+            }
+
+        
             $entityManager->flush();
 
             return $this->redirectToRoute('app_dashboard', [], Response::HTTP_SEE_OTHER);
@@ -63,7 +64,7 @@ final class CompanyController extends AbstractController
 
         return $this->render('company/edit.html.twig', [
             'company' => $company,
-            'form' => $form,
+            'form' => $form->createView(),
         ]);
     }
 

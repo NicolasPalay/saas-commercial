@@ -3,6 +3,8 @@
 namespace App\Form\Field;
 
 use App\Entity\Client;
+use Doctrine\ORM\EntityRepository;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\UX\Autocomplete\Form\AsEntityAutocompleteField;
@@ -11,18 +13,28 @@ use Symfony\UX\Autocomplete\Form\BaseEntityAutocompleteType;
 #[AsEntityAutocompleteField]
 class ClientAutocompleteField extends AbstractType
 {
+        public function __construct(private Security $security)
+    {
+    }
+
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
             'class' => Client::class,
             'placeholder' => 'Choose a Client',
             'choice_label' => 'raisonSocial',
-
-            // choose which fields to use in the search
-            // if not passed, *all* fields are used
             'searchable_fields' => ['raisonSocial'],
             'autocomplete' => true,
-            // 'security' => 'ROLE_SOMETHING',
+
+            'query_builder' => function (EntityRepository $er) {
+                $user = $this->security->getUser();
+
+                return $er->createQueryBuilder('c')
+                    ->where('c.company = :company')
+                    ->setParameter('company', $user->getCompany());
+            },
+
+
         ]);
     }
 

@@ -37,6 +37,10 @@ class Address
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $email = null;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?bool $isDefault = null;
+
+
     public function getId(): ?int
     {
         return $this->id;
@@ -134,6 +138,18 @@ class Address
     public function setEmail(?string $email): static
     {
         $this->email = $email;
+
+        return $this;
+    }
+
+    public function isIsDefault(): ?bool
+    {
+        return $this->isDefault;
+    }
+
+    public function setIsDefault(?bool $isDefault): static
+    {
+        $this->isDefault = $isDefault;
 
         return $this;
     }

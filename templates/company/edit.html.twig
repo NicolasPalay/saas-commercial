@@ -3,11 +3,23 @@
 {% block title %}Edit Company{% endblock %}
 
 {% block body %}
-    <h1>Edit Company</h1>
 
-    {{ include('company/_form.html.twig', {'button_label': 'Update'}) }}
+    {{ include('company/_form.html.twig', {'button_label': 'Modifier'}) }}
 
     <a href="{{ path('app_company_index') }}">back to list</a>
 
     {{ include('company/_delete_form.html.twig') }}
+    
+<script>
+    const input = document.getElementById('company_urlLogo');
+    const label = document.querySelector('label[for="company_urlLogo"]');
+
+    input.addEventListener('change', function() {
+        if (this.files.length > 0) {
+            label.textContent = this.files[0].name;
+        }
+    });
+
+    
+</script>
 {% endblock %}

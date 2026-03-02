@@ -1,4 +1,28 @@
+<div class="form-page-wrapper">
+  <div class="form-container-company">
+    
+    {# Utilise card-ocean du CSS commun #}
+    <div class="card-ocean">
+      
+      {# Utilise card-ocean-header du CSS commun #}
+      <div class="card-ocean-header d-flex flex-column items-center" style="text-align: center;">    
+        <h1 style="color: var(--white); margin-bottom: 8px;">
+          {{ company.id ? 'Modifier l\'entreprise' : 'Nouvelle entreprise' }}
+        </h1>
+        {% if company.id %}
+        <img src="/uploads/{{ company.id }}/{{ company.urlLogo }}" alt="{{ company.name }}">
+        {% endif %}
+
+      </div>
+
+      {# Utilise card-ocean-body du CSS commun #}
+      <div class="card-ocean-body">
+
 {{ form_start(form) }}
     {{ form_widget(form) }}
-    <button class="btn">{{ button_label|default('Save') }}</button>
+    <button class="btn-ocean btn-ocean-primary mt-2">{{ button_label|default('Enregistrer') }}</button>
 {{ form_end(form) }}
+
+      </div>
+    </div>
+  </div>  

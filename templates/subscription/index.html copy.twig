@@ -1,0 +1,67 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello SubscriptionController!{% endblock %}
+
+{% block body %}
+<div class="text-center w-100">
+    
+   {% for message in app.flashes('info') %}
+
+            <div class="bg-info-subtle rounded-lg p-4 mb-4 flash-message" role="alert">
+                {{ message }}
+            </div>
+
+    {% endfor %}
+
+    <section class="pricing-section abonnez-vous mb-5 px-5" id="tarifs">
+        <div class="container  my-5">
+            <h1 class="section-title text-white">Une tarification simple et transparente</h1>
+            <h3 class="text-white">Vous avez atteint {{ devisCount }} devis, félicitation ! </h3>
+            <p class="text-white pb-4"> Afin de poursuivre le développement de votre activité, abonnez-vous !</p>
+            <div class="row justify-content-evenly">
+                di
+                <div class="col-lg-4 pricing-card d-flex flex-column justify-content-between">
+                    <div>
+                        <h3>Starter</h3>
+                        <div class="price">3€ HT<span>/mois</span></div>
+                    </div>
+                    <ul class="pricing-features">
+                        <li>Jusqu'à 30 factures/an</li>
+                        <li>1 utilisateur</li>
+                        <li>Support par email</li>
+                    </ul>
+                        <a href="{{ path('app_subscription_new', {'id':plan[0].id}) }}" class="btn btn-primary w-100">Abonnez-vous</a>
+                </div>
+                <div class="col-lg-4 pricing-card popular d-flex flex-column justify-content-between">
+                    
+                    <h3>Pro</h3>
+                    <div class="price">10€ HT<span>/mois</span></div>
+                    <ul class="pricing-features">
+                        <li>Factures illimitées</li>
+                        <li>3 utilisateurs</li>
+                        <li>Relances automatiques</li>
+                        <li>Support prioritaire</li>
+                    </ul>
+                        <a href="{{ path('app_subscription_new', {'id':plan[1].id}) }}" class="btn btn-primary w-100">Abonnez-vous</a>
+                </div>
+                {# <div class="col-lg-4">
+                    <div class="pricing-card">
+                        <h3>Business</h3>
+                        <div class="price">39€<span>/mois</span></div>
+                        <ul class="pricing-features">
+                            <li>Tout Pro +</li>
+                            <li>Utilisateurs illimités</li>
+                            <li>API & intégrations</li>
+                            <li>Account manager dédié</li>
+                        </ul>
+                        <a href="#essai" class="btn btn-outline-primary w-100">Commencer</a>
+                    </div>
+                </div> #}
+            </div>
+            <div class="text-center mt-5">
+                <p class="text-white"><em>Essai gratuit 10 factures - 20 devis  - Aucune carte bancaire requise</em></p>
+            </div>
+        </div>
+    </section>
+</div>
+{% endblock %}
