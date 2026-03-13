@@ -1,26 +1,106 @@
+{# templates/devis/index.html.twig #}
 {% extends 'base.html.twig' %}
 
-{% block title %}Devis index{% endblock %}
+{% block title %}Liste des Devis{% endblock %}
+
+{% block stylesheets %}
+<link rel="stylesheet" href="{{ asset('css/shoreline-haze.css') }}">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+<style>
+  /* Modal styles */
+  #modal {
+    display: none;
+    margin-bottom: 24px;
+  }
+  
+  #modal.show {
+    display: block;
+  }
+</style>
+{% endblock %}
 
 {% block body %}
-
-
-
- <div class="w-100 p-5">
-        <h1 class="text-lg font-semibold mb-4 text-gray-700 text-center">📑 Les devis</h1>
-
-    <div class="w-100 p-5 bg-white border-info-subtle rounded-4 shadow-sm" id="modal"
-    >
-        {{ include('devis/_form.html.twig') }}
+<div class="container">
+  
+  {# Page Header #}
+  <div class="page-header">
+    <div class="breadcrumb-ocean">
+      <a href="{{ path('app_dashboard') }}">Dashboard</a>
+      <span>›</span>
+      <span style="color: var(--white);">Devis</span>
     </div>
+    <h1><i class="bi bi-file-text"></i> Liste des Devis</h1>
+    <p>Gérez et suivez tous vos devis en un coup d'œil</p>
+    <button class="btn-ocean btn-ocean-primary openModal" 
+            data-action="click->modal#open"
+            style="position: absolute; top: 40px; right: 40px; padding: 12px 24px;">
+      <i class="bi bi-plus-circle"></i> Nouveau Devis
+    </button>
+  </div>
 
-
-<div class="w-full bg-white rounded-4 shadow-sm py-3 px-5 mt-4">
-<twig:DevisComponent :entity='entity' :headers='headers' />
-       
+  {# Stats Cards #}
+  <div class="row g-3 mb-4">
+    <div class="col-md-3 col-6">
+      <div class="kpi-card">
+        <p class="label">Total Devis</p>
+        <h2 class="value">{{ entity|length }}</h2>
       </div>
-       </div>
+    </div>
+    <div class="col-md-3 col-6">
+      <div class="kpi-card" style="border-left-color: #4a9f7e;">
+        <p class="label">Acceptés</p>
+        <h2 class="value" style="color: #4a9f7e;">12</h2>
+      </div>
+    </div>
+    <div class="col-md-3 col-6">
+      <div class="kpi-card" style="border-left-color: #9a7745;">
+        <p class="label">En attente</p>
+        <h2 class="value" style="color: #9a7745;">8</h2>
+      </div>
+    </div>
+    <div class="col-md-3 col-6">
+      <div class="kpi-card" style="border-left-color: #a85751;">
+        <p class="label">Refusés</p>
+        <h2 class="value" style="color: #a85751;">3</h2>
+      </div>
+    </div>
+  </div>
+
+  {# Modal Form #}
+  <div class="card-ocean" id="modal">
+    <div class="card-ocean-body">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 style="font-family: 'Cormorant Garamond', serif; font-size: 24px; color: var(--deep-marine); margin: 0;">
+          <i class="bi bi-plus-circle"></i> Nouveau Devis
+        </h2>
+        <button class="btn-ocean btn-ocean-secondary btn-ocean-sm" onclick="document.getElementById('modal').classList.remove('show')">
+          <i class="bi bi-x-circle"></i> Fermer
+        </button>
+      </div>
+      <div class="divider"></div>
+      {{ include('devis/_form.html.twig') }}
+    </div>
+  </div>
+
+  {# Composant Devis #}
+  <twig:DevisComponent :entity='entity' :headers='headers' />
+
+</div>
+
+<script>
+  // Gestion du modal
+  document.querySelectorAll('.openModal').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const modal = document.getElementById('modal');
+      modal.classList.add('show');
+      modal.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+</script>
 {% endblock %}
+
 {% block javascripts %}
-    <script src="{{ asset('assets/js/modal.js') }}"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="{{ asset('assets/js/modal.js') }}"></script>
 {% endblock %}

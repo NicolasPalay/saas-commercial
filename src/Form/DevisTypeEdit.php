@@ -51,13 +51,7 @@ class DevisTypeEdit extends AbstractType
                 'label' => 'Facturé',
                 'required' => false,
                 'attr' => ['class' => 'mx-3 mb-3']])
-            ->add('isInvoiceDefault', null, [
-                
-                'label' => 'Adresse pour la facturation',
-                'required' => false,
-                'attr' => ['class' => 'form-control mb-3']])
             
-
         ;
     }
 

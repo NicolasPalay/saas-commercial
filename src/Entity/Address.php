@@ -40,6 +40,8 @@ class Address
     #[ORM\Column(length: 255, nullable: true)]
     private ?bool $isDefault = null;
 
+    
+
 
     public function getId(): ?int
     {

@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit InvoiceDetails{% endblock %}
+
+{% block body %}
+    <h1>Edit InvoiceDetails</h1>
+
+    {{ include('invoice_details/_form.html.twig', {'button_label': 'Update'}) }}
+
+    <a href="{{ path('app_invoice_details_index') }}">back to list</a>
+
+    {{ include('invoice_details/_delete_form.html.twig') }}
+{% endblock %}

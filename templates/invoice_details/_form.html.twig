@@ -1,27 +1,22 @@
 <div class="card-ocean">
-  {# Header avec infos du devis #}
+  {# Header avec infos du invoice #}
   <div class="card-ocean-header" style="padding: 32px 40px;">
     <h1 style="color: var(--white); font-size: 24px; margin-bottom: 8px; text-align: center;">
-      <a href="{{ path('app_devis_edit', {'id': devis.id}) }}" style="color: var(--white); text-decoration: none;">
-        Devis n°{{ devis.reference }}
+      <a href="{{ path('app_devis_edit', {'id': invoice.id}) }}" style="color: var(--white); text-decoration: none;">
+        invoice n°{{ invoice.reference }}
       </a>
     </h1>
     <p style="color: var(--sky-shell);" class="text-center mb-25">
-      {{ devis.deliveryLabel }}
+      {{ invoice.raisonSocial }}
     </p>
-      {# Bouton retour vers l'édition du devis #}
+      {# Bouton retour vers l'édition du invoice #}
     <div class="text-center mb-4">
-      <a href="{{ path('app_devis_edit', {'id': devis.id}) }}" class="btn-ocean btn-ocean-secondary btn-ocean-sm">
+      <a href="{{ path('app_devis_edit', {'id': invoice.id}) }}" class="btn-ocean btn-ocean-secondary btn-ocean-sm">
         <i class="bi bi-pencil"></i> Modifier l'adresse
       </a>
-      {% if devis.IsInvoiced %}
-        <a href="{{ path('app_invoice_show', {'id': devis.invoice.id}) }}" class="btn-ocean btn-ocean-secondary btn-ocean-sm">
+      {% if invoice.devis %}
+        <a href="{{ path('app_devis_detail_show', {'id': invoice.devis.id}) }}" class="btn-ocean btn-ocean-secondary btn-ocean-sm">
         <i class="bi bi-pencil"></i> accédez à la facture
-      </a>
-
-        {% else %}
-         <a href="{{ path('app_inInvoice', {'id': devis.id}) }}" class="btn-ocean btn-ocean-secondary btn-ocean-sm">
-        <i class="bi bi-pencil"></i> Transfert en facture
       </a>
       {% endif %}
       
@@ -33,7 +28,7 @@
   
     <div class="divider"></div>
 
-    {# Tableau des lignes de devis #}
+    {# Tableau des lignes de invoice #}
     <div class="table-card mb-4">
       <div class="table-responsive">
         <table class="table-ocean">
@@ -49,31 +44,31 @@
             </tr>
           </thead>
           <tbody>
-            {% for devisLine in devis.devisDetails %}
+            {% for invoiceLine in invoice.invoicesDetails %}
               <tr>
                 <td>
-                  <a href="{{ path('app_devis_details_edit', {'id': devisLine.id}) }}">
-                    {{ devisLine.product.reference }}
+                  <a href="{{ path('app_devis_details_edit', {'id': invoiceLine.id}) }}">
+                    {{ invoiceLine.product.reference }}
                   </a>
                 </td>
                 <td>
-                  <a href="{{ path('app_devis_details_edit', {'id': devisLine.id}) }}">
-                    {{ devisLine.label }}
+                  <a href="{{ path('app_devis_details_edit', {'id': invoiceLine.id}) }}">
+                    {{ invoiceLine.label }}
                   </a>
                 </td>
-                <td>{{ devisLine.quantity }}</td>
-                <td>{{ devisLine.price | number_format(2, ',', ' ') }} €</td>
-                <td>{{ devisLine.reduce | number_format(2, ',', ' ') }} %</td>
-                <td><strong>{{ devisLine.total | number_format(2, ',', ' ') }} €</strong></td>
+                <td>{{ invoiceLine.quantity }}</td>
+                <td>{{ invoiceLine.price | number_format(2, ',', ' ') }} €</td>
+                <td>{{ invoiceLine.reduce | number_format(2, ',', ' ') }} %</td>
+                <td><strong>{{ invoiceLine.total | number_format(2, ',', ' ') }} €</strong></td>
                 <td>
-                  {{ include('devis_details/_delete_form.html.twig', { devis_detail: devisLine }) }}
+                  {{ include('devis_details/_delete_form.html.twig', { devis_detail: invoiceLine }) }}
                 </td>
               </tr>
             {% else %}
               <tr>
                 <td colspan="7" style="text-align: center; padding: 40px; color: var(--dune);">
                   <i class="bi bi-inbox" style="font-size: 48px; display: block; margin-bottom: 12px; opacity: 0.5;"></i>
-                  Aucune ligne de devis
+                  Aucune ligne de invoice
                 </td>
               </tr>
             {% endfor %}
@@ -85,7 +80,7 @@
     
 
     {# Formulaire d'ajout/édition #}
-    <div class="bg-light p-4 form-edit-detail-devis editAbsolute" style="border-radius: var(--radius-lg); border: 1.5px solid var(--sky-shell);">
+    <div class="bg-light p-4 form-edit-detail-invoice editAbsolute" style="border-radius: var(--radius-lg); border: 1.5px solid var(--sky-shell);">
       </h3>
 {{ form_start(form) }}
         {{ form_widget(form) }}

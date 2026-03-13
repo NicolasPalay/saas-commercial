@@ -12,6 +12,7 @@ use App\Repository\AddressRepository;
 use App\Repository\ClientRepository;
 use App\Repository\DevisRepository;
 use App\Services\DevisAddress;
+use App\Services\DevisVsInvoiceService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -106,29 +107,14 @@ final class DevisController extends AbstractController
         ]);
     }
 
-    #[Route('/newModal', name: 'app_devis_new', methods: ['POST'])]
-public function newModal(Request $request, EntityManagerInterface $entityManager): Response
-{
-    $user = $this->getUser();
-if(!$user) return $this->redirectToRoute('app_login');
-    $devis = new Devis();
-    $devis->setReference($request->request->get('reference'));
-    $devis->setUser($user);
-    $devis->setCompany($user->getCompany());
+    #[Route('/in/{id}', name: 'app_inInvoice', methods: ['GET'])]
+    public function inInvoice(DevisRepository $devisRepository, int $id, DevisVsInvoiceService $devisVsInvoiceService): Response
+    {
+    $devis = $devisRepository->findOneBy(['id' => $id]);
+    $devisVsInvoiceService->devisToInvoice($devis);
 
-    // Client
-    $clientId = $request->request->get('client');
-    $client = $entityManager->getRepository(Client::class)->find($clientId);
-    $devis->setClient($client);
-
-    $entityManager->persist($devis);
-    $entityManager->flush();
-
-    return $this->redirectToRoute(
-        'app_devis_details_new',
-        ['id' => $devis->getId()]
-    );
-}
+    return $this->redirectToRoute('app_invoice_index');
+    }
 
     #[Route('/{id}', name: 'app_devis_show', methods: ['GET'])]
     public function show(Devis $devi): Response

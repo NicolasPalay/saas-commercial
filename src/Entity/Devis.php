@@ -63,8 +63,9 @@ class Devis
     #[ORM\Column]
     private bool $isInvoiced = false;
 
-    #[ORM\Column]
-    private bool $isInvoiceDefault = false;
+    #[ORM\OneToOne(mappedBy: 'devis', targetEntity: Invoice::class)]
+    private ?Invoice $invoice = null;
+
 
     public function __construct()
     {
@@ -269,14 +270,15 @@ class Devis
         return $this;
     }
 
-    public function isInvoiceDefault(): bool
+    public function getInvoice(): ?Invoice
     {
-        return $this->isInvoiceDefault;
+        return $this->invoice;
     }
 
-    public function setIsInvoiceDefault(bool $isInvoiceDefault): static
+    public function setInvoice(?Invoice $invoice): self
     {
-        $this->isInvoiceDefault = $isInvoiceDefault;
+        $this->invoice = $invoice;
+
         return $this;
-    }
+    }   
 }

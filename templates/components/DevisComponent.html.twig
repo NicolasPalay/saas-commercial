@@ -1,74 +1,105 @@
+{# templates/components/DevisComponent.html.twig #}
 <div {{ attributes }}>
-    <div class="w-100 mt-4">
-        <div class="card border-0 shadow-sm">
-            <div class="card-body p-0">
-
-                <div class="table-responsive">
-                    <table class="table table-hover align-middle mb-0 w-100">
-                        <thead class="table-light">
-                            <tr>
-                                {% for header in headers %}
-                                    <th class="fw-semibold w-75 text-uppercase small">
-                                        <div class="d-flex justify-content-start align-items-center">
-                                            <span>{{ header }}</span>
-
-                                            <span class="sort-icons d-flex flex-column ms-2">
-                                                <button
-                                                    class="sort-btn"
-                                                    data-action="live#action"
-                                                    data-live-action-param="sort"
-                                                    data-live-header-param="{{ header }}"
-                                                    data-live-direction-param="asc">
-                                                    <i class="bi bi-caret-up-fill"></i>
-                                                </button>
-
-                                                <button
-                                                    class="sort-btn"
-                                                    data-action="live#action"
-                                                    data-live-action-param="sort"
-                                                    data-live-header-param="{{ header }}"
-                                                    data-live-direction-param="desc">
-                                                    <i class="bi bi-caret-down-fill"></i>
-                                                </button>
-                                            </span>
-                                        </div>
-                                    </th>
-                                {% endfor %}
-                            </tr>
-                        </thead>
-
-                        <tbody>
-                            {% for devisOne in lines %}
-                                <tr class="table-row">
-                                    <td>
-                                        <a href="{{ path('app_devis_details_new', {'id': devisOne.id}) }}"
-                                           class="fw-medium text-decoration-none text-primary">
-                                            {{ devisOne.reference }}
-                                        </a>
-                                    </td>
-
-                                    <td>{{ devisOne.client.raisonSocial }}</td>
-
-                                    <td class="fw-semibold text-success">
-                                        {{ devisOne.total }} €
-                                    </td>
-
-                                    <td class="text-muted">
-                                        {{ devisOne.createdAt|date('d/m/Y H:i') }}
-                                    </td>
-                                </tr>
-                            {% else %}
-                                <tr>
-                                    <td colspan="{{ headers|length }}" class="text-center py-4 text-muted">
-                                        Aucun devis pour le moment
-                                    </td>
-                                </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
+  <div class="table-card">
+    <div class="table-responsive">
+      <table class="table-ocean">
+        <thead>
+          <tr>
+            {% for header in headers %}
+              <th>
+                <div class="d-flex justify-content-start align-items-center gap-2">
+                  <span>{{ header }}</span>
+                  
+                  {# Sort buttons #}
+                  <span class="d-flex flex-column" style="gap: 2px;">
+                    <button
+                      class="btn p-0 border-0 bg-transparent"
+                      style="line-height: 1; color: var(--dune); font-size: 10px;"
+                      data-action="live#action"
+                      data-live-action-param="sort"
+                      data-live-header-param="{{ header }}"
+                      data-live-direction-param="asc"
+                      title="Trier croissant">
+                      <i class="bi bi-caret-up-fill"></i>
+                    </button>
+                    
+                    <button
+                      class="btn p-0 border-0 bg-transparent"
+                      style="line-height: 1; color: var(--dune); font-size: 10px;"
+                      data-action="live#action"
+                      data-live-action-param="sort"
+                      data-live-header-param="{{ header }}"
+                      data-live-direction-param="desc"
+                      title="Trier décroissant">
+                      <i class="bi bi-caret-down-fill"></i>
+                    </button>
+                  </span>
                 </div>
+              </th>
+            {% endfor %}
+            <th style="width: 120px;">Actions</th>
+          </tr>
+        </thead>
 
-            </div>
-        </div>
+        <tbody>
+          {% for devisOne in lines %}
+            <tr>
+              <td>
+                <a href="{{ path('app_devis_details_new', {'id': devisOne.id}) }}">
+                  <strong>{{ devisOne.reference }}</strong>
+                </a>
+              </td>
+
+              <td>{{ devisOne.client.raisonSocial }}</td>
+
+              <td>
+                <strong style="color: var(--success-green);">
+                  {{ devisOne.total|number_format(2, ',', ' ') }} €
+                </strong>
+              </td>
+
+              <td style="color: var(--dune); font-size: 13px;">
+                {{ devisOne.createdAt|date('d/m/Y H:i') }}
+              </td>
+
+              <td>
+                <div class="d-flex gap-2">
+                  <a href="{{ path('app_devis_show', {'id': devisOne.id}) }}" 
+                     class="btn-ocean btn-ocean-primary" 
+                     style="padding: 6px 12px; font-size: 11px;"
+                     title="Voir">
+                    <i class="bi bi-eye"></i>
+                  </a>
+                  <a href="{{ path('app_devis_edit', {'id': devisOne.id}) }}" 
+                     class="btn-ocean btn-ocean-secondary" 
+                     style="padding: 6px 12px; font-size: 11px;"
+                     title="Éditer">
+                    <i class="bi bi-pencil"></i>
+                  </a>
+                  {# <a href="{{ path('app_devis_pdf', {'id': devisOne.id}) }}" 
+                     class="btn-ocean btn-ocean-success" 
+                     style="padding: 6px 12px; font-size: 11px;"
+                     title="PDF">
+                    <i class="bi bi-file-pdf"></i>
+                  </a> #}
+                </div>
+              </td>
+            </tr>
+          {% else %}
+            <tr>
+              <td colspan="{{ headers|length + 1 }}" style="text-align: center; padding: 60px 20px;">
+                <i class="bi bi-inbox" style="font-size: 64px; color: var(--sky-shell); display: block; margin-bottom: 20px; opacity: .5;"></i>
+                <h3 style="font-family: 'Cormorant Garamond', serif; font-size: 24px; color: var(--deep-marine); margin-bottom: 12px;">
+                  Aucun devis pour le moment
+                </h3>
+                <p style="color: var(--dune);">
+                  Commencez par créer votre premier devis
+                </p>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
     </div>
+  </div>
 </div>

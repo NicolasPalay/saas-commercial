@@ -1,0 +1,253 @@
+{# templates/invoice/index.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste des Factures{% endblock %}
+
+{% block stylesheets %}
+<link rel="stylesheet" href="{{ asset('css/shoreline-haze.css') }}">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+{% endblock %}
+
+{% block body %}
+<div class="container">
+  
+  {# Page Header #}
+  <div class="page-header">
+    <div class="breadcrumb-ocean">
+      <a href="{{ path('app_dashboard') }}">Dashboard</a>
+      <span>›</span>
+      <span style="color: var(--white);">Factures</span>
+    </div>
+    <h1><i class="bi bi-receipt"></i> Liste des Factures</h1>
+    <p>Gérez et suivez toutes vos factures clients</p>
+    <a href="{{ path('app_invoice_new') }}" class="btn-ocean btn-ocean-primary" 
+       style="position: absolute; top: 40px; right: 40px; padding: 12px 24px;">
+      <i class="bi bi-plus-circle"></i> Nouvelle Facture
+    </a>
+  </div>
+  <section class="row g-3 mb-4">
+    <article class="col-md-6 col-12">
+        <div class="w-100 new-invoice"  style="color: var(--white);">
+            <h2 class="h4">Nouvelle Facture</h2>
+            {{ include('devis/_form.html.twig') }}
+        </div>
+    </article>
+    <article class="col-md-6 col-12 d-flex flex-column justify-content-between">
+        <div class="col-12">
+            <div class="kpi-card">
+                <p class="label">Total Factures</p>
+                <h2 class="value">{{ invoices|length }}</h2>
+            </div>
+        </div>
+        <div class="col-12">
+      <div class="kpi-card" style="border-left-color: var(--cloudy-ocean);">
+        <p class="label">Total TTC</p>
+        <h2 class="value" style="color: var(--cloudy-ocean); font-size: 1.5rem;">
+          {% set total = 0 %}
+          {% for invoice in invoices %}
+            {% set total = total + invoice.priceTotalTTC %}
+          {% endfor %}
+          {{ total|number_format(0, ',', ' ') }} €
+        </h2>
+      </div>
+    </div>
+    </article>
+</section>
+ 
+  {# Filters #}
+  <div class="card-ocean mb-4">
+    <div class="card-ocean-body" style="padding: 20px 32px;">
+      <div class="row g-3 align-items-end">
+        <div class="col-md-4">
+          <label class="form-label">Rechercher</label>
+          <input type="text" class="form-input" placeholder="🔍 Référence, client..." id="searchInput">
+        </div>
+        <div class="col-md-3">
+          <label class="form-label">Statut</label>
+          <select class="form-select" id="statusFilter">
+            <option value="">Tous les statuts</option>
+            <option value="paid">Payées</option>
+            <option value="unpaid">Impayées</option>
+          </select>
+        </div>
+        <div class="col-md-3">
+          <label class="form-label">Trier par</label>
+          <select class="form-select" id="sortFilter">
+            <option value="date-desc">Plus récent</option>
+            <option value="date-asc">Plus ancien</option>
+            <option value="amount-desc">Montant décroissant</option>
+            <option value="amount-asc">Montant croissant</option>
+          </select>
+        </div>
+        <div class="col-md-2">
+          <button class="btn-ocean btn-ocean-secondary w-100" onclick="resetFilters()">
+            <i class="bi bi-arrow-clockwise"></i> Réinitialiser
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {# Table #}
+  <div class="table-card">
+    {% if invoices is not empty %}
+    <div class="table-responsive">
+      <table class="table-ocean" id="invoicesTable">
+        <thead>
+          <tr>
+            <th>Référence</th>
+            <th>Client</th>
+            <th>Date</th>
+            <th>Adresse</th>
+            <th>Total HT</th>
+            <th>TVA</th>
+            <th>Total TTC</th>
+            <th>Statut</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for invoice in invoices %}
+          <tr data-status="{{ invoice.isPay ? 'paid' : 'unpaid' }}" 
+              data-amount="{{ invoice.priceTotalTTC }}"
+              data-date="{{ invoice.createdAt|date('Y-m-d') }}">
+            <td>
+              <a href="{{ path('app_invoice_show', {'id': invoice.id}) }}">
+                <strong>{{ invoice.reference }}</strong>
+              </a>
+            </td>
+            <td>{{ invoice.raisonSocial }}</td>
+            <td>{{ invoice.createdAt ? invoice.createdAt|date('d/m/Y') : '-' }}</td>
+            <td style="font-size: 12px; color: var(--dune);">
+              {{ invoice.address }}<br>
+              {{ invoice.codePostal }} {{ invoice.ville }}
+            </td>
+            <td>{{ invoice.priceTotalHt|number_format(2, ',', ' ') }} €</td>
+            <td>{{ invoice.taxeTotal|number_format(2, ',', ' ') }} €</td>
+            <td><strong>{{ invoice.priceTotalTTC|number_format(2, ',', ' ') }} €</strong></td>
+            <td>
+              {% if invoice.isPay %}
+                <span class="badge-status accepted">
+                  <i class="bi bi-check-circle"></i> Payée
+                </span>
+              {% else %}
+                <span class="badge-status pending">
+                  <i class="bi bi-clock"></i> Impayée
+                </span>
+              {% endif %}
+            </td>
+            <td>
+              <div class="d-flex gap-2">
+                <a href="{{ path('app_invoice_show', {'id': invoice.id}) }}" 
+                   class="btn-ocean btn-ocean-primary" 
+                   style="padding: 6px 12px; font-size: 11px;"
+                   title="Voir">
+                  <i class="bi bi-eye"></i>
+                </a>
+                <a href="{{ path('app_invoice_edit', {'id': invoice.id}) }}" 
+                   class="btn-ocean btn-ocean-secondary" 
+                   style="padding: 6px 12px; font-size: 11px;"
+                   title="Éditer">
+                  <i class="bi bi-pencil"></i>
+                </a>
+                {# <a href="{{ path('app_invoice_pdf', {'id': invoice.id}) }}" 
+                   class="btn-ocean btn-ocean-success" 
+                   style="padding: 6px 12px; font-size: 11px;"
+                   title="PDF">
+                  <i class="bi bi-file-pdf"></i>
+                </a> #}
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    {# Empty State #}
+    <div style="text-align: center; padding: 60px 20px;">
+      <i class="bi bi-inbox" style="font-size: 64px; color: var(--sky-shell); display: block; margin-bottom: 20px; opacity: .5;"></i>
+      <h3 style="font-family: 'Cormorant Garamond', serif; font-size: 24px; color: var(--deep-marine); margin-bottom: 12px;">
+        Aucune facture trouvée
+      </h3>
+      <p style="color: var(--dune); margin-bottom: 20px;">
+        Commencez par créer votre première facture
+      </p>
+      <a href="{{ path('app_invoice_new') }}" class="btn-ocean btn-ocean-primary">
+        <i class="bi bi-plus-circle"></i> Créer une facture
+      </a>
+    </div>
+    {% endif %}
+  </div>
+
+</div>
+
+<script>
+  // Filtres et recherche
+  const searchInput = document.getElementById('searchInput');
+  const statusFilter = document.getElementById('statusFilter');
+  const sortFilter = document.getElementById('sortFilter');
+  const table = document.getElementById('invoicesTable');
+  const tbody = table?.querySelector('tbody');
+
+  function filterTable() {
+    if (!tbody) return;
+    
+    const searchTerm = searchInput.value.toLowerCase();
+    const status = statusFilter.value;
+    const rows = Array.from(tbody.querySelectorAll('tr'));
+
+    rows.forEach(row => {
+      const text = row.textContent.toLowerCase();
+      const rowStatus = row.dataset.status;
+      
+      const matchSearch = text.includes(searchTerm);
+      const matchStatus = !status || rowStatus === status;
+      
+      row.style.display = matchSearch && matchStatus ? '' : 'none';
+    });
+  }
+
+  function sortTable() {
+    if (!tbody) return;
+    
+    const sortValue = sortFilter.value;
+    const rows = Array.from(tbody.querySelectorAll('tr'));
+    
+    rows.sort((a, b) => {
+      switch(sortValue) {
+        case 'date-desc':
+          return new Date(b.dataset.date) - new Date(a.dataset.date);
+        case 'date-asc':
+          return new Date(a.dataset.date) - new Date(b.dataset.date);
+        case 'amount-desc':
+          return parseFloat(b.dataset.amount) - parseFloat(a.dataset.amount);
+        case 'amount-asc':
+          return parseFloat(a.dataset.amount) - parseFloat(b.dataset.amount);
+        default:
+          return 0;
+      }
+    });
+    
+    rows.forEach(row => tbody.appendChild(row));
+  }
+
+  function resetFilters() {
+    searchInput.value = '';
+    statusFilter.value = '';
+    sortFilter.value = 'date-desc';
+    filterTable();
+    sortTable();
+  }
+
+  // Event listeners
+  searchInput?.addEventListener('input', filterTable);
+  statusFilter?.addEventListener('change', filterTable);
+  sortFilter?.addEventListener('change', sortTable);
+</script>
+{% endblock %}
+
+{% block javascripts %}
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+{% endblock %}

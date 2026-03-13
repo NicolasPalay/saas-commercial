@@ -78,6 +78,12 @@ class Company
     #[ORM\OneToMany(targetEntity: Subscription::class, mappedBy: 'company')]
     private Collection $subscriptions;
 
+    /**
+     * @var Collection<int, Invoice>
+     */
+    #[ORM\OneToMany(targetEntity: Invoice::class, mappedBy: 'company')]
+    private Collection $invoices;
+
     public function __construct() {
         $this->createdAt = new \DateTimeImmutable();
         $this->user = new ArrayCollection();
@@ -88,6 +94,7 @@ class Company
         $this->devis = new ArrayCollection();
         $this->taxes = new ArrayCollection();
         $this->subscriptions = new ArrayCollection();
+        $this->invoices = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -385,6 +392,36 @@ class Company
             // set the owning side to null (unless already changed)
             if ($subscription->getCompany() === $this) {
                 $subscription->setCompany(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Invoice>
+     */
+    public function getInvoices(): Collection
+    {
+        return $this->invoices;
+    }
+
+    public function addInvoice(Invoice $invoice): static
+    {
+        if (!$this->invoices->contains($invoice)) {
+            $this->invoices->add($invoice);
+            $invoice->setCompany($this);
+        }
+
+        return $this;
+    }
+
+    public function removeInvoice(Invoice $invoice): static
+    {
+        if ($this->invoices->removeElement($invoice)) {
+            // set the owning side to null (unless already changed)
+            if ($invoice->getCompany() === $this) {
+                $invoice->setCompany(null);
             }
         }
 
