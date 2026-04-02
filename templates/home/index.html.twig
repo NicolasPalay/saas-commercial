@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello HomeController!{% endblock %}
+{% block title %}PrestoCo{% endblock %}
 {% block class %}landing-page{% endblock %}
 {% block body %}
 <header class="header-img mb-5">
@@ -151,8 +151,9 @@
                             <li>Jusqu'à 30 factures/an</li>
                             <li>1 utilisateur</li>
                             <li>Support par email</li>
+                            <li class="starter-li-last"> </li>
                         </ul>
-                        <a href="#essai" class="btn btn-outline-primary w-100">Commencer</a>
+                        <a href="{{ path('subscription_plans') }}" class="btn btn-outline-primary w-100">Commencer</a>
                     </div>
                 </div>
                 <div class="col-lg-6">
@@ -166,7 +167,7 @@
                             <li>Relances automatiques</li>
                             <li>Support prioritaire</li>
                         </ul>
-                        <a href="#essai" class="btn btn-primary w-100">Commencer</a>
+                        <a href="{{ path('subscription_plans') }}" class="btn btn-primary w-100">Commencer</a>
                     </div>
                 </div>
                 {# <div class="col-lg-4">

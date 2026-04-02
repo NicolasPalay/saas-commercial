@@ -7,9 +7,10 @@ use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use App\Contract\OwnedByCompanyInterface;
 
 #[ORM\Entity(repositoryClass: InvoiceRepository::class)]
-class Invoice
+class Invoice implements OwnedByCompanyInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -42,28 +43,34 @@ class Invoice
     private ?string $raisonSocial = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    private ?string $address = null;
-
-    #[ORM\Column(length: 255, nullable: true)]
     private ?string $codePostal = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $ville = null;
 
-    #[ORM\Column]
-    private ?float $priceTotalHt = null;
+    #[ORM\Column(type: 'float', nullable: true)]
+    private ?float $total = 0;
 
-    #[ORM\Column]
-    private ?float $taxeTotal = null;
+    #[ORM\Column(type: 'float', nullable: true)]
+    private ?float $taxe = 0;
 
-    #[ORM\Column]
-    private ?float $priceTotalTTC = null;
+    #[ORM\Column(type: 'float', nullable: true)]
+    private ?float $totalTTC = 0;
 
     #[ORM\Column]
     private ?bool $isPay = false;
 
     #[ORM\ManyToOne(inversedBy: 'invoices')]
     private ?Client $client = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $nameStreet = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $nameStreet2 = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $email = null;
 
     public function __construct()
     {
@@ -178,18 +185,6 @@ class Invoice
         return $this;
     }
 
-    public function getAddress(): ?string
-    {
-        return $this->address;
-    }
-
-    public function setAddress(?string $address): static
-    {
-        $this->address = $address;
-
-        return $this;
-    }
-
     public function getCodePostal(): ?string
     {
         return $this->codePostal;
@@ -214,39 +209,36 @@ class Invoice
         return $this;
     }
 
-    public function getPriceTotalHt(): ?float
+    public function getTotal(): ?float
     {
-        return $this->priceTotalHt;
+        return $this->total;
     }
 
-    public function setPriceTotalHt(float $priceTotalHt): static
+    public function setTotal(?float $total): static
     {
-        $this->priceTotalHt = $priceTotalHt;
-
+        $this->total = $total;
         return $this;
     }
 
-    public function getTaxeTotal(): ?float
+    public function getTaxe(): ?float
     {
-        return $this->taxeTotal;
+        return $this->taxe;
     }
 
-    public function setTaxeTotal(float $taxeTotal): static
+    public function setTaxe(?float $taxe): static
     {
-        $this->taxeTotal = $taxeTotal;
-
+        $this->taxe = $taxe;
         return $this;
     }
 
-    public function getPriceTotalTTC(): ?float
+    public function getTotalTTC(): ?float
     {
-        return $this->priceTotalTTC;
+        return $this->totalTTC;
     }
 
-    public function setPriceTotalTTC(float $priceTotalTTC): static
+    public function setTotalTTC(?float $totalTTC): static
     {
-        $this->priceTotalTTC = $priceTotalTTC;
-
+        $this->totalTTC = $totalTTC;
         return $this;
     }
 
@@ -270,6 +262,42 @@ class Invoice
     public function setClient(?Client $client): static
     {
         $this->client = $client;
+
+        return $this;
+    }
+
+    public function getNameStreet(): ?string
+    {
+        return $this->nameStreet;
+    }
+
+    public function setNameStreet(?string $nameStreet): static
+    {
+        $this->nameStreet = $nameStreet;
+
+        return $this;
+    }
+
+    public function getNameStreet2(): ?string
+    {
+        return $this->nameStreet2;
+    }
+
+    public function setNameStreet2(?string $nameStreet2): static
+    {
+        $this->nameStreet2 = $nameStreet2;
+
+        return $this;
+    }
+
+    public function getEmail(): ?string
+    {
+        return $this->email;
+    }
+
+    public function setEmail(?string $email): static
+    {
+        $this->email = $email;
 
         return $this;
     }

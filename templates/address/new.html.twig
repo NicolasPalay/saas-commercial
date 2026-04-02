@@ -1,11 +1,34 @@
+
 {% extends 'base.html.twig' %}
 
-{% block title %}New Address{% endblock %}
+{% block title %}Nouvelle adresse client{% endblock %}
 
 {% block body %}
-    <h1>Create new Address</h1>
+<main class="d-flex w-100 ">
+{% include('_includes/aside.html.twig') %}
+<div class="w-100 mx-4">
+    <div class="login-card">
+        
+        <div class="login-header">
+            <div class="d-flex justify-content-center mb-2"><a href="{{ path('app_home') }}"><img class="logo" src="{{asset('images/logo.png')}}" alt=""></a></div>
+                 <h1><i class="bi bi-people"></i> Création d'une adresse pour le client {{ client.raisonSocial }}</h1>
+                    
 
-    {{ include('address/_form.html.twig') }}
+            </div>
 
-    <a href="{{ path('app_address_index') }}">back to list</a>
+            <div class="login-body">
+                <section>
+                    {{ include('address/_form.html.twig', {'button_label': 'Enregistrer',}) }}
+                </section>
+            </div>    
+        </div>
+    </div>
+
+  </div>
+</div>
+
+
+</div>    
+</main>
 {% endblock %}
+

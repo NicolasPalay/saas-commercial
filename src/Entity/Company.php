@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
+
 #[ORM\Entity(repositoryClass: CompanyRepository::class)]
 class Company
 {
@@ -17,6 +18,24 @@ class Company
 
     #[ORM\Column(length: 255)]
     private ?string $name = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $street = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $street2 = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?int $codePostal = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $ville = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $siret = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?string $stripeCustomerId = null;
 
     #[ORM\Column]
     private ?\DateTimeImmutable $createdAt = null;
@@ -84,6 +103,35 @@ class Company
     #[ORM\OneToMany(targetEntity: Invoice::class, mappedBy: 'company')]
     private Collection $invoices;
 
+    /**
+     * @var Collection<int, Order>
+     */
+    #[ORM\OneToMany(targetEntity: Order::class, mappedBy: 'company')]
+    private Collection $orders;
+
+    /**
+     * @var Collection<int, OrderDetail>
+     */
+    #[ORM\OneToMany(targetEntity: OrderDetail::class, mappedBy: 'company')]
+    private Collection $orderDetails;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $refOrder = null;
+
+    /**
+     * @var Collection<int, InvoiceDetails>
+     */
+    #[ORM\OneToMany(targetEntity: InvoiceDetails::class, mappedBy: 'company')]
+    private Collection $invoiceDetails;
+
+    /**
+     * @var Collection<int, Address>
+     */
+    #[ORM\OneToMany(targetEntity: Address::class, mappedBy: 'company')]
+    private Collection $addresses;
+
+
+
     public function __construct() {
         $this->createdAt = new \DateTimeImmutable();
         $this->user = new ArrayCollection();
@@ -95,6 +143,10 @@ class Company
         $this->taxes = new ArrayCollection();
         $this->subscriptions = new ArrayCollection();
         $this->invoices = new ArrayCollection();
+        $this->orders = new ArrayCollection();
+        $this->orderDetails = new ArrayCollection();
+        $this->invoiceDetails = new ArrayCollection();
+        $this->addresses = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -109,11 +161,20 @@ class Company
 
     public function setName(string $name): static
     {
-        $this->name = $name;
+        $this->name = mb_strtoupper($name);
         return $this;
     }
 
+    public function getStripeCustomerId(): ?string
+    {
+        return $this->stripeCustomerId;
+    }
 
+    public function setStripeCustomerId(?string $stripeCustomerId): static
+    {
+        $this->stripeCustomerId = $stripeCustomerId;
+        return $this;
+    }
 
     public function getCreatedAt(): ?\DateTimeImmutable
     {
@@ -351,7 +412,7 @@ class Company
 
     public function setRefDevis(string $refDevis): static
     {
-        $this->refDevis = $refDevis;
+        $this->refDevis = mb_strtoupper($refDevis);
 
         return $this;
     }
@@ -363,7 +424,7 @@ class Company
 
     public function setRefFacture(string $refFacture): static
     {
-        $this->refFacture = $refFacture;
+        $this->refFacture = mb_strtoupper($refFacture);
 
         return $this;
     }
@@ -424,6 +485,198 @@ class Company
                 $invoice->setCompany(null);
             }
         }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Order>
+     */
+    public function getOrders(): Collection
+    {
+        return $this->orders;
+    }
+
+    public function addOrder(Order $order): static
+    {
+        if (!$this->orders->contains($order)) {
+            $this->orders->add($order);
+            $order->setCompany($this);
+        }
+
+        return $this;
+    }
+
+    public function removeOrder(Order $order): static
+    {
+        if ($this->orders->removeElement($order)) {
+            // set the owning side to null (unless already changed)
+            if ($order->getCompany() === $this) {
+                $order->setCompany(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, OrderDetail>
+     */
+    public function getOrderDetails(): Collection
+    {
+        return $this->orderDetails;
+    }
+
+    public function addOrderDetail(OrderDetail $orderDetail): static
+    {
+        if (!$this->orderDetails->contains($orderDetail)) {
+            $this->orderDetails->add($orderDetail);
+            $orderDetail->setCompany($this);
+        }
+
+        return $this;
+    }
+
+    public function removeOrderDetail(OrderDetail $orderDetail): static
+    {
+        if ($this->orderDetails->removeElement($orderDetail)) {
+            // set the owning side to null (unless already changed)
+            if ($orderDetail->getCompany() === $this) {
+                $orderDetail->setCompany(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getRefOrder(): ?string
+    {
+        return $this->refOrder;
+    }
+
+    public function setRefOrder(?string $refOrder): static
+    {
+        $this->refOrder = mb_strtoupper($refOrder);
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, InvoiceDetails>
+     */
+    public function getInvoiceDetails(): Collection
+    {
+        return $this->invoiceDetails;
+    }
+
+    public function addInvoiceDetail(InvoiceDetails $invoiceDetail): static
+    {
+        if (!$this->invoiceDetails->contains($invoiceDetail)) {
+            $this->invoiceDetails->add($invoiceDetail);
+            $invoiceDetail->setCompany($this);
+        }
+
+        return $this;
+    }
+
+    public function removeInvoiceDetail(InvoiceDetails $invoiceDetail): static
+    {
+        if ($this->invoiceDetails->removeElement($invoiceDetail)) {
+            // set the owning side to null (unless already changed)
+            if ($invoiceDetail->getCompany() === $this) {
+                $invoiceDetail->setCompany(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Address>
+     */
+    public function getAddresses(): Collection
+    {
+        return $this->addresses;
+    }
+
+    public function addAddress(Address $address): static
+    {
+        if (!$this->addresses->contains($address)) {
+            $this->addresses->add($address);
+            $address->setCompany($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAddress(Address $address): static
+    {
+        if ($this->addresses->removeElement($address)) {
+            // set the owning side to null (unless already changed)
+            if ($address->getCompany() === $this) {
+                $address->setCompany(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getStreet(): ?string
+    {
+        return $this->street;
+    }
+
+    public function setStreet(string $street): static
+    {
+        $this->street = $street;
+
+        return $this;
+    }
+
+    public function getStreet2(): ?string
+    {
+        return $this->street2;
+    }
+
+    public function setStreet2(?string $street2): static
+    {
+        $this->street2 = $street2;
+
+        return $this;
+    }
+
+    public function getCodePostal(): ?int
+    {
+        return $this->codePostal;
+    }
+
+    public function setCodePostal(?int $codePostal): static
+    {
+        $this->codePostal = $codePostal;
+
+        return $this;
+    }
+
+    public function getVille(): ?string
+    {
+        return $this->ville;
+    }
+
+    public function setVille(?string $ville): static
+    {
+        $this->ville = $ville;
+
+        return $this;
+    }
+
+    public function getSiret(): ?string
+    {
+        return $this->siret;
+    }
+
+    public function setSiret(?string $siret): static
+    {
+        $this->siret = $siret;
 
         return $this;
     }

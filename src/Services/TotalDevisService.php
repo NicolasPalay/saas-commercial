@@ -2,27 +2,20 @@
 
 namespace App\Services;
 
-use App\Entity\Devis;
-use App\Repository\DevisDetailsRepository;
+
 
 class TotalDevisService
 {
-    public function __construct(
-        private DevisDetailsRepository $devisDetailsRepository
-    ) {}
+
 
     /**
      * Calcule le total HT d'un devis
      */
-    public function calculTotalHT(Devis $devis): string
+    public function calculTotalHT(array $entityDetails): string
     {
         $total = '0.00';
 
-        $details = $this->devisDetailsRepository->findBy([
-            'devis' => $devis
-        ]);
-
-        foreach ($details as $detail) {
+        foreach ($entityDetails as $detail) {
             $total = bcadd($total, (string) $detail->getTotal(), 2);
         }
 

@@ -24,6 +24,7 @@ class ProductAutocompleteField extends AbstractType
             'choice_label' => 'name',
             'label' => false,
             'placeholder' => 'Ajouter un produit',
+            'attr' => [ 'class' => "",],
 
             'query_builder' => function (EntityRepository $er) {
 

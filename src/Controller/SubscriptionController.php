@@ -2,190 +2,170 @@
 
 namespace App\Controller;
 
-use App\Entity\Plan;
-use App\Entity\Subscription;
-use App\Form\SubscriptionType;
-use App\Repository\DevisRepository;
 use App\Repository\PlanRepository;
-use App\Repository\SubscriptionRepository;
-use Doctrine\ORM\EntityManagerInterface;
-use Stripe\Checkout\Session;
-use Stripe\Stripe;
+use App\Services\SendMailService;
+use App\Services\StripeService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/subscription')]
-final class SubscriptionController extends AbstractController
+#[IsGranted('ROLE_USER')]
+class SubscriptionController extends AbstractController
 {
-    #[Route(name: 'app_subscription_index', methods: ['GET'])]
-    public function index(DevisRepository $devisRepository, SubscriptionRepository $subscriptionRepository, PlanRepository $planRepository): Response
+    public function __construct(
+        private StripeService $stripeService,
+        private PlanRepository $planRepository,
+        private SendMailService $sendMailService,
+    ) {}
+
+    /**
+     * Page listant tous les plans disponibles.
+     */
+    #[Route('/plans', name: 'subscription_plans')]
+    public function plans(): Response
     {
-    $companyId = $this->getUser()->getCompany()->getId();
+        $plans = $this->planRepository->findBy(['isActive' => true]);
 
-    $count = $devisRepository->countDevisByCompany($companyId);
+        $user    = $this->getUser();
+        $company = $user->getCompany();
 
+        $activeSub = $this->stripeService->getActiveSubscription($company);
 
-    $subscriptions = $subscriptionRepository->findBy(['user' => $this->getUser(),]);
-    $pro = null;
-    $starter = null;
-    if($subscriptions){
-        foreach ($subscriptions as $value) {
-            if($value->getType() === 'pro') {
-                $pro = $value->getId();
-            } elseif($value->getType() === 'starter') {
-                $starter = $value->getId();
-            }
-        }
-    }
-
-    return $this->render('subscription/index.html.twig', [
-        'devisCount' => $count,
-        'pro' => $pro,
-        'starter' => $starter,
-        'plan' =>$planRepository->findby(["isActive"=>true])
-    ]);
-}
-
-   #[Route('/{id<\d+>}', name: 'app_subscription_new', methods: ['GET', 'POST'])]
-    public function new(
-        EntityManagerInterface $entityManager,
-        string $id,
-        PlanRepository $planRepository,
-        SubscriptionRepository $subscriptionRepository
-    ): Response
-    {
-        $user = $this->getUser();
-
-        if (!$user) {
-            return $this->redirectToRoute('app_login');
-        }
-        $plan = $planRepository->findOneBy(['id'=> $id]);
-        
-        // 1 seule requête pour récupérer starter et pro
-        $subscriptions = $subscriptionRepository->findBy([
-            'user' => $user,
-            'plan' => [1, 2]
-        ]);
-
-        // Vérifie si le type demandé existe déjà
-        foreach ($subscriptions as $sub) {
-            if ($sub->getPlan() === $plan) {
-                return $this->render('subscription/check.html.twig', [
-                    'subscriptions' => $subscriptions,
-                    'alreadySubscribed' => true,
-                ]);
-            }
-        }
-
-        // sinon création
-        if ($subscriptions[0]->getPlan() != $plan) {
-            $subscription = new Subscription();
-            $subscription
-                ->setUser($user)
-                ->setCompany($user->getCompany())
-                ->setType($plan->name)
-                ->setMontant($plan->getPrice())
-                ->setStripeId($plan->getStripeId());
-
-
-            $entityManager->persist($subscription);
-            $entityManager->flush();
-
-            // ajoute le nouveau à la liste existante
-            $subscriptions[] = $subscription;
-        }
-
-        return $this->render('subscription/check.html.twig', [
-            'subscriptions' => $subscriptions,
-            'alreadySubscribed' => false,
-        ]);
-    }
- 
-    #[Route('/create-session-stripe', name: 'app_payment_stripe', methods: ['POST'])]
-public function checkout(Request $request): RedirectResponse
-{
-    Stripe::setApiKey($this->getParameter('app.stripe'));
-
-    $lookupKey = $request->request->get('lookup_key');
-
-    if (!$lookupKey) {
-        throw $this->createNotFoundException('lookup_key manquant');
-    }
-
-    $YOUR_DOMAIN = 'https://127.0.0.1:8000';
-
-    // CRÉER la session Stripe (et non retrieve)
-    $checkout_session = Session::create([
-        'mode' => 'subscription',
-
-        'line_items' => [[
-            'price' => $lookupKey, // price_xxx
-            'quantity' => 1,
-        ]],
-
-        'success_url' => $YOUR_DOMAIN . '/subscription/success?session_id={CHECKOUT_SESSION_ID}',
-
-        'cancel_url' => $YOUR_DOMAIN . '/subscription/cancel',
-    ]);
-
-
-    return new RedirectResponse($checkout_session->url);
-}
-
-    #[Route('/{id<\d+>}', name: 'app_subscription_show', methods: ['GET'])]
-    public function show(Subscription $subscription): Response
-    {
-        return $this->render('subscription/show.html.twig', [
-            'subscription' => $subscription,
+        return $this->render('subscription/plans.html.twig', [
+            'plans'     => $plans,
+            'activeSub' => $activeSub,
         ]);
     }
 
-     #[Route('/success', name: 'subscription_success')]
-public function success(Request $request)
-{
-    Stripe::setApiKey($this->getParameter('app.stripe'));
-
-    $sessionId = $request->query->get('session_id');
-
-    if (!$sessionId) {
-        throw $this->createNotFoundException();
-    }
-
-    $session = Session::retrieve($sessionId);
-
-    $subscriptionId = $session->subscription;
-
-    dd($subscriptionId);
-}
- #[Route('/cancel', name: 'subscription_cancel')]
-public function cancel(Request $request)
-{
-    Stripe::setApiKey($this->getParameter('app.stripe'));
-
-    $sessionId = $request->query->get('session_id');
-
-    if (!$sessionId) {
-        throw $this->createNotFoundException();
-    }
-
-    $session = Session::retrieve($sessionId);
-
-    $subscriptionId = $session->subscription;
-
-    dd($subscriptionId);
-}
-
-    #[Route('/{id<\d+>}', name: 'app_subscription_delete', methods: ['POST'])]
-    public function delete(Request $request, Subscription $subscription, EntityManagerInterface $entityManager): Response
+    /**
+     * Lance le checkout Stripe pour un plan donné.
+     */
+    #[Route('/checkout/{id}', name: 'subscription_checkout')]
+    public function checkout(int $id): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$subscription->getId(), $request->getPayload()->getString('_token'))) {
-            $entityManager->remove($subscription);
-            $entityManager->flush();
+        $plan = $this->planRepository->find($id);
+
+        if (!$plan || !$plan->isActive()) {
+            $this->addFlash('danger', 'Ce plan n\'est pas disponible.');
+            return $this->redirectToRoute('subscription_plans');
         }
 
-        return $this->redirectToRoute('app_subscription_index', [], Response::HTTP_SEE_OTHER);
+        $user    = $this->getUser();
+        $company = $user->getCompany();
+
+        // Empêche de souscrire si déjà abonné
+        $existing = $this->stripeService->getActiveSubscription($company);
+        if ($existing) {
+            $this->addFlash('warning', 'Vous avez déjà un abonnement actif.');
+            return $this->redirectToRoute('subscription_manage');
+        }
+
+        $session = $this->stripeService->createCheckoutSession($plan, $company, $user);
+
+        return $this->redirect($session->url, 303);
+    }
+
+    /**
+     * Page de succès après paiement Stripe.
+     */
+    #[Route('/success', name: 'subscription_success')]
+    public function success(Request $request): Response
+    {
+        $sessionId = $request->query->get('session_id');
+
+        if (!$sessionId) {
+            return $this->redirectToRoute('subscription_plans');
+        }
+
+        try {
+            $subscription = $this->stripeService->handleCheckoutSuccess($sessionId);
+
+            // Envoi d'un email de confirmation
+            $user = $this->getUser();
+            $this->sendMailService->send(
+                'noreply@' . $_SERVER['HTTP_HOST'],
+                $user->getEmail(),
+                'Confirmation de votre abonnement',
+                'subscription_confirmation',
+                [
+                    'user'         => $user,
+                    'subscription' => $subscription,
+                    'plan'         => $subscription->getPlan(),
+                ]
+            );
+
+            $this->addFlash('success', 'Votre abonnement est maintenant actif !');
+        } catch (\Exception $e) {
+            $this->addFlash('danger', 'Une erreur est survenue lors de la validation.');
+        }
+
+        return $this->render('subscription/success.html.twig');
+    }
+
+    /**
+     * Page de gestion de l'abonnement (portail Stripe ou détails).
+     */
+    #[Route('/manage', name: 'subscription_manage')]
+    public function manage(): Response
+    {
+        $user    = $this->getUser();
+        $company = $user->getCompany();
+
+        $activeSub = $this->stripeService->getActiveSubscription($company);
+
+        return $this->render('subscription/manage.html.twig', [
+            'subscription' => $activeSub,
+            'company'      => $company,
+        ]);
+    }
+
+    /**
+     * Redirige vers le portail de facturation Stripe.
+     */
+    #[Route('/billing-portal', name: 'subscription_billing_portal')]
+    public function billingPortal(): Response
+    {
+        $user    = $this->getUser();
+        $company = $user->getCompany();
+
+        if (!$company->getStripeCustomerId()) {
+            $this->addFlash('warning', 'Aucun abonnement trouvé.');
+            return $this->redirectToRoute('subscription_plans');
+        }
+
+        $portalSession = $this->stripeService->createBillingPortalSession($company);
+
+        return $this->redirect($portalSession->url, 303);
+    }
+
+    /**
+     * Annulation de l'abonnement (côté app, sans passer par le portail).
+     */
+    #[Route('/cancel', name: 'subscription_cancel', methods: ['POST'])]
+    public function cancel(Request $request): Response
+    {
+        if (!$this->isCsrfTokenValid('cancel_subscription', $request->request->get('_token'))) {
+            $this->addFlash('danger', 'Token CSRF invalide.');
+            return $this->redirectToRoute('subscription_manage');
+        }
+
+        $user    = $this->getUser();
+        $company = $user->getCompany();
+
+        $activeSub = $this->stripeService->getActiveSubscription($company);
+
+        if (!$activeSub) {
+            $this->addFlash('warning', 'Aucun abonnement actif à annuler.');
+            return $this->redirectToRoute('subscription_manage');
+        }
+
+        $this->stripeService->cancelSubscription($activeSub);
+
+        $this->addFlash('success', 'Votre abonnement a été annulé.');
+
+        return $this->redirectToRoute('subscription_plans');
     }
 }

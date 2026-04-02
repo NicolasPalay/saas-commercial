@@ -1,14 +1,40 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Edit Company{% endblock %}
+{% block title %}Modification des informations de l'entreprise{% endblock %}
 
 {% block body %}
 
-    {{ include('company/_form.html.twig', {'button_label': 'Modifier'}) }}
+<main class="d-flex w-100 ">
+{% include('_includes/aside.html.twig') %}
+<div class="w-100 mx-4">
+    <div class="login-card">
+        
+        <div class="login-header d-flex justify-content-center flex-column align-items-center">
+            {% if app.user.company.urlLogo %}
+                <div class="d-flex justify-content-center mb-4 w-50">
+                    <a href="{{ path('app_dashboard') }}">
+                        <img src="/uploads/{{ app.user.company.id }}/{{ app.user.company.urlLogo }}" alt="{{ app.user.company.name }}">
+                    </a>
+                </div>
+            {% endif %}
+                 <h1><i class="bi bi-people"></i>Modification des informations de l'entreprise</h1>
 
-    <a href="{{ path('app_company_index') }}">back to list</a>
+            </div>
 
-    {{ include('company/_delete_form.html.twig') }}
+            <div class="login-body ">
+                <section>
+                    {{ include('company/_form.html.twig', {'button_label': 'Mettre à jour',}) }}
+                </section>
+            </div>    
+        </div>
+    </div>
+
+  </div>
+</div>
+
+
+</div>    
+</main>
     
 <script>
     const input = document.getElementById('company_urlLogo');

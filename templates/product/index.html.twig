@@ -3,11 +3,32 @@
 {% block title %}Product index{% endblock %}
 
 {% block body %}
-    <h1>Product index</h1>
- <div class="container w-100 p-5 bg-white border-info-subtle rounded-4 shadow-sm">
- <twig:ProductComponent :entity='entity' :headers='headers' />
+   <main class="d-flex w-100 ">
+{% include('_includes/aside.html.twig') %}
+<div class="w-100 mx-4">
     
-
-    <a  class="btn-ocean btn-ocean-primary" href="{{ path('app_product_new') }}"><i class="bi bi-plus-square"></i> Create new</a>
+   {# Page Header #}
+  <div class="page-header">
+    <div class="breadcrumb-ocean">
+      <a href="{{ path('app_dashboard') }}">Dashboard</a>
+      <span>›</span>
+      <span style="color: var(--white);">Produits</span>
     </div>
+    <h1><i class="bi bi-receipt"></i> Liste des Produits</h1>
+    <p>Retrouver toutes les produits</p>
+    <a href="{{ path('app_product_new') }}" class="btn-ocean btn-ocean-primary" 
+       style="position: absolute; top: 40px; right: 40px; padding: 12px 24px;">
+      <i class="bi bi-plus-circle"></i> Nouvelle Produit
+    </a>
+    <a href="{{ path('app_excel') }}" class="btn-ocean btn-ocean-primary" 
+       style="position: absolute; top: 40px; right: 40px; padding: 12px 24px;">
+      <i class="bi bi-plus-circle"></i> Traitement par lot <span>Excel, CSV acceptés</span>
+    </a>
+
+  </div>
+ <div class="w-100 bg-white border-info-subtle rounded-5 shadow-sm">
+ <twig:ProductComponent :entity='entity' :headers='headers' />
+    </div>
+    </div>
+</main>
 {% endblock %}

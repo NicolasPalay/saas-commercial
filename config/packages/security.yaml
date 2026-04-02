@@ -14,6 +14,9 @@ security:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
         main:
+            login_throttling:
+                max_attempts: 3
+                interval: '15 minutes'
             lazy: true
             provider: app_user_provider
             custom_authenticator:
@@ -41,8 +44,12 @@ security:
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
     access_control:
-        # - { path: ^/admin, roles: ROLE_ADMIN }
-        # - { path: ^/profile, roles: ROLE_USER }
+    - { path: ^/login, roles: PUBLIC_ACCESS }
+    - { path: ^/register, roles: PUBLIC_ACCESS }
+    - { path: ^/mot-de-passe-oublie, roles: PUBLIC_ACCESS }
+    - { path: ^/verif, roles: PUBLIC_ACCESS }
+    - { path: ^/stripe/webhook, roles: PUBLIC_ACCESS }
+    - { path: ^/, roles: [ROLE_USER, ROLE_DIRIGEANT, ROLE_EMPLOYE] } 
 
 when@test:
     security:

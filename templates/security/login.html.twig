@@ -3,19 +3,13 @@
 {% block title %}Log in!{% endblock %}
 
 {% block body %}
-<div class="login-container">
+<div class="login-container mt-5">
   <div class="login-card">
     
     <div class="login-header">
-      <div class="login-logo">🌊</div>
+      <div class="d-flex justify-content-center mb-2"><a href="{{ path('app_home') }}"><img class="logo" src="{{asset('images/logo.png')}}" alt=""></a></div>
       <h1>Connexion</h1>
       <p>Accédez à votre espace de gestion</p>
-    </div>
-
-    <div class="wave-divider">
-      <svg viewBox="0 0 520 30" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M0,30 C70,2 150,30 260,15 C370,0 450,28 520,12 L520,30 Z" fill="#fff"/>
-      </svg>
     </div>
 
     <div class="login-body">

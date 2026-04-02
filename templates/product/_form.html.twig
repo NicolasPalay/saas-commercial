@@ -1,157 +1,90 @@
-{{ form_errors(form) }}
-
-{{ form_start(form, { attr: { class: 'needs-validation', novalidate: 'novalidate' } }) }}
+{{ form_start(form) }}
 
 <div class="card-ocean mb-4">
   <div class="card-body">
 
+    <div class="row g-3">
+        {{ form_row(form.reference) }}
+        {{ form_row(form.name) }}
+    <div class="mb-3 d-flex gap-5 flex-wrap">
+        {{ form_row(form.price) }}
+        {{ form_row(form.costPrice) }}
 
+        <div>
+        <label class="form-label fw-semibold">🧾 Taxe</label>
+  
+        <div class="d-flex gap-2 flex-wrap justify-content- last:between">
+            {% for child in form.taxe %}
+                <label class="taxe-option">
+                    {{ form_widget(child, { attr: { class: 'd-none' } }) }}
 
-    {# Référence & Nom #}
-    <div class="row g-3 mb-3">
-
-      <div class="col-md-6">
-        <label class="form-label fw-semibold">🏷️ Référence</label>
-        <div class="input-group">
-          <span class="input-group-text">🏷️</span>
-          {{ form_widget(form.reference, {
-            attr: {
-              class: 'form-control',
-              placeholder: 'Référence produit'
-            }
-          }) }}
+                    <span class="taxe-card  py-1">
+                        {{ child.vars.label }}
+                    </span>
+                </label>
+            {% endfor %}
         </div>
-        {{ form_errors(form.reference) }}
-      </div>
 
-      <div class="col-md-6">
-        <label class="form-label fw-semibold">📝 Nom</label>
-        <div class="input-group">
-          <span class="input-group-text">📝</span>
-          {{ form_widget(form.name, {
-            attr: {
-              class: 'form-control',
-              placeholder: 'Nom du produit'
-            }
-          }) }}
-        </div>
-        {{ form_errors(form.name) }}
-      </div>
-
-    </div>
-
-    {# Prix & Prix de revient #}
-    <div class="row g-3 mb-3">
-
-      <div class="col-md-6">
-        <label class="form-label fw-semibold">💶 Prix (HT)</label>
-        <div class="input-group">
-          <span class="input-group-text">€</span>
-          {{ form_widget(form.price, {
-            attr: {
-              class: 'form-control',
-              placeholder: '0.00'
-            }
-          }) }}
-        </div>
-        {{ form_errors(form.price) }}
-      </div>
-
-      <div class="col-md-6">
-        <label class="form-label fw-semibold">💰 Prix de revient</label>
-        <div class="input-group">
-          <span class="input-group-text">€</span>
-          {{ form_widget(form.costPrice, {
-            attr: {
-              class: 'form-control',
-              placeholder: '0.00'
-            }
-          }) }}
-        </div>
-        {{ form_errors(form.costPrice) }}
-      </div>
-
-    </div>
-
-    {# Stock & Code-barres #}
-    <div class="row g-3 mb-3">
-
-      <div class="col-md-6">
-        <label class="form-label fw-semibold">📦 Stock</label>
-        <div class="input-group">
-          <span class="input-group-text">📦</span>
-          {{ form_widget(form.stock, {
-            attr: {
-              class: 'form-control',
-              placeholder: 'Quantité en stock'
-            }
-          }) }}
-        </div>
-        {{ form_errors(form.stock) }}
-      </div>
-
-      <div class="col-md-6">
-        <label class="form-label fw-semibold">🔢 Code-barres</label>
-        <div class="input-group">
-          <span class="input-group-text">🔢</span>
-          {{ form_widget(form.barcode, {
-            attr: {
-              class: 'form-control',
-              placeholder: 'Code-barres'
-            }
-          }) }}
-        </div>
-        {{ form_errors(form.barcode) }}
-      </div>
-
-    </div>
-
-    {# Taxe #}
-    <div class="row g-3 mb-3">
-      <div class="col-md-12">
-        <label class="form-label fw-semibold">🧾 Taxe applicable</label>
-        {{ form_widget(form.taxe, {
-          attr: {
-            class: 'form-select'
-          }
-        }) }}
         {{ form_errors(form.taxe) }}
-      </div>
+    </div>
+    </div>
+        
+<div class="mb-3 d-flex gap-5 flex-wrap">
+    <div>
+    <label class="form-label fw-semibold">🧾 Categorie</label>
+         <div class="d-flex gap-2 flex-wrap">
+        {% for child in form.category %}
+            <label class="taxe-option">
+                {{ form_widget(child, { attr: { class: 'd-none' } }) }}
+
+                <span class="taxe-card py-1">
+                    {{ child.vars.label }}
+                </span>
+            </label>
+        {% endfor %}
+   
+            {{ form_errors(form.taxe) }}
+            </div>
+     </div>
+        {{ form_row(form.stock) }}
+        {{ form_row(form.barcode) }}
+</div>
+        
+  
+       <label class="btn-ocean-sm label-image">
+    📷 
+    {{ form_widget(form.image, {
+        attr: {
+            class: 'd-none',
+            onchange: 'this.nextElementSibling.innerText = this.files[0]?.name || "Choisir une image"'
+        }
+    }) }}
+    <span class="ms-2">Choisir une image</span>
+</label>
+
+
+    <div class="row g-3 mt-3 justify-content-center">
+
+        <div class="col-md-2">
+            <div class="form-check form-switch">
+                {{ form_widget(form.isActive, { attr: { class: 'form-check-input' } }) }}
+                {{ form_label(form.isActive, 'Produit actif', { label_attr: { class: 'form-check-label' } }) }}
+            </div>
+        </div>
+
+        <div class="col-md-2">
+            <div class="form-check form-switch">
+                {{ form_widget(form.isService, { attr: { class: 'form-check-input' } }) }}
+                {{ form_label(form.isService, '🛠️ Service', { label_attr: { class: 'form-check-label' } }) }}
+            </div>
+        </div>
+
     </div>
 
-    {# Options : isActive & isService #}
-    <div class="row g-3 mb-4 d-flex justify-content-center">
-
-      <div class="col-md-2">
-        <div class="form-check form-switch mt-2">
-          {{ form_widget(form.isActive, {
-            attr: { class: 'form-check-input', role: 'switch', id: 'isActive' }
-          }) }}
-          <label class="form-check-label" for="isActive">✅ Produit actif</label>
-        </div>
-        {{ form_errors(form.isActive) }}
-      </div>
-
-      <div class="col-md-2">
-        <div class="form-check form-switch mt-2">
-          {{ form_widget(form.isService, {
-            attr: { class: 'form-check-input', role: 'switch', id: 'isService' }
-          }) }}
-          <label class="form-check-label" for="isService">🛠️ C'est un service</label>
-        </div>
-        {{ form_errors(form.isService) }}
-      </div>
-
-    </div>
-
-    {# Champs restants auto-générés (cachés / autres) #}
     {{ form_rest(form) }}
 
-    {# Bouton Submit #}
-    <div class="d-flex justify-content-center pt-2">
-      <button type="submit" class="btn-sand">
-        💾 Enregistrer
-      </button>
+    <div class="d-flex justify-content-center pt-3">
+        <button class="btn-ocean btn-ocean-secondary btn-ocean-sm">Enregistrer</button>
     </div>
 
   </div>

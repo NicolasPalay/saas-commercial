@@ -4,9 +4,10 @@ namespace App\Entity;
 
 use App\Repository\SubscriptionRepository;
 use Doctrine\ORM\Mapping as ORM;
+use App\Contract\OwnedByCompanyInterface;
 
 #[ORM\Entity(repositoryClass: SubscriptionRepository::class)]
-class Subscription
+class Subscription implements OwnedByCompanyInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -33,8 +34,11 @@ class Subscription
     #[ORM\Column(length: 255)]
     private ?string $type = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $stripeId = null;
+    #[ORM\Column(nullable: true)]
+    private ?string $stripeSubscriptionId = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?string $stripeCustomerId = null;
 
     #[ORM\ManyToOne(inversedBy: 'subscriptions')]
     private ?Plan $plan = null;
@@ -122,18 +126,30 @@ class Subscription
         return $this;
     }
 
-    public function getStripeId(): ?string
+    public function getStripeSubscriptionId(): ?string
     {
-        return $this->stripeId;
+        return $this->stripeSubscriptionId;
     }
 
-    public function setStripeId(string $stripeId): static
+    public function setStripeSubscriptionId(?string $stripeSubscriptionId): static
     {
-        $this->stripeId = $stripeId;
+        $this->stripeSubscriptionId = $stripeSubscriptionId;
 
         return $this;
     }
 
+    public function getStripeCustomerId(): ?string
+    {
+        return $this->stripeCustomerId;
+    }
+
+    public function setStripeCustomerId(?string $stripeCustomerId): static
+    {
+        $this->stripeCustomerId = $stripeCustomerId;
+
+        return $this;
+    }
+    
     public function getPlan(): ?Plan
     {
         return $this->plan;

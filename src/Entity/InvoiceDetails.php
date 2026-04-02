@@ -19,17 +19,26 @@ class InvoiceDetails
     #[ORM\Column(length: 255)]
     private ?string $label = null;
 
-    #[ORM\Column(length: 255)]
-    private ?float $quantity = 0;
+    #[ORM\Column(nullable: true)]
+    private ?float $price = 0.00;
 
-    #[ORM\Column(length: 255)]
-    private ?float$priceUnit = 0;
+    #[ORM\Column(nullable: true)]
+    private ?float $reduce = 0.00;
 
-    #[ORM\Column(length: 255)]
-    private ?float$priceTotalHt = 0;
+    #[ORM\Column(nullable: true)]
+    private ?float $quantity = 1;
 
-    #[ORM\Column(length: 255)]
-    private ?float$taxe = 0;
+    #[ORM\Column(nullable: true)]
+    private ?float $total = null;
+
+    #[ORM\ManyToOne(inversedBy: 'invoiceDetails')]
+    private ?Product $product = null;
+
+    #[ORM\ManyToOne(inversedBy: 'invoiceDetails')]
+    private ?Taxe $taxe = null;
+
+    #[ORM\ManyToOne(inversedBy: 'invoiceDetails')]
+    private ?Company $company = null;
 
     public function getId(): ?int
     {
@@ -60,50 +69,86 @@ class InvoiceDetails
         return $this;
     }
 
+    public function getPrice(): ?float
+    {
+        return $this->price;
+    }
+
+    public function setPrice(?float $price): static
+    {
+        $this->price = $price;
+
+        return $this;
+    }
+
+    public function getReduce(): ?float
+    {
+        return $this->reduce;
+    }
+
+    public function setReduce(?float $reduce): static
+    {
+        $this->reduce = $reduce;
+
+        return $this;
+    }
+
     public function getQuantity(): ?float
     {
         return $this->quantity;
     }
 
-    public function setQuantity(float $quantity): static
+    public function setQuantity(?float $quantity): static
     {
         $this->quantity = $quantity;
 
         return $this;
     }
 
-    public function getPriceUnit(): ?float
+    public function getTotal(): ?float
     {
-        return $this->priceUnit;
+        return $this->total;
     }
 
-    public function setPriceUnit(float $priceUnit): static
+    public function setTotal(?float $total): static
     {
-        $this->priceUnit = $priceUnit;
+        $this->total = $total;
 
         return $this;
     }
-
-    public function getPriceTotalHt(): ?float
-    {
-        return $this->priceTotalHt;
-    }
-
-    public function setPriceTotalHt(float $priceTotalHt): static
-    {
-        $this->priceTotalHt = $priceTotalHt;
-
-        return $this;
-    }
-
-    public function getTaxe(): ?float
+    
+        public function getTaxe(): ?Taxe
     {
         return $this->taxe;
     }
 
-    public function setTaxe(float $taxe): static
+    public function setTaxe(?Taxe $taxe): static
     {
         $this->taxe = $taxe;
+
+        return $this;
+    }
+
+    public function getProduct(): ?Product
+    {
+        return $this->product;
+    }
+
+    public function setProduct(?Product $product): static
+    {
+        $this->product = $product;
+
+        return $this;
+    }
+
+    public function getCompany(): ?Company
+    {
+        return $this->company;
+    }
+
+    public function setCompany(?Company $company): static
+    {
+        $this->company = $company;
 
         return $this;
     }

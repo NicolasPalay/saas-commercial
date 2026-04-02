@@ -1,0 +1,113 @@
+<div class="card-ocean">
+  {# Header avec infos du devis #}
+  <div class="card-ocean-header" style="padding: 32px 40px;">
+    <h1 style="color: var(--white); font-size: 24px; margin-bottom: 8px; text-align: center;">
+        Commande n°{{ order.reference }}
+    </h1>
+     <div class="divider"></div>
+    <header class="d-flex justify-content-center gap-5">
+      <div class="border px-4 py-2 rounded-3 text-right">
+      Adresse de Livraison
+      <hr>
+        <h2 class="mb-25 h4 adresse-devis">
+          <a href="{{ path('app_order_edit', {'id': order.id}) }}"  class="mb-25 h4">
+            {{ order.deliveryLabel }}
+          </a>
+        </h2>
+       
+          
+              <div>
+
+              {% if order.deliveryStreet %}{{ order.deliveryStreet }}<br>{% endif %}
+              {% if order.deliveryStreet2 %}{{ order.deliveryStreet2 }}<br>{% endif %}
+                {{ order.deliveryPostalCode }} {{ order.deliveryCity }}<br>
+                {% if order.client.address[0].email %}<br>{{ order.client.address[0].email }}<br>{% endif %}
+                {% if order.deliveryPhone %}{{ order.deliveryPhone }}<br>{% endif %}
+              </div>
+           
+      </div>
+      
+        {# Bouton retour vers l'édition du devis #}
+      <div class="action-header">
+
+        <a href="{{ path('app_order_edit', {'id': order.id}) }}" class="btn-ocean btn-ocean-secondary btn-ocean-sm">
+            <i class="bi bi-pencil"></i> Modifier l'adresse
+        </a>
+        <a href="{{ path('app_orderInInvoice', {'id': order.id}) }}" class="btn-ocean btn-ocean-secondary btn-ocean-sm">
+            <i class="bi bi-pencil"></i> Transfert en facture
+        </a>
+        <a href="{{ path('app_order_output_pdf', {'id': order.id}) }}" class="btn-ocean btn-ocean-secondary btn-ocean-sm" target="_blank">
+            <i class="bi bi-file-pdf"></i> enregistrer en PDF
+        </a>
+      </div>
+    </header>
+  </div>
+
+  <div class="card-ocean-body">
+    
+  
+    <div class="divider"></div>
+
+    {# Tableau des lignes de order #}
+    <div class="table-card mb-4">
+      <div class="table-responsive">
+        <table class="table-ocean">
+          <thead>
+            <tr>
+              <th>Réf. Prod</th>
+              <th>Nom du Produit</th>
+              <th>Qté</th>
+              <th>Prix Unit</th>
+              <th>Remise</th>
+              <th>Total</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for orderLine in order.orderDetails %}
+              <tr>
+                <td>
+                  <a href="{{ path('app_order_details_edit', {'id': orderLine.id}) }}">
+                    {{ orderLine.product.reference }}
+                  </a>
+                </td>
+                <td>
+                  <a href="{{ path('app_order_details_edit', {'id': orderLine.id}) }}">
+                    {{ orderLine.label }}
+                  </a>
+                </td>
+                <td>{{ orderLine.quantity }}</td>
+                <td>{{ orderLine.price | number_format(2, ',', ' ') }} €</td>
+                <td>{{ orderLine.reduce | number_format(2, ',', ' ') }} %</td>
+                <td><strong>{{ orderLine.total | number_format(2, ',', ' ') }} €</strong></td>
+                <td>
+                  {{ include('order_detail/_delete_form.html.twig', { order_detail: orderLine }) }}
+                </td>
+              </tr>
+            {% else %}
+              <tr>
+                <td colspan="7" style="text-align: center; padding: 40px; color: var(--dune);">
+                  <i class="bi bi-inbox" style="font-size: 48px; display: block; margin-bottom: 12px; opacity: 0.5;"></i>
+                  Aucune ligne de order
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    
+
+    {# Formulaire d'ajout/édition #}
+    <div class="bg-light p-4 form-edit-detail-devis editAbsolute" style="border-radius: var(--radius-lg); border: 1.5px solid var(--sky-shell);">
+      </h3>
+{{ form_start(form) }}
+        {{ form_widget(form) }}
+        <button class="btn-ocean btn-ocean-secondary btn-ocean-sm" type="submit"
+    >{{ button_label|default('Sélectionnez') }}</button>
+    {{ form_end(form) }}
+    </div>
+<div class="divider"></div>
+  </div>
+</div>

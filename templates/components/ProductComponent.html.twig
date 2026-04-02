@@ -1,16 +1,25 @@
 <div {{ attributes }}>
+{% set labels = {
+    'reference': 'Référence',
+    'name': 'Nom',
+    'nameCategory': 'Famille',
+    'price': 'Prix',
+    'stock': 'Stock',
+    'createdAt': 'Date de création'
+} %}
     <div class="w-100 my-4">
-        <div class="card border-0 shadow-sm">
+        <div class="card border-0 shadow-sm rounded-5 ">
             <div class="card-body p-0">
 
                 <div class="table-responsive">
-                    <table class="table table-hover align-middle mb-0 w-100 table-ocean">
+                    <table class="table table-hover align-middle mb-0 w-100 table-ocean ">
                         <thead class="table-light">
                             <tr>
+
                                 {% for header in headers %}
                                     <th class="fw-semibold text-uppercase small header-{{ header }}">
                                         <div class="d-flex align-items-center">
-                                            <span>{{ header }}</span>
+                                            <span>{{ labels[header] }}</span>
 
                                             <span class="sort-icons d-flex flex-column ms-2">
                                                 <button
@@ -48,13 +57,27 @@
                                         </a>
                                     </td>
 
-                                    <td><a href="{{ path('app_product_edit', {'id': product.id}) }}"
-                                           >{{ product.name }}</a></td>
+                                    <td>
+                                    <a href="{{ path('app_product_edit', {'id': product.id}) }}"
+                                           >
+                                            {{ product.name }}
+                                           </a>
+                                    </td>
+                                    <td>  
+                                        {% if product.category %}
+                                            <a href="{{ path('app_product_edit', {'id': product.id}) }}"
+                                            >
+                                                {{ product.category.nameCategory }}
+                                            </a>
+                                        {% endif %}
+                                    </td>
 
                                     <td class="text-right">
                                         {{ product.price | number_format(2, ',', ' ') }} €
                                     </td>
-
+                                    <td class="text-muted">
+                                        {{ product.stock }}
+                                    </td>
                                     <td class="text-muted">
                                         {{ product.createdAt|date('d/m/Y ') }}
                                     </td>

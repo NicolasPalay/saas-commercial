@@ -7,9 +7,10 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use App\Contract\OwnedByCompanyInterface;
 
 #[ORM\Entity(repositoryClass: ProductRepository::class)]
-class Product
+class Product implements OwnedByCompanyInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -22,13 +23,6 @@ class Product
     #[ORM\Column(nullable: true,type: 'decimal', precision: 10, scale: 2)]
     private ?float $price = null;
 
-
-
-    /**
-     * @var Collection<int, Category>
-     */
-    #[ORM\OneToMany(targetEntity: Category::class, mappedBy: 'product')]
-    private Collection $categories;
 
 
 
@@ -68,11 +62,27 @@ class Product
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $image = null;
 
+    /**
+     * @var Collection<int, OrderDetail>
+     */
+    #[ORM\OneToMany(targetEntity: OrderDetail::class, mappedBy: 'product')]
+    private Collection $orderDetails;
+
+    /**
+     * @var Collection<int, InvoiceDetails>
+     */
+    #[ORM\OneToMany(targetEntity: InvoiceDetails::class, mappedBy: 'product')]
+    private Collection $invoiceDetails;
+
+    #[ORM\ManyToOne(inversedBy: 'products')]
+    private ?Category $category = null;
+
      public function __construct()
     {
-        $this->categories = new ArrayCollection();
         $this->devisDetails = new ArrayCollection();
         $this->createdAt = new \DateTimeImmutable();
+        $this->orderDetails = new ArrayCollection();
+        $this->invoiceDetails = new ArrayCollection();
    }
 
     public function getId(): ?int
@@ -87,8 +97,7 @@ class Product
 
     public function setName(string $name): static
     {
-        $this->name = $name;
-
+        $this->name = mb_strtoupper($name);
         return $this;
     }
 
@@ -100,36 +109,6 @@ class Product
     public function setPrice(?float $price): static
     {
         $this->price = $price;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Category>
-     */
-    public function getCategories(): Collection
-    {
-        return $this->categories;
-    }
-
-    public function addCategory(Category $category): static
-    {
-        if (!$this->categories->contains($category)) {
-            $this->categories->add($category);
-            $category->setProduct($this);
-        }
-
-        return $this;
-    }
-
-    public function removeCategory(Category $category): static
-    {
-        if ($this->categories->removeElement($category)) {
-            // set the owning side to null (unless already changed)
-            if ($category->getProduct() === $this) {
-                $category->setProduct(null);
-            }
-        }
 
         return $this;
     }
@@ -153,7 +132,8 @@ class Product
 
     public function setReference(string $reference): static
     {
-        $this->reference = $reference;
+        $this->reference = mb_strtoupper($reference);
+   
 
         return $this;
     }
@@ -285,6 +265,78 @@ class Product
     public function setImage(?string $image): static
     {
         $this->image = $image;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, OrderDetail>
+     */
+    public function getOrderDetails(): Collection
+    {
+        return $this->orderDetails;
+    }
+
+    public function addOrderDetail(OrderDetail $orderDetail): static
+    {
+        if (!$this->orderDetails->contains($orderDetail)) {
+            $this->orderDetails->add($orderDetail);
+            $orderDetail->setProduct($this);
+        }
+
+        return $this;
+    }
+
+    public function removeOrderDetail(OrderDetail $orderDetail): static
+    {
+        if ($this->orderDetails->removeElement($orderDetail)) {
+            // set the owning side to null (unless already changed)
+            if ($orderDetail->getProduct() === $this) {
+                $orderDetail->setProduct(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, InvoiceDetails>
+     */
+    public function getInvoiceDetails(): Collection
+    {
+        return $this->invoiceDetails;
+    }
+
+    public function addInvoiceDetail(InvoiceDetails $invoiceDetail): static
+    {
+        if (!$this->invoiceDetails->contains($invoiceDetail)) {
+            $this->invoiceDetails->add($invoiceDetail);
+            $invoiceDetail->setProduct($this);
+        }
+
+        return $this;
+    }
+
+    public function removeInvoiceDetail(InvoiceDetails $invoiceDetail): static
+    {
+        if ($this->invoiceDetails->removeElement($invoiceDetail)) {
+            // set the owning side to null (unless already changed)
+            if ($invoiceDetail->getProduct() === $this) {
+                $invoiceDetail->setProduct(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getCategory(): ?Category
+    {
+        return $this->category;
+    }
+
+    public function setCategory(?Category $category): static
+    {
+        $this->category = $category;
 
         return $this;
     }

@@ -31,21 +31,31 @@ final class ProductComponent
     {
     }
 
-    public function mount(string $entity, array $headers): void{
+    public function mount(string $entity, array $headers): void
+    {
         $user = $this->security->getUser();
-        if (!$user instanceof User) {
-            return;
-        }
+        if (!$user instanceof User) return;
+
         $repository = $this->entityManager->getRepository($entity);
-        $this->lines = $repository->findBy(['company' => $user->getCompany()]);
+        $this->lines = $repository->findByCompanySorted(
+            $user->getCompany(),
+            'name', // tri par défaut sur product
+            'asc'
+        );
         $this->entity = $entity;
         $this->headers = $headers;
     }
 
     #[LiveAction]
-    public function sort(#[LiveArg] string $header, #[LiveArg] string $direction): void {
+    public function sort(#[LiveArg] string $header, #[LiveArg] string $direction): void
+    {
+        $this->entityManager->clear();
         $repository = $this->entityManager->getRepository($this->entity);
-        $this->lines = $repository->findBy(['company' => $this->security->getUser()->getCompany()], [$header => $direction]);
+        $this->lines = $repository->findByCompanySorted(
+            $this->security->getUser()->getCompany(),
+            $header,
+            $direction
+        );
     }
 }
 

@@ -2,35 +2,48 @@
   {# Header avec infos du devis #}
   <div class="card-ocean-header" style="padding: 32px 40px;">
     <h1 style="color: var(--white); font-size: 24px; margin-bottom: 8px; text-align: center;">
-      <a href="{{ path('app_devis_edit', {'id': devis.id}) }}" style="color: var(--white); text-decoration: none;">
         Devis n°{{ devis.reference }}
-      </a>
     </h1>
-    <p style="color: var(--sky-shell);" class="text-center mb-25">
-      {{ devis.deliveryLabel }}
-    </p>
-      {# Bouton retour vers l'édition du devis #}
-    <div class="text-center mb-4">
-      <a href="{{ path('app_devis_edit', {'id': devis.id}) }}" class="btn-ocean btn-ocean-secondary btn-ocean-sm">
-        <i class="bi bi-pencil"></i> Modifier l'adresse
-      </a>
-      {% if devis.IsInvoiced %}
-        <a href="{{ path('app_invoice_show', {'id': devis.invoice.id}) }}" class="btn-ocean btn-ocean-secondary btn-ocean-sm">
-        <i class="bi bi-pencil"></i> accédez à la facture
-      </a>
-
-        {% else %}
-         <a href="{{ path('app_inInvoice', {'id': devis.id}) }}" class="btn-ocean btn-ocean-secondary btn-ocean-sm">
-        <i class="bi bi-pencil"></i> Transfert en facture
-      </a>
-      {% endif %}
+    <hr>
+    <header class="d-flex justify-content-center gap-5">
+      <div class="border px-4 py-2 rounded-3 text-right">
+        <h2 class="mb-25 h4 adresse-devis">
+          <a href="{{ path('app_devis_edit', {'id': devis.id}) }}"  class="mb-25 h4">
+            {{ devis.deliveryLabel }}
+          </a>
+        </h2>
+       
+          
+              <div>
+                {{ devis.deliveryStreet }}<br>
+              {% if devis.deliveryStreet2 %}{{ devis.deliveryStreet2 }}<br>{% endif %}
+                {{ devis.deliveryPostalCode }} {{ devis.deliveryCity }}<br>
+                {% if devis.client.address[0].email %}<br>{{ devis.client.address[0].email }}<br>{% endif %}
+                {% if devis.deliveryPhone %}{{ devis.deliveryPhone }}<br>{% endif %}
+              </div>
+           
+      </div>
       
-    </div>
-
+        {# Bouton retour vers l'édition du devis #}
+      <div class="action-header">
+        <a href="{{ path('app_devis_edit', {'id': devis.id}) }}" class="btn-ocean btn-ocean-secondary btn-ocean-sm">
+          <i class="bi bi-pencil"></i> Modifier l'adresse
+        </a>
+          <a href="{{ path('app_toOrder', {'id': devis.id}) }}" class="btn-ocean btn-ocean-secondary btn-ocean-sm">
+            <i class="bi bi-pencil"></i> Transfert en Commande
+          </a>
+          <a href="{{ path('app_devis_toInvoice', {'id': devis.id}) }}" class="btn-ocean btn-ocean-secondary btn-ocean-sm">
+            <i class="bi bi-pencil"></i> Transfert en Facture
+          </a>
+        <a href="{{ path('app_devis_output_pdf', {'id': devis.id}) }}" class="btn-ocean btn-ocean-secondary btn-ocean-sm" target="_blank">
+            <i class="bi bi-file-pdf"></i> enregistrer en PDF
+        </a>
+      </div>
+    </header>
   </div>
   <div class="card-ocean-body">
     
-  
+  <a href="#addLine" class="btn-ocean btn-ocean-secondary btn-ocean-sm">Ajouter une ligne</a>
     <div class="divider"></div>
 
     {# Tableau des lignes de devis #}
@@ -85,9 +98,11 @@
     
 
     {# Formulaire d'ajout/édition #}
-    <div class="bg-light p-4 form-edit-detail-devis editAbsolute" style="border-radius: var(--radius-lg); border: 1.5px solid var(--sky-shell);">
+    <div id="addLine" class="bg-light p-4 form-edit-detail-devis editAbsolute" style="border-radius: var(--radius-lg); border: 1.5px solid var(--sky-shell);">
       </h3>
-{{ form_start(form) }}
+{{ form_start(form, {
+    attr: { 'data-devis-detail': '1' }
+}) }}
         {{ form_widget(form) }}
         <button class="btn-ocean btn-ocean-secondary btn-ocean-sm" type="submit"
     >{{ button_label|default('Sélectionnez') }}</button>

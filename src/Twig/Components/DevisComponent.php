@@ -21,9 +21,12 @@ final class DevisComponent
 
     #[LiveProp()]
     public? array $headers = [];
-
+    
+    #[LiveProp()]
+    public string $entityText;
 
     public array $lines = [];
+    
 
     public function __construct(
         private EntityManagerInterface $entityManager,
@@ -31,7 +34,7 @@ final class DevisComponent
     {
     }
 
-    public function mount(string $entity, array $headers): void{
+    public function mount(string $entity, array $headers, string $entityText): void{
         $user = $this->security->getUser();
         if (!$user instanceof User) {
             return;
@@ -40,6 +43,7 @@ final class DevisComponent
         $this->lines = $repository->findBy(['company' => $user->getCompany()]);
         $this->entity = $entity;
         $this->headers = $headers;
+        $this->entityText = $entityText;
     }
 
     #[LiveAction]

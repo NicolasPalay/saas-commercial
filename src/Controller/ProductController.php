@@ -24,7 +24,7 @@ final class ProductController extends AbstractController
         return $this->render('product/index.html.twig', [
             'products' => $productRepository->findAllByCompany(['company' => $company->getId()]),
             'entity' => Product::class,
-            'headers' => ['reference', 'name', 'price', 'createdAt']
+            'headers' => ['reference', 'name','nameCategory', 'price', 'stock', 'createdAt']
         ]);
     }
 

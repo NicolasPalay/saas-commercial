@@ -36,8 +36,10 @@ class RegistrationController extends AbstractController
             $company = new Company();
             $name= $form->get("name")->getData();
             $devis = $form->get("refDevis")->getData();
+            $order = $form->get("refOrder")->getData();
             $facture = $form->get("refFacture")->getData();
             $company->setRefDevis($devis);
+            $company->setRefOrder($order);
             $company->setRefFacture($facture);
             $company->setName($name);
 

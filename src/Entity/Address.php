@@ -3,10 +3,11 @@
 namespace App\Entity;
 
 use App\Repository\AddressRepository;
+use App\Contract\OwnedByCompanyInterface;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: AddressRepository::class)]
-class Address
+class Address implements OwnedByCompanyInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -40,6 +41,12 @@ class Address
     #[ORM\Column(length: 255, nullable: true)]
     private ?bool $isDefault = null;
 
+    #[ORM\Column(nullable: true)]
+    private ?bool $isDelivery = null;
+
+    #[ORM\ManyToOne(inversedBy: 'addresses')]
+    private ?Company $company = null;
+
     
 
 
@@ -55,7 +62,7 @@ class Address
 
     public function setNameStreet(?string $nameStreet): static
     {
-        $this->nameStreet = $nameStreet;
+        $this->nameStreet = mb_strtoupper($nameStreet);
 
         return $this;
     }
@@ -67,7 +74,7 @@ class Address
 
     public function setNameStreet2(?string $nameStreet2): static
     {
-        $this->nameStreet2 = $nameStreet2;
+        $this->nameStreet2 = mb_strtoupper($nameStreet2);
 
         return $this;
     }
@@ -91,7 +98,7 @@ class Address
 
     public function setVille(string $ville): static
     {
-        $this->ville = $ville;
+        $this->ville = mb_strtoupper($ville);
 
         return $this;
     }
@@ -152,6 +159,30 @@ class Address
     public function setIsDefault(?bool $isDefault): static
     {
         $this->isDefault = $isDefault;
+
+        return $this;
+    }
+
+    public function isDelivery(): ?bool
+    {
+        return $this->isDelivery;
+    }
+
+    public function setIsDelivery(?bool $isDelivery): static
+    {
+        $this->isDelivery = $isDelivery;
+
+        return $this;
+    }
+
+    public function getCompany(): ?Company
+    {
+        return $this->company;
+    }
+
+    public function setCompany(?Company $company): static
+    {
+        $this->company = $company;
 
         return $this;
     }

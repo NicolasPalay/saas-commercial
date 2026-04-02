@@ -1,0 +1,11 @@
+{#
+  Macro utilitaires pour les formulaires Shoreline Haze
+  Usage : {% from '_includes/form_helpers.html.twig' import field %}
+#}
+{% macro field(form_field, label, type) %}
+  <div class="form-group">
+    <label class="form-label">{{ label }}</label>
+    {{ form_widget(form_field, {attr:{class:'form-control'}}) }}
+    {{ form_errors(form_field) }}
+  </div>
+{% endmacro %}

@@ -14,10 +14,15 @@ use Symfony\Component\Routing\Attribute\Route;
 
 #[Route('/invoice')]
 final class InvoiceController extends AbstractController
-{
+{   
+    public array $headers;
+    public $entity;
+    public string $entityText;
+    
     #[Route(name: 'app_invoice_index', methods: ['GET', 'POST'])]
     public function index(InvoiceRepository $invoiceRepository, Request $request, EntityManagerInterface $entityManager): Response
     {
+
         $user = $this->getUser();
         $company = $user->getCompany();
 
@@ -51,9 +56,9 @@ final class InvoiceController extends AbstractController
                 ->setCompany($company)
                 ->setRaisonSocial($client->getRaisonSocial())
                 ->setIsPay(false)
-                ->setPriceTotalHt(0)
-                ->setTaxeTotal(0)
-                ->setPriceTotalTTC(0);
+                ->setTotal(0)
+                ->setTaxe(0)
+                ->setTotalTtc(0);
         
 
 
@@ -66,6 +71,9 @@ final class InvoiceController extends AbstractController
         return $this->render('invoice/index.html.twig', [
             'invoices' => $invoiceRepository->findBy(['company'=> $company]),
              'form' => $form,
+             'entity' => Invoice::class,
+             'entityText' => 'invoice',
+            'headers'=>["reference", "client", "total", "createdAt"],
         ]);
     }
 
@@ -73,6 +81,8 @@ final class InvoiceController extends AbstractController
     #[Route('/new', name: 'app_invoice_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
+        $user = $this->getUser();
+        if (!$user) return $this->redirectToRoute('app_login');
         $invoice = new Invoice();
         $form = $this->createForm(InvoiceType::class, $invoice);
         $form->handleRequest($request);
@@ -101,13 +111,33 @@ final class InvoiceController extends AbstractController
     #[Route('/{id}/edit', name: 'app_invoice_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Invoice $invoice, EntityManagerInterface $entityManager): Response
     {
-        $form = $this->createForm(InvoiceTypeEdit::class, $invoice);
+        $user = $this->getUser();
+        if (!$user) return $this->redirectToRoute('app_login');
+        $this->denyAccessUnlessGranted('EDIT', $invoice);
+        $form = $this->createForm(InvoiceTypeEdit::class, $invoice, [
+            'company' => $invoice->getCompany(),
+            'currentClient' => $invoice->getClient(),
+        ]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+               $address = $form->get('address')->getData();
+           //dd($address->getNameStreet());
+            if($address) {
+                $invoice->setRaisonSocial($invoice->getClient()->getRaisonSocial())
+                    ->setNameStreet2($address->getNameStreet2())
+                    ->setCodePostal($address->getCodePostal())
+                    ->setVille($address->getVille())
+                    ->setEmail($address->getEmail()) ;
+                    $invoice->setNameStreet($address->getNameStreet());
+            }
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_invoice_index', [], Response::HTTP_SEE_OTHER);
+             return $this->redirectToRoute(
+                'app_invoice_details_new',
+                ['id' => $invoice->getId()],
+                Response::HTTP_SEE_OTHER
+            );
         }
 
         return $this->render('invoice/edit.html.twig', [
@@ -119,6 +149,7 @@ final class InvoiceController extends AbstractController
     #[Route('/{id}', name: 'app_invoice_delete', methods: ['POST'])]
     public function delete(Request $request, Invoice $invoice, EntityManagerInterface $entityManager): Response
     {
+        $this->denyAccessUnlessGranted('DELETE', $invoice);
         if ($this->isCsrfTokenValid('delete'.$invoice->getId(), $request->getPayload()->getString('_token'))) {
             $entityManager->remove($invoice);
             $entityManager->flush();

@@ -16,6 +16,40 @@ class AddressRepository extends ServiceEntityRepository
         parent::__construct($registry, Address::class);
     }
 
+
+    public function findDefaultAddressesByCompany($company)
+    {
+        return $this->createQueryBuilder('a')
+            ->innerJoin('a.client', 'c')
+            ->addSelect('c')
+            ->where('c.company = :company')
+            ->andWhere('a.isDefault = true')
+            ->setParameter('company', $company)
+            ->orderBy('a.codePostal', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function findByClientSortedByAddress($company, $client, $field = 'nameStreet', $direction = 'asc'): array
+    {
+        $qb = $this->createQueryBuilder('a')
+            ->leftJoin('a.client', 'c')
+            ->addSelect('c')
+            ->where('c.company = :company')
+            ->setParameter('company', $company)
+            ->andWhere('a.client = :client')
+            ->setParameter('client', $client);
+
+        $addressFields = ['codePostal', 'ville', 'mobilePhone'];
+
+        if (in_array($field, $addressFields)) {
+            $qb->orderBy('a.' . $field, $direction);
+        }    
+        return $qb->getQuery()
+            ->setHint(\Doctrine\ORM\Query::HINT_REFRESH, true)
+            ->getResult();
+    }
+
     //    /**
     //     * @return Address[] Returns an array of Address objects
     //     */

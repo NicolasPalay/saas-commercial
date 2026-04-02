@@ -39,7 +39,7 @@ class DevisDetailsTypeEdit extends AbstractType
             ->add('price', NumberType::class, [
                 'label' => 'Prix Unitaire',
                 'attr' => [
-                    'class' => "form-control mb-2",
+                    'class' => "mb-2 w-100",
                     'placeholder' => 'Prix',
                     'step' => '0.01',
                 ],

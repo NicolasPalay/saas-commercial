@@ -1,0 +1,62 @@
+{% block form_row %}
+
+    {% set col = {
+        'reference': 'col-md-4',
+        'name': 'col-md-6',
+        'raisonSocial': 'col-md-6',
+        'price': 'col-md-3',
+        'costPrice': 'col-md-3',
+        'stock': 'col-md-2',
+        'barcode': 'col-md-4',
+        'codePostal': 'col-md-4',
+        'ville': 'col-md-7',
+        'businessPhone': 'col-md-5',
+        'mobilePhone': 'col-md-5',
+        'email': 'col-md-6',
+        'isDefault': 'col-md-6',
+        'isDelivery': 'col-md-6',
+        'firstname': 'col-md-5',
+        'lastname': 'col-md-5',
+    }[form.vars.name] ?? 'col-md-6' %}
+
+    <div class="{{ col }} mb-3">
+        {{ form_label(form, null, {'label_attr': {'class': 'form-label fw-semibold'}}) }}
+
+        <div class="input-group">
+            {% set icon = {
+                'reference': '🏷️',
+                'name': '📝',
+                'raisonSocial': '🏢',
+                'price': '€',
+                'costPrice': '€',
+                'stock': '📦',
+                'barcode': '🔢',
+                'codePostal': '📮' ,
+                'ville': '🏙️',
+                'siret': '🔍',
+                'businessPhone': '☎️',
+                'mobilePhone': '📱',
+                'email': '📧',
+                'firstname': '👤',
+                'lastname': '👤',
+                'plainPassword': '🔒'
+
+
+            }[form.vars.name] ?? null %}
+
+            {% if icon %}
+                <span class="input-group-text">{{ icon }}</span>
+            {% endif %}
+
+           {{ form_widget(form, {
+    attr: {
+        class: form.vars.block_prefixes[1] == 'choice' ? 'form-select' : 'form-control',
+        placeholder: form.vars.label,
+        disabled: isDevisDetail ?? false
+    }
+}) }}
+        </div>
+
+        {{ form_errors(form) }}
+    </div>
+{% endblock %}

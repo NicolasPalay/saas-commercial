@@ -6,9 +6,11 @@ use App\Repository\DevisRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use App\Contract\OwnedByCompanyInterface;
+
 
 #[ORM\Entity(repositoryClass: DevisRepository::class)]
-class Devis
+class Devis implements OwnedByCompanyInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -66,11 +68,18 @@ class Devis
     #[ORM\OneToOne(mappedBy: 'devis', targetEntity: Invoice::class)]
     private ?Invoice $invoice = null;
 
+    /**
+     * @var Collection<int, Order>
+     */
+    #[ORM\OneToMany(targetEntity: Order::class, mappedBy: 'devis')]
+    private Collection $orders;
+
 
     public function __construct()
     {
         $this->devisDetails = new ArrayCollection();
         $this->createdAt = new \DateTimeImmutable();
+        $this->orders = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -85,7 +94,7 @@ class Devis
 
     public function setReference(?string $reference): static
     {
-        $this->reference = $reference;
+        $this->reference = mb_strtoupper($reference);
         return $this;
     }
 
@@ -189,7 +198,7 @@ class Devis
 
     public function setDeliveryStreet(?string $deliveryStreet): static
     {
-        $this->deliveryStreet = $deliveryStreet;
+        $this->deliveryStreet = mb_strtoupper($deliveryStreet);
         return $this;
     }
 
@@ -200,7 +209,7 @@ class Devis
 
     public function setDeliveryStreet2(?string $deliveryStreet2): static
     {
-        $this->deliveryStreet2 = $deliveryStreet2;
+        $this->deliveryStreet2 = mb_strtoupper($deliveryStreet2);
         return $this;
     }
 
@@ -222,7 +231,7 @@ class Devis
 
     public function setDeliveryCity(?string $deliveryCity): static
     {
-        $this->deliveryCity = $deliveryCity;
+        $this->deliveryCity = mb_strtoupper($deliveryCity);
         return $this;
     }
 
@@ -233,7 +242,7 @@ class Devis
 
     public function setDeliveryLabel(?string $deliveryLabel): static
     {
-        $this->deliveryLabel = $deliveryLabel;
+        $this->deliveryLabel = mb_strtoupper($deliveryLabel);
         return $this;
     }
 
@@ -278,6 +287,36 @@ class Devis
     public function setInvoice(?Invoice $invoice): self
     {
         $this->invoice = $invoice;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Order>
+     */
+    public function getOrders(): Collection
+    {
+        return $this->orders;
+    }
+
+    public function addOrder(Order $order): static
+    {
+        if (!$this->orders->contains($order)) {
+            $this->orders->add($order);
+            $order->setDevis($this);
+        }
+
+        return $this;
+    }
+
+    public function removeOrder(Order $order): static
+    {
+        if ($this->orders->removeElement($order)) {
+            // set the owning side to null (unless already changed)
+            if ($order->getDevis() === $this) {
+                $order->setDevis(null);
+            }
+        }
 
         return $this;
     }   

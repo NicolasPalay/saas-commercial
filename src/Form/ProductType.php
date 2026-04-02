@@ -2,7 +2,10 @@
 
 namespace App\Form;
 
+use App\Entity\Category;
 use App\Entity\Product;
+use App\Entity\Taxe;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\MoneyType;
@@ -15,20 +18,55 @@ class ProductType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('reference')
-            ->add('name')
+           ->add('reference', null, [
+                'label' => '🏷️ Référence',
+            ])
+
+            ->add('name', null, [
+                'label' => '📝 Nom du produit',
+            ])
+
             ->add('price', MoneyType::class, [
+                'label' => '💶 Prix (HT)',
                 'currency' => false,
                 'required' => false,
             ])
-            ->add('stock')
+
+            ->add('costPrice', MoneyType::class, [
+                'label' => '💰 Prix de revient',
+                'currency' => false,
+                'required' => false,
+            ])
+
+            ->add('stock', null, [
+                'label' => '📦 Stock',
+            ])
+
+            ->add('barcode', null, [
+                'label' => '🔢 Code-barres',
+                'required' => false,
+            ])
+            ->add('category', EntityType::class, [
+                 'class' => Category::class,
+                'label' => '🧾 Categorie',
+                'choice_label' => 'nameCategory',
+                'placeholder' => 'Sans',
+                'required' => false,
+                'expanded'=>true
+            ])
+
+            ->add('taxe', EntityType::class, [
+                 'class' => Taxe::class,
+                'label' => '🧾 Taxe applicable',
+                'choice_label' => 'name',
+                'placeholder' => 'Sélectionnez une taxe',
+                'required' => false,
+                'expanded'=>true
+            ])
             ->add('image', FileType::class, [
-                'label' => 'Image (image, etc.)',
                 'mapped' => false,
                 'required' => false,
-                'attr' => [
-                    'accept' => 'application/pdf,image/*', 
-                ],
+               
                 'constraints' => [
                     new File([
                         'maxSize' => '5M',
@@ -37,27 +75,20 @@ class ProductType extends AbstractType
                             'image/png',
                             'image/gif',
                         ],
-                        'mimeTypesMessage' => 'Veuillez télécharger une image valide (JPEG, PNG, GIF).',  ])
+                        'mimeTypesMessage' => 'Veuillez télécharger une image valide (JPEG, PNG, GIF).',
+                    ])
                 ],
             ])
-            ->add('isActive')
-            ->add('taxe', null, [
-                'choice_label' => 'name', // Affiche le nom de la taxe dans le select
-                'placeholder' => 'Sélectionnez une taxe',
-                'required' => false,])
-            ->add('isService')
-            ->add('costPrice', MoneyType::class, [
-                'currency' => false,
+            ->add('isActive', null, [
+                'label' => 'Produit actif',
                 'required' => false,
             ])
-            ->add('barcode')
-            // ->add('createdAt') --- IGNORE ---
 
+            ->add('isService', null, [
+                'label' => 'Service',
+                'required' => false,
+            ]);
 
-
-
-
-        ;
     }
 
     public function configureOptions(OptionsResolver $resolver): void

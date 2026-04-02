@@ -21,34 +21,30 @@ class ClientRepository extends ServiceEntityRepository
         return $this->createQueryBuilder('c')
             ->andWhere('c.company = :company')
             ->setParameter('company', $company)
-            ->orderBy('c.raison_social', 'ASC')
+            ->orderBy('c.raisonSocial', 'ASC')
             ->getQuery()
             ->getResult()
         ;
     }
 
-    //    /**
-    //     * @return Client[] Returns an array of Client objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('c')
-    //            ->andWhere('c.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('c.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
+    public function findByCompanySortedByAddress($company, $field = 'raison_social', $direction = 'asc'): array
+    {
+        $qb = $this->createQueryBuilder('c')
+            ->leftJoin('c.address', 'a')
+            ->addSelect('a')
+            ->where('c.company = :company')
+            ->setParameter('company', $company);
 
-    //    public function findOneBySomeField($value): ?Client
-    //    {
-    //        return $this->createQueryBuilder('c')
-    //            ->andWhere('c.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+        $addressFields = ['codePostal', 'ville', 'mobilePhone'];
+
+        if (in_array($field, $addressFields)) {
+            $qb->orderBy('a.' . $field, $direction);
+        } else {
+            $qb->orderBy('c.' . $field, $direction);
+        }
+
+        return $qb->getQuery()
+            ->setHint(\Doctrine\ORM\Query::HINT_REFRESH, true)
+            ->getResult();
+    }
 }

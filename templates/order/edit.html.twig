@@ -1,0 +1,30 @@
+{% extends 'base.html.twig' %}
+{% block title %}Modifier {{ order.reference }}{% endblock %}
+{% block topbar_title %}Modifier {{ order.reference }}{% endblock %}
+{% block body %}
+<main class="d-flex w-100 ">
+{% include('_includes/aside.html.twig') %}
+<div class="w-100 mx-4">
+    <div class="login-card">
+        
+        <div class="login-header">
+            <div class="d-flex justify-content-center mb-2"><a href="{{ path('app_home') }}"><img class="logo" src="{{asset('images/logo.png')}}" alt=""></a></div>
+                 <h1><i class="bi bi-people"></i>Modification de la commande n° {{ order.reference }}</h1>
+
+            </div>
+
+            <div class="login-body ">
+                <section>
+                    {{ include('order/_formEdit.html.twig', {'button_label': 'Mettre à jour',}) }}
+                </section>
+            </div>    
+        </div>
+    </div>
+
+  </div>
+</div>
+
+
+</div>    
+</main>
+{% endblock %}

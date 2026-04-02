@@ -20,13 +20,18 @@ class CompanyType extends AbstractType
             ->add('name', TextType::class, [
                 'label' => 'Nom de l\'entreprise',
                 'attr' => [
-                    'class' => 'form-input',
+                    'class' => 'col-md-6',
                     'placeholder' => 'Ex: Ma Super Entreprise SARL'
                 ],
                 'label_attr' => [
-                    'class' => 'form-label required'
+                    'class' => 'col-md-6'
                 ],
             ])
+            ->add('street')
+            ->add('street2')
+            ->add('codePostal')
+            ->add('ville')
+            ->add('siret')
             ->add('urlLogo', FileType::class, [
                 'label' => 'Logo de l\'entreprise',
                 'mapped' => false,
@@ -50,6 +55,9 @@ class CompanyType extends AbstractType
                     'class' => 'form-input'
                 ],
             ])
+            ->add('refDevis')
+            ->add('refOrder')
+            ->add('refFacture')
         ;
     }
 

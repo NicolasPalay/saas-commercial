@@ -2,17 +2,14 @@
 
 namespace App\Controller;
 
-use App\Entity\Client;
 use App\Entity\Devis;
-use App\Entity\User;
+
 use App\Form\DevisType;
 use App\Form\DevisTypeEdit;
-use App\Form\Field\ClientAutocompleteField;
 use App\Repository\AddressRepository;
-use App\Repository\ClientRepository;
 use App\Repository\DevisRepository;
 use App\Services\DevisAddress;
-use App\Services\DevisVsInvoiceService;
+use App\Services\TransfertService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -24,12 +21,13 @@ final class DevisController extends AbstractController
 {
     #[Route(name: 'app_devis_index', methods: ['GET', 'POST'])]
     public function index(DevisRepository $devisRepository, Request $request, EntityManagerInterface $entityManager, AddressRepository $addressRepository, DevisAddress $devisAddress): Response
-    {
+    { 
+        $user = $this->getUser();
+        if(!$user) return $this->redirectToRoute('app_login');
 
-
-       $user = $this->getUser();
-       if(!$user) return $this->redirectToRoute('app_login');
         $company = $user->getCompany();
+        $devi = $devisRepository->findBy(['company' => $company]);
+       
         $prefix = $company->getRefDevis();
         
         $count = $devisRepository->CountDevisByCompany($company->getId());
@@ -44,7 +42,7 @@ final class DevisController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            if($count >= 10) {
+            if($count >= 15) {
                 $this->addFlash('info', 'Vous avez atteint la limite de '.$count.' devis pour votre entreprise. Veuillez souscrire à un abonnement pour continuer à créer des devis.');
                 return $this->redirectToRoute('app_subscription_index');
             }
@@ -74,10 +72,11 @@ final class DevisController extends AbstractController
         }
 
         return $this->render('devis/index.html.twig', [
-            'devis' => $devisRepository->findBy(['company' => $company]),
+            'devis' => $devi,
             'user' => $user,
             'form' => $form,
             'entity' => Devis::class,
+            'entityText' => 'devis',
             'headers'=>["reference", "client", "total", "createdAt"],
         ]);
     }
@@ -107,30 +106,61 @@ final class DevisController extends AbstractController
         ]);
     }
 
-    #[Route('/in/{id}', name: 'app_inInvoice', methods: ['GET'])]
-    public function inInvoice(DevisRepository $devisRepository, int $id, DevisVsInvoiceService $devisVsInvoiceService): Response
+    #[Route('/toorder/{id}', name: 'app_toOrder', methods: ['GET'])]
+    public function toOrder(DevisRepository $devisRepository, int $id, TransfertService $transfertService): Response
     {
-    $devis = $devisRepository->findOneBy(['id' => $id]);
-    $devisVsInvoiceService->devisToInvoice($devis);
-
-    return $this->redirectToRoute('app_invoice_index');
+        $user = $this->getUser();
+        $devis = $devisRepository->findOneBy([
+            'id' => $id,
+            'company' => $user->getCompany()
+        ]);
+        $this->denyAccessUnlessGranted('EDIT', $devis);
+        if($devis) {  
+            $transfertService->devisToOrder($devis);
+        }
+    return $this->redirectToRoute('app_order_index');
     }
 
-    #[Route('/{id}', name: 'app_devis_show', methods: ['GET'])]
-    public function show(Devis $devi): Response
+    #[Route('/toinvoice/{id}', name: 'app_devis_toInvoice', methods: ['GET'])]
+    public function devisToInvoice(DevisRepository $devisRepository, int $id, TransfertService $devisVsInvoiceService): Response
     {
-        return $this->render('devis/show.html.twig', [
-            'devi' => $devi,
-        ]);
+    $user = $this->getUser();
+
+    $devis = $devisRepository->findOneBy([
+        'id' => $id,
+        'company' => $user->getCompany()
+    ]);
+    $this->denyAccessUnlessGranted('EDIT', $devis);
+    if($devis) {
+        $devisVsInvoiceService->devisToInvoice($devis);
+    }
+    return $this->redirectToRoute('app_invoice_index');
     }
 
     #[Route('/{id}/edit', name: 'app_devis_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Devis $devi, EntityManagerInterface $entityManager): Response
     {
-        $form = $this->createForm(DevisTypeEdit::class, $devi);
+        $this->denyAccessUnlessGranted('EDIT', $devi);
+        $form = $this->createForm(DevisTypeEdit::class, $devi, [
+            'company' => $devi->getCompany(),
+            'currentClient' => $devi->getClient(),
+        ]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+               $address = $form->get('address')->getData();
+           //dd($address->getNameStreet());
+            if($address) {
+                $devi->setDeliveryLabel($devi->getClient()->getRaisonSocial())
+                    ->setDeliveryStreet2($address->getNameStreet2())
+                    ->setDeliveryPostalCode($address->getCodePostal())
+                    ->setDeliveryCity($address->getVille())
+                    ->setDeliveryPhone($address->getMobilePhone())
+                    ->setDeliveryStreet($address->getEmail()) ;
+                    $devi->setDeliveryStreet($address->getNameStreet());
+            }
+
+
             $entityManager->flush();
 
             return $this->redirectToRoute(
@@ -149,6 +179,7 @@ final class DevisController extends AbstractController
     #[Route('/{id}', name: 'app_devis_delete', methods: ['POST'])]
     public function delete(Request $request, Devis $devi, EntityManagerInterface $entityManager): Response
     {
+            $this->denyAccessUnlessGranted('DELETE', $devi);
         if ($this->isCsrfTokenValid('delete'.$devi->getId(), $request->getPayload()->getString('_token'))) {
 
             $entityManager->remove($devi);

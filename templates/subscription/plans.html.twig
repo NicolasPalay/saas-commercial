@@ -1,0 +1,102 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nos offres d'abonnement{% endblock %}
+
+{% block body %}
+<main class="d-flex w-100 ">
+{% include('_includes/aside.html.twig') %}
+<div class="w-100 mx-4">
+  
+   {# Page Header #}
+  <div class="page-header">
+    <div class="breadcrumb-ocean">
+      <a href="{{ path('app_dashboard') }}">Dashboard</a>
+      <span>›</span>
+      <span style="color: var(--white);">Abonnement</span>
+    </div>
+    <h1><i class="bi bi-receipt"></i> Liste des Abonnements</h1>
+    <p>Gérez et suivez tous vos abonnements clients</p>
+  </div>
+  
+
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success">{{ message }}</div>
+    {% endfor %}
+    {% for message in app.flashes('warning') %}
+        <div class="alert alert-warning">{{ message }}</div>
+    {% endfor %}
+    {% for message in app.flashes('danger') %}
+        <div class="alert alert-danger">{{ message }}</div>
+    {% endfor %}
+
+    {% if activeSub %}
+        <div class="alert alert-info d-flex align-items-center gap-2 mb-4">
+            <i class="bi bi-check-circle-fill fs-4"></i>
+            <div>
+                Vous êtes abonné au plan <strong>{{ activeSub.plan.name }}</strong>.
+                <a href="{{ path('subscription_manage') }}" class="alert-link ms-2">Gérer mon abonnement →</a>
+            </div>
+        </div>
+    {% endif %}
+
+    <div class="row justify-content-center g-4">
+        {% for plan in plans %}
+            <div class="col-md-3 pricing-card d-flex flex-column justify-content-between mx-2 shadow-sm">
+                <div class="card h-100  border-0 {% if activeSub and activeSub.plan.id == plan.id %}border border-primary{% endif %}">
+                    {% if activeSub and activeSub.plan.id == plan.id %}
+                        <div class="card-header  text-center fw-semibold">
+                            Votre abonnement actuel
+                        </div>
+                    {% endif %}
+                    <div class="card-body d-flex flex-column p-4">
+                        <h2 class="card-title fw-bold mb-1">{{ plan.name }}</h2>
+                        <div class="my-3">
+                            <span class="display-6 fw-bold">{{ plan.price }} €</span>
+                            <span class="text-muted">/mois</span>
+                        </div>
+
+                        <hr>
+
+                        <div class="flex-grow-1">
+                            {# Ajoutez ici les features de votre plan si vous en avez un champ #}
+                            <ul class="list-unstyled">
+                                <li class="mb-2"><i class="bi bi-check2 text-success me-2"></i>Accès complet</li>
+                                <li class="mb-2"><i class="bi bi-check2 text-success me-2"></i>Support inclus</li>
+                                <li class="mb-2"><i class="bi bi-check2 text-success me-2"></i>Mises à jour incluses</li>
+                            </ul>
+                        </div>
+
+                        <div class="mt-4">
+                            {% if activeSub and activeSub.plan.id == plan.id %}
+                                <a href="{{ path('subscription_manage') }}" class="btn btn-outline-primary w-100">
+                                    Gérer mon abonnement
+                                </a>
+                            {% elseif activeSub %}
+                                <button class="btn btn-secondary w-100" disabled>
+                                    Déjà abonné
+                                </button>
+                            {% else %}
+                                <a href="{{ path('subscription_checkout', {id: plan.id}) }}" class="btn btn-primary w-100">
+                                    Souscrire
+                                </a>
+                            {% endif %}
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <div class="col-12 text-center text-muted">
+                Aucun plan disponible pour le moment.
+            </div>
+        {% endfor %}
+          
+    </div>
+
+<div class="text-center mt-5 bandeau-gratuit">
+    <p class="text-white  py-2"><em>Essai gratuit 10 factures - 20 devis  - Aucune carte bancaire requise</em></p>
+</div>
+</div>
+
+</main>
+{% endblock %}

@@ -4,6 +4,8 @@ namespace App\Entity;
 
 use App\Repository\DevisDetailsRepository;
 use Doctrine\ORM\Mapping as ORM;
+use App\Contract\OwnedByCompanyInterface;
+
 
 #[ORM\Entity(repositoryClass: DevisDetailsRepository::class)]
 class DevisDetails
@@ -13,7 +15,8 @@ class DevisDetails
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\ManyToOne(inversedBy: 'devisDetails')]
+
+    #[ORM\ManyToOne(targetEntity: Devis::class, inversedBy: 'orderDetails')]
     private ?Devis $devis = null;
 
     #[ORM\ManyToOne(inversedBy: 'devisDetails')]

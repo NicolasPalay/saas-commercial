@@ -1,39 +1,41 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Client index{% endblock %}
+{% block title %}Listes des clients{% endblock %}
 
 {% block body %}
-    <h1>Client index</h1>
+<main class="d-flex w-100 ">
+{% include('_includes/aside.html.twig') %}
+<div class="w-100 mx-4">
+    
+   {# Page Header #}
+  <div class="page-header">
+    <div class="breadcrumb-ocean">
+      <a href="{{ path('app_dashboard') }}">Dashboard</a>
+      <span>›</span>
+      <span style="color: var(--white);">Clients</span>
+    </div>
+    <h1><i class="bi bi-people"></i> Liste des clients</h1>
+    <p>Gérer et enregistrer vos clients</p>
+    <a href="{{ path('app_client_new') }}" class="btn-ocean btn-ocean-primary" 
+       style="position: absolute; top: 40px; right: 40px; padding: 12px 24px;">
+      <i class="bi bi-plus-circle"></i> Ajoutez un client
+    </a>
+  </div>
+  <section class="row g-3 mb-4">
 
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>Raison_social</th>
-                <th>CreatedAt</th>
-                <th>UpdatedAt</th>
-                <th>actions</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for client in clients %}
-            <tr>
-                <td>{{ client.id }}</td>
-                <td>{{ client.raisonSocial }}</td>
-                <td>{{ client.createdAt ? client.createdAt|date('Y-m-d H:i:s') : '' }}</td>
-                <td>{{ client.updatedAt ? client.updatedAt|date('Y-m-d H:i:s') : '' }}</td>
-                <td>
-                    <a href="{{ path('app_client_show', {'id': client.id}) }}">show</a>
-                    <a href="{{ path('app_client_edit', {'id': client.id}) }}">edit</a>
-                </td>
-            </tr>
-        {% else %}
-            <tr>
-                <td colspan="5">no records found</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+  {# Composant Devis #}
+  <twig:ClientComponent :entity='entity' :headers='headers' />
 
-    <a href="{{ path('app_client_new') }}">Create new</a>
+</div>
+</main>
+<script>
+  // Gestion du modal
+  document.querySelectorAll('.openModal').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const modal = document.getElementById('modal');
+      modal.classList.add('show');
+      modal.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+</script>
 {% endblock %}

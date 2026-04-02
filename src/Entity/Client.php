@@ -6,9 +6,10 @@ use App\Repository\ClientRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use App\Contract\OwnedByCompanyInterface;
 
 #[ORM\Entity(repositoryClass: ClientRepository::class)]
-class Client
+class Client implements OwnedByCompanyInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -16,7 +17,7 @@ class Client
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $raison_social = null;
+    private ?string $raisonSocial = null;
 
     #[ORM\Column]
     private ?\DateTimeImmutable $createdAt = null;
@@ -45,6 +46,12 @@ class Client
     #[ORM\OneToMany(targetEntity: Invoice::class, mappedBy: 'client')]
     private Collection $invoices;
 
+    /**
+     * @var Collection<int, Order>
+     */
+    #[ORM\OneToMany(targetEntity: Order::class, mappedBy: 'client')]
+    private Collection $orders;
+
     public function __construct()
     {
         $this->address = new ArrayCollection();
@@ -52,6 +59,7 @@ class Client
         $this->updatedAt = new \DateTimeImmutable();
         $this->devis = new ArrayCollection();
         $this->invoices = new ArrayCollection();
+        $this->orders = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -61,12 +69,12 @@ class Client
 
     public function getRaisonSocial(): ?string
     {
-        return $this->raison_social;
+        return $this->raisonSocial;
     }
 
-    public function setRaisonSocial(string $raison_social): static
+    public function setRaisonSocial(string $raisonSocial): static
     {
-        $this->raison_social = $raison_social;
+        $this->raisonSocial = mb_strtoupper($raisonSocial);
 
         return $this;
     }
@@ -195,5 +203,45 @@ class Client
         }
 
         return $this;
+    }
+
+    /**
+     * @return Collection<int, Order>
+     */
+    public function getOrders(): Collection
+    {
+        return $this->orders;
+    }
+
+    public function addOrder(Order $order): static
+    {
+        if (!$this->orders->contains($order)) {
+            $this->orders->add($order);
+            $order->setClient($this);
+        }
+
+        return $this;
+    }
+
+    public function removeOrder(Order $order): static
+    {
+        if ($this->orders->removeElement($order)) {
+            // set the owning side to null (unless already changed)
+            if ($order->getClient() === $this) {
+                $order->setClient(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getDefaultAddress(): ?Address
+    {
+        foreach ($this->address as $addr) {
+            if ($addr->isIsDefault()) {
+                return $addr;
+            }
+        }
+        return $this->address->first() ?: null;
     }
 }

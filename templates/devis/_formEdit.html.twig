@@ -1,0 +1,25 @@
+{{ form_start(form) }}  
+    {{ form_errors(form) }}
+    {{ form_row(form.reference) }}
+    {{ form_row(form.deliveryLabel) }}
+    {{ form_row(form.address) }}
+    <div>
+    ou bien
+    </div>
+    {{ form_row(form.deliveryStreet) }}
+    {{ form_row(form.deliveryStreet2) }}
+    {{ form_row(form.deliveryPostalCode) }}
+    {{ form_row(form.deliveryCity) }}
+    {{ form_row(form.deliveryPhone) }}
+
+
+        <div class="col-md-2 d-flex align-items-center justify-content-center">
+            <div class="form-check form-switch">
+                {{ form_widget(form.isInvoiced, { attr: { class: 'form-check-input' } }) }}
+                {{ form_label(form.isInvoiced, 'C\'est facturé', { label_attr: { class: 'form-check-label' } }) }}
+            </div>
+        </div>
+
+    {{ form_widget(form) }}
+    <button class="btn-ocean btn-ocean-primary mt-3" >{{ button_label|default('Créer') }}</button>
+{{ form_end(form) }}

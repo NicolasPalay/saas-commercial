@@ -28,19 +28,37 @@ class ProductRepository extends ServiceEntityRepository
     }
 
     public function createQueryBuilderForCompany(?Company $company): QueryBuilder
-{
-    $qb = $this->createQueryBuilder('p')
-        ->orderBy('p.name', 'ASC');
+    {
+        $qb = $this->createQueryBuilder('p')
+            ->orderBy('p.name', 'ASC');
 
-    if ($company) {
-        $qb->andWhere('p.company = :company')
-           ->setParameter('company', $company);
-    } else {
-        $qb->andWhere('1 = 0'); // sécurité : aucun résultat
+        if ($company) {
+            $qb->andWhere('p.company = :company')
+            ->setParameter('company', $company);
+        } else {
+            $qb->andWhere('1 = 0'); // sécurité : aucun résultat
+        }
+
+        return $qb;
     }
 
-    return $qb;
-}
+    public function findByCompanySorted($company, $field, $direction)
+    {
+        $qb = $this->createQueryBuilder('p')
+            ->leftJoin('p.category', 'c') // ⚠️ adapte selon ta relation
+            ->addSelect('c')
+            ->where('p.company = :company')
+            ->setParameter('company', $company);
+
+        if ($field === 'nameCategory') {
+            $qb->orderBy('c.nameCategory', $direction);
+        } else {
+            $qb->orderBy('p.' . $field, $direction);
+        }
+
+        return $qb->getQuery()->getResult();
+    }
+      
 
     //    /**
     //     * @return Product[] Returns an array of Product objects

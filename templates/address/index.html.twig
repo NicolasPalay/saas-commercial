@@ -1,41 +1,43 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Address index{% endblock %}
+{% block title %}Listes des adresses{% endblock %}
 
 {% block body %}
-    <h1>Address index</h1>
+<main class="d-flex w-100 ">
+{% include('_includes/aside.html.twig') %}
+<div class="w-100 mx-4">
+    
+   {# Page Header #}
+  <div class="page-header">
+    <div class="breadcrumb-ocean">
+      <a href="{{ path('app_dashboard') }}">Dashboard</a>
+      <span>›</span>
+      <span style="color: var(--white);">Clients</span>
+      <span>›</span>
+      <span style="color: var(--white);">Adresses</span>
+    </div>
+    <h1><i class="bi bi-receipt"></i> Liste des Adresses</h1>
+    <p>Gérez et suivez toutes vos adresses de vos clients</p>
+  </div>
 
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>NameStreet</th>
-                <th>NameStreet2</th>
-                <th>CodePostal</th>
-                <th>Ville</th>
-                <th>actions</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for address in addresses %}
-            <tr>
-                <td>{{ address.id }}</td>
-                <td>{{ address.nameStreet }}</td>
-                <td>{{ address.nameStreet2 }}</td>
-                <td>{{ address.codePostal }}</td>
-                <td>{{ address.ville }}</td>
-                <td>
-                    <a href="{{ path('app_address_show', {'id': address.id}) }}">show</a>
-                    <a href="{{ path('app_address_edit', {'id': address.id}) }}">edit</a>
-                </td>
-            </tr>
-        {% else %}
-            <tr>
-                <td colspan="6">no records found</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+  {# Composant Address #}
+  <twig:AddressComponent :entity='entity' :headers='headers' :client='client' />
 
-    <a href="{{ path('app_address_new') }}">Create new</a>
+</div>
+</main>
+<script>
+  // Gestion du modal
+  document.querySelectorAll('.openModal').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const modal = document.getElementById('modal');
+      modal.classList.add('show');
+      modal.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+</script>
+{% endblock %}
+
+{% block javascripts %}
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="{{ asset('assets/js/modal.js') }}"></script>
 {% endblock %}

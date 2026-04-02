@@ -6,11 +6,8 @@ use App\Entity\Devis;
 use App\Entity\DevisDetails;
 use App\Form\DevisDetailsType;
 use App\Form\DevisDetailsTypeEdit;
-use App\Repository\DevisDetailsRepository;
-use App\Repository\DevisRepository;
 use App\Repository\ProductRepository;
-use App\Services\DevisCalculator;
-use App\Services\TotalDevisService;
+use App\Services\DocumentCalculator;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -21,27 +18,20 @@ use Symfony\Component\Routing\Attribute\Route;
 final class DevisDetailsController extends AbstractController
 {
     public function __construct(
-        private readonly TotalDevisService $totalDevisService,
         private readonly ProductRepository $productRepository,
         private readonly EntityManagerInterface $entityManager,
-        private readonly DevisCalculator $devisCalculator
+        private readonly DocumentCalculator $calculator
     ) {}
-
-    #[Route(name: 'app_devis_details_index', methods: ['GET'])]
-    public function index(DevisDetailsRepository $devisDetailsRepository): Response
-    {
-        return $this->render('devis_details/index.html.twig', [
-            'devis_details' => $devisDetailsRepository->findAll(),
-        ]);
-    }
 
     #[Route('/{id}/new', name: 'app_devis_details_new', methods: ['GET', 'POST'])]
     public function new(Devis $devis, Request $request): Response
     {
-        $user= $this->getUser();
-        if(!$user) return $this->redirectToRoute('app_login');
-        $product = $this->productRepository->findBy(['company'=> $devis->getCompany()]);
-        if(!$product) return $this->redirectToRoute('app_product_new');
+        $user = $this->getUser();
+        if (!$user) return $this->redirectToRoute('app_login');
+
+        $products = $this->productRepository->findBy(['company' => $devis->getCompany()]);
+        if (!$products) return $this->redirectToRoute('app_product_new');
+
         $devisDetail = new DevisDetails();
 
         $form = $this->createForm(DevisDetailsType::class, $devisDetail);
@@ -52,7 +42,7 @@ final class DevisDetailsController extends AbstractController
             $product = $devisDetail->getProduct();
 
             if (!$product) {
-                $this->addFlash('error', 'Le produit associé au détail de devis est requis.');
+                $this->addFlash('error', 'Produit requis.');
                 return $this->render('devis_details/new.html.twig', [
                     'devis' => $devis,
                     'devis_detail' => $devisDetail,
@@ -60,25 +50,27 @@ final class DevisDetailsController extends AbstractController
                 ]);
             }
 
+            // Hydratation
             $devisDetail->setLabel($product->getName());
             $devisDetail->setPrice($product->getPrice());
             $devisDetail->setTaxe($product->getTaxe());
+            $devisDetail->setDevis($devis);
 
-            // calcul total propre
-            $total = $this->devisCalculator->calculLineHT(
-                $devisDetail->getPrice(),
-                $devisDetail->getQuantity(),
-                $devisDetail->getReduce()
+            // Calcul ligne
+            $total = $this->calculator->calculLineHT(
+                (string) $devisDetail->getPrice(),
+                (string) $devisDetail->getQuantity(),
+                (string) $devisDetail->getReduce()
             );
+
             $devisDetail->setTotal($total);
 
-            $devisDetail->setDevis($devis);
-            
-            $totalDevis = $this->totalDevisService->calculTotalHT($devis);
-            $devis->setTotal($totalDevis);
-            
-
+            // Persist
             $this->entityManager->persist($devisDetail);
+            $this->entityManager->flush();
+
+            // Recalcul global
+            $this->calculator->recalculate($devis, 'getDevisDetails');
             $this->entityManager->flush();
 
             return $this->redirectToRoute(
@@ -95,34 +87,28 @@ final class DevisDetailsController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'app_devis_details_show', methods: ['GET'])]
-    public function show(DevisDetails $devisDetail): Response
-    {
-        return $this->render('devis_details/show.html.twig', [
-            'devis_detail' => $devisDetail,
-        ]);
-    }
-
     #[Route('/{id}/edit', name: 'app_devis_details_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, DevisDetails $devisDetail): Response
     {
+        $devis = $devisDetail->getDevis();
 
         $form = $this->createForm(DevisDetailsTypeEdit::class, $devisDetail);
         $form->handleRequest($request);
-        $devis = $devisDetail->getDevis();
+
         if ($form->isSubmitted() && $form->isValid()) {
 
-            $total = $this->devisCalculator->calculLineHT(
-                $devisDetail->getPrice(),
-                $devisDetail->getQuantity(),
-                $devisDetail->getReduce()
+            // Recalcul ligne
+            $total = $this->calculator->calculLineHT(
+                (string) $devisDetail->getPrice(),
+                (string) $devisDetail->getQuantity(),
+                (string) $devisDetail->getReduce()
             );
 
             $devisDetail->setTotal($total);
 
-            $totalDevis = $this->totalDevisService->calculTotalHT($devis);
-            $devis->setTotal($totalDevis);
-            $devis->setTaxe($devis->getTaxe() + ($total * ($devisDetail->getTaxe()->getRate()/100)));
+            // Recalcul global
+            $this->calculator->recalculate($devis, 'getDevisDetails');
+
             $this->entityManager->flush();
 
             return $this->redirectToRoute(
@@ -140,20 +126,23 @@ final class DevisDetailsController extends AbstractController
     }
 
     #[Route('/{id}', name: 'app_devis_details_delete', methods: ['POST'])]
-    public function delete(Request $request, DevisDetails $devisDetail, EntityManagerInterface $entityManager, DevisRepository $devisRepository): Response
+    public function delete(Request $request, DevisDetails $devisDetail): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$devisDetail->getId(), $request->getPayload()->getString('_token'))) {
-            $devis= $devisRepository->findOneBy(['id'=> $devisDetail->getDevis()]);
-            $devis->setTaxe($devis->getTaxe() - ($devisDetail->getTotal() * ($devisDetail->getTaxe()->getRate()/100)));
-           $devis->setTotal($devis->getTotal() - $devisDetail->getTotal());
-            $entityManager->remove($devisDetail);
-            $entityManager->flush();
+        $devis = $devisDetail->getDevis();
+
+        if ($this->isCsrfTokenValid('delete' . $devisDetail->getId(), $request->getPayload()->getString('_token'))) {
+            $this->entityManager->remove($devisDetail);
+            $this->entityManager->flush();
+
+            // Recalcul global propre
+            $this->calculator->recalculate($devis, 'getDevisDetails');
+            $this->entityManager->flush();
         }
 
         return $this->redirectToRoute(
-                'app_devis_details_new',
-                ['id' => $devisDetail->getDevis()->getId()],
-                Response::HTTP_SEE_OTHER
-            );
+            'app_devis_details_new',
+            ['id' => $devis->getId()],
+            Response::HTTP_SEE_OTHER
+        );
     }
 }

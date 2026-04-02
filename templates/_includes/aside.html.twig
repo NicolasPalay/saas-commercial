@@ -1,0 +1,37 @@
+{# ========== SIDEBAR ========== #}
+  <aside id="sidebar">
+    <div class="sidebar-header">
+      <button id="closeMenu" class="d-md-none">✕</button>
+      <div>  
+        <h2>
+          <a href="{{ path('app_company_edit', {'id': app.user.company.id}) }}">{{ app.user.company.name }}</a>
+        </h2>
+        {% if app.user.company.urlLogo %}
+          <img src="/uploads/{{ app.user.company.id }}/{{ app.user.company.urlLogo }}" alt="{{ app.user.company.name }}">
+        {% endif %}
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a href="{{ path('app_employed') }}"><i class="bi bi-person-plus"></i> Ajouter un employé</a>
+      <a href="{{ path('app_client_index') }}"><i class="bi bi-people"></i> Voir tous les clients</a>
+      <a href="{{ path('app_client_new') }}"><i class="bi bi-person-plus"></i> Ajouter un client</a>
+      <a href="{{ path('app_product_index') }}"><i class="bi bi-box-seam"></i> Voir les produits</a>
+      <a href="#"><i class="bi bi-plus-square"></i> Ajouter un produit</a>
+      <a href="{{ path('app_devis_index') }}"><i class="bi bi-file-text"></i> Voir tous les devis</a>
+      <a href="#" class="openModal" data-action="click->modal#open"><i class="bi bi-plus-square"></i> Ajouter un devis</a>
+      <a href="#"><i class="bi bi-receipt"></i> Voir toutes les factures</a>
+      <a href="#"><i class="bi bi-plus-square"></i> Ajouter une facture</a>
+    {# 
+      <hr>
+
+    <div class="nav-section-title">Messagerie</div> #}
+    {# {% for conversation in conversations %}
+    <a href="{{ path('app_conversation_show', {'id': conversation.id}) }}">
+        <i class="bi bi-chat-dots"></i> Conversation #{{ conversation.id }}
+    </a>
+    {% else %}
+    <div style="padding: 8px 16px; color: var(--sky-shell); font-size: 13px;">Aucune conversation</div>
+    {% endfor %} #}
+    </nav>
+  </aside>

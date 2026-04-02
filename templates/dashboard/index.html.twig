@@ -8,46 +8,10 @@
   {# ========== SIDEBAR OVERLAY (mobile) ========== #}
   <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
-  {# ========== SIDEBAR ========== #}
-  <aside id="sidebar">
-    <div class="sidebar-header">
-      <button id="closeMenu" class="d-md-none">✕</button>
-      <div>  
-        <h2>
-          <a href="{{ path('app_company_edit', {'id': user.company.id}) }}">{{ user.company.name }}</a>
-        </h2>
-        {% if user.company.urlLogo %}
-          <img src="/uploads/{{ user.company.id }}/{{ user.company.urlLogo }}" alt="{{ user.company.name }}">
-        {% endif %}
-      </div>
-    </div>
-
-    <nav class="sidebar-nav">
-      <a href="{{ path('app_employed') }}"><i class="bi bi-person-plus"></i> Ajouter un employé</a>
-      <a href="{{ path('app_client_index') }}"><i class="bi bi-people"></i> Voir tous les clients</a>
-      <a href="{{ path('app_client_new') }}"><i class="bi bi-person-plus"></i> Ajouter un client</a>
-      <a href="{{ path('app_product_index') }}"><i class="bi bi-box-seam"></i> Voir les produits</a>
-      <a href="#"><i class="bi bi-plus-square"></i> Ajouter un produit</a>
-      <a href="{{ path('app_devis_index') }}"><i class="bi bi-file-text"></i> Voir tous les devis</a>
-      <a href="#" class="openModal" data-action="click->modal#open"><i class="bi bi-plus-square"></i> Ajouter un devis</a>
-      <a href="#"><i class="bi bi-receipt"></i> Voir toutes les factures</a>
-      <a href="#"><i class="bi bi-plus-square"></i> Ajouter une facture</a>
-
-      <hr>
-
-      <div class="nav-section-title">Messagerie</div>
-      {% for conversation in conversations %}
-        <a href="{{ path('app_conversation_show', {'id': conversation.id}) }}">
-          <i class="bi bi-chat-dots"></i> Conversation #{{ conversation.id }}
-        </a>
-      {% else %}
-        <div style="padding: 8px 16px; color: var(--sky-shell); font-size: 13px;">Aucune conversation</div>
-      {% endfor %}
-    </nav>
-  </aside>
+  {% include('_includes/aside.html.twig') %}
 
   {# ========== MAIN CONTENT ========== #}
-  <main class="w-100">
+  <main class="w-100 px-4">
 
     {# Mobile top bar #}
     <div class="mobile-topbar">
@@ -152,31 +116,8 @@
       </div>
     </div>
 
-    {# Recent Activity #}
-    <div class="card-ocean mb-4">
-      <div class="card-body">
-        <h2 class="card-title-ocean">
-          <i class="bi bi-clock-history"></i> Activité récente
-        </h2>
-        <div>
-          <div class="activity-item">
-            <span>Jean Dupont a créé un devis</span>
-            <span>12/09/2025</span>
-          </div>
-          <div class="activity-item">
-            <span>Marie Martin a ajouté un client</span>
-            <span>10/09/2025</span>
-          </div>
-          <div class="activity-item">
-            <span>Paul Leroy a modifié un produit</span>
-            <span>08/09/2025</span>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    {# Internal Notes #}
-    <div class="card-ocean mb-4">
+       {# Internal Notes #}
+    {# <div class="card-ocean mb-4">
       <div class="card-body">
         <h2 class="card-title-ocean">
           <i class="bi bi-journal-text"></i> Notes / Messages internes
@@ -186,7 +127,7 @@
           <i class="bi bi-save"></i> Enregistrer
         </button>
       </div>
-    </div>
+    </div> #}
 
     {# Financial Charts #}
     <div class="card-ocean mb-4">
@@ -207,29 +148,7 @@
       </div>
     </div>
 
-    {# Financial Timeline #}
-    <div class="card-ocean mb-4">
-      <div class="card-body">
-        <h2 class="card-title-ocean">
-          <i class="bi bi-cash-coin"></i> Timeline financière
-        </h2>
-        <div>
-          <div class="financial-item">
-            <span>Facture #201 payée</span>
-            <span class="amount-positive">+2 500 €</span>
-          </div>
-          <div class="financial-item">
-            <span>Encaissement devis #102</span>
-            <span class="amount-positive">+3 500 €</span>
-          </div>
-          <div class="financial-item">
-            <span>Dépense fournisseur</span>
-            <span class="amount-negative">-800 €</span>
-          </div>
-        </div>
-      </div>
-    </div>
-
+   
   </main>
 </div>
 {% endblock %}

@@ -26,11 +26,15 @@
         </li>
         <li class="nav-item">
           <a class="nav-link" href="{{ path('app_product_index') }}"><i class="bi bi-box-seam"></i>
- Les produits</a>
+           Les produits</a>
         </li>
         <li class="nav-item">
           <a class="nav-link" href="{{ path('app_devis_index') }}"><i class="bi bi-file-ruled"></i>
- Les devis</a>
+          Les devis</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{{ path('app_order_index') }}"><i class="bi bi-file-ruled"></i>
+          Les commandes</a>
         </li>
         <li class="nav-item">
           <a class="nav-link" href="{{ path('app_invoice_index') }}">Les factures</a>
@@ -39,8 +43,11 @@
           <a class="nav-link" href="{{ path('app_employed') }}"><i class="bi bi-plus-square"></i> Ajouter un employé</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="{{ path('app_subscription_index') }}"><i class="bi bi-plus-square"></i> Abandement</a>
+          <a class="nav-link" href="{{ path('subscription_plans') }}"><i class="bi bi-plus-square"></i> Abandement</a>
         </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{ path('app_logout') }}">Logout</a>
+          </li>
          {% endif %}
       </ul>
     </div>

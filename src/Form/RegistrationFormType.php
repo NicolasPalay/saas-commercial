@@ -6,6 +6,7 @@ use App\Entity\User;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -22,24 +23,31 @@ class RegistrationFormType extends AbstractType
             ->add('email', EmailType::class, [
                 'label' => "Email",
                 'attr' => [
-                    'class' => 'input-ocean',
+                    'class' => 'form-control mb-2',
                     'placeholder' => "Entrez votre email",
                 ],
             ])
-            ->add('agreeTerms', CheckboxType::class, [
-                'mapped' => false,
-                
-                'constraints' => [
-                    new IsTrue([
-                        'message' => 'You should agree to our terms.',
-                    ]),
+            ->add('firstname', TextType::class, [
+                'label' => "Prénom",
+                'attr' => [
+                    'class' => 'form-control mb-2',
+                    'placeholder' => "Entrez votre prénom",
+                ],
+            ])
+            ->add('lastname', TextType::class, [
+                'label' => "Nom",
+                'attr' => [
+                    'class' => 'form-control mb-2',
+                    'placeholder' => "Entrez votre nom",
                 ],
             ])
             ->add('plainPassword', PasswordType::class, [
-                // instead of being set onto the object directly,
-                // this is read and encoded in the controller
+                'label' => "Mot de passe",
                 'mapped' => false,
-                'attr' => ['autocomplete' => 'new-password'],
+                'attr' => ['autocomplete' => 'new-password',
+                    'class' => 'form-control  mb-2',
+                    'placeholder' => "Entrez votre nouveau mot de passe",
+                ],
                 'constraints' => [
                     new NotBlank([
                         'message' => 'Please enter a password',
@@ -52,11 +60,17 @@ class RegistrationFormType extends AbstractType
                     ]),
                 ],
             ])
+            ->add('separator', HiddenType::class, [
+                'mapped' => false,
+                'attr' => [
+                    'class' => 'separator'
+                ]
+            ])
             ->add('name', TextType::class, [
                 'label' => "Nom de la nouvelle entreprise",
                 'mapped' => false,
                 'attr' => [
-                    'class' => 'input-ocean',
+                    'class' => 'form-control  mb-2',
                     'placeholder' => "Entrez le nom de votre entreprise",],
                 'constraints' => [
                     new NotBlank([
@@ -74,8 +88,17 @@ class RegistrationFormType extends AbstractType
                 'mapped' => false,
                 'required' => false,
                 'attr' => [
-                    'class' => 'input-devis',
-                    'placeholder' => "Entrez la référence: 11100001 ou 101 ou d--000001...",
+                    'class' => 'form-control  mb-2',
+                    'placeholder' => "Entrez la référence: 11100001 ou 101 ou D-000001...",
+                ],
+            ])
+            ->add('refOrder',TextType::class, [
+                'label' => "Configurer vos commandes",
+                'mapped' => false,
+                'required' => false,
+                'attr' => [
+                    'class' => 'form-control  mb-2',
+                    'placeholder' => "Entrez la référence: 11100001 ou 101 ou C-000001...",
                 ],
             ])
              ->add('refFacture',TextType::class, [
@@ -83,8 +106,23 @@ class RegistrationFormType extends AbstractType
                 'mapped' => false,
                 'required' => false,
                 'attr' => [
-                    'class' => 'input-devis',
-                    'placeholder' => "Entrez la référence: 11100001 ou 101 ou F--000001...",
+                    'class' => 'form-control  mb-2',
+                    'placeholder' => "Entrez la référence: 11100001 ou 101 ou F-000001...",
+                ],
+            ])
+            ->add('agreeTerms', CheckboxType::class, [
+                'mapped' => false,
+                'label' => "J'accepte les conditions",
+                'label_attr' => [
+                    'class' => 'mt-2 px-3',
+                ],
+                'attr' => [
+                    'class' => ' mt-3',
+                ],
+                'constraints' => [
+                    new IsTrue([
+                        'message' => 'Vous devez accepter les conditions.',
+                    ]),
                 ],
             ])
         ;

@@ -1,28 +1,32 @@
-<div class="form-page-wrapper">
-  <div class="form-container-company">
-    
-    {# Utilise card-ocean du CSS commun #}
-    <div class="card-ocean">
-      
-      {# Utilise card-ocean-header du CSS commun #}
-      <div class="card-ocean-header d-flex flex-column items-center" style="text-align: center;">    
-        <h1 style="color: var(--white); margin-bottom: 8px;">
-          {{ company.id ? 'Modifier l\'entreprise' : 'Nouvelle entreprise' }}
-        </h1>
-        {% if company.id %}
-        <img src="/uploads/{{ company.id }}/{{ company.urlLogo }}" alt="{{ company.name }}">
-        {% endif %}
 
-      </div>
-
-      {# Utilise card-ocean-body du CSS commun #}
-      <div class="card-ocean-body">
 
 {{ form_start(form) }}
-    {{ form_widget(form) }}
-    <button class="btn-ocean btn-ocean-primary mt-2">{{ button_label|default('Enregistrer') }}</button>
-{{ form_end(form) }}
+
+       <label class="btn-ocean-sm label-image mb-4">
+          📷 
+          {{ form_widget(form.urlLogo, {
+              attr: {
+                  class: 'd-none',
+                  onchange: 'this.nextElementSibling.innerText = this.files[0]?.name || "Choisir une image de logo"'
+              }
+          }) }}
+          <span class="ms-2">Choisir une image pour votre logo</span>
+      </label>
+      {{ form_row(form.name) }}
+      {{ form_row(form.street) }}
+      {{ form_row(form.street2) }}
+      <div class="d-flex gap-3 col-md-6 justify-between">
+        {{ form_row(form.codePostal) }}
+        {{ form_row(form.ville) }}
 
       </div>
-    </div>
-  </div>  
+
+      {{ form_row(form.siret) }}
+
+<div class="divider"></div>
+    {{ form_row(form.refDevis) }}
+    {{ form_row(form.refOrder) }}
+    {{ form_row(form.refFacture) }}
+    
+    <button class="btn-ocean btn-ocean-primary mt-2">{{ button_label|default('Enregistrer') }}</button>
+{{ form_end(form) }}

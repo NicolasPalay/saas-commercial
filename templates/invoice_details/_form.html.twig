@@ -1,33 +1,46 @@
 <div class="card-ocean">
-  {# Header avec infos du invoice #}
+  {# Header avec infos du devis #}
   <div class="card-ocean-header" style="padding: 32px 40px;">
     <h1 style="color: var(--white); font-size: 24px; margin-bottom: 8px; text-align: center;">
-      <a href="{{ path('app_devis_edit', {'id': invoice.id}) }}" style="color: var(--white); text-decoration: none;">
-        invoice n°{{ invoice.reference }}
-      </a>
+        Commande n°{{ invoice.reference }}
     </h1>
-    <p style="color: var(--sky-shell);" class="text-center mb-25">
-      {{ invoice.raisonSocial }}
-    </p>
-      {# Bouton retour vers l'édition du invoice #}
-    <div class="text-center mb-4">
-      <a href="{{ path('app_devis_edit', {'id': invoice.id}) }}" class="btn-ocean btn-ocean-secondary btn-ocean-sm">
-        <i class="bi bi-pencil"></i> Modifier l'adresse
-      </a>
-      {% if invoice.devis %}
-        <a href="{{ path('app_devis_detail_show', {'id': invoice.devis.id}) }}" class="btn-ocean btn-ocean-secondary btn-ocean-sm">
-        <i class="bi bi-pencil"></i> accédez à la facture
-      </a>
-      {% endif %}
-      
-    </div>
+     <div class="divider"></div>
+    <header class="d-flex justify-content-center gap-5">
+      <div class="border px-4 py-2 rounded-3 text-right">
+      Adresse de Livraison
+      <hr>
+        <h2 class="mb-25 h4 adresse-devis">
+          <a href="{{ path('app_invoice_edit', {'id': invoice.id}) }}"  class="mb-25 h4">
+            {{ invoice.raisonSocial }}
+          </a>
+        </h2>
+       
+          
+              <div>
 
+              {% if invoice.nameStreet %}{{ invoice.nameStreet }}<br>{% endif %}
+              {% if invoice.nameStreet2 %}{{ invoice.nameStreet2 }}<br>{% endif %}
+                {{ invoice.codePostal }} {{ invoice.ville }}<br>
+                {% if invoice.email %}<br>{{ invoice.email }}<br>{% endif %}
+
+              </div>
+           
+      </div>
+      
+        {# Bouton retour vers l'édition du devis #}
+      <div class="action-header">
+
+        <a href="{{ path('app_invoice_edit', {'id': invoice.id}) }}" class="btn-ocean btn-ocean-secondary btn-ocean-sm">
+            <i class="bi bi-pencil"></i> Modifier l'adresse
+        </a>
+        <a href="{{ path('app_invoice_output_pdf', {'id': invoice.id}) }}" class="btn-ocean btn-ocean-secondary btn-ocean-sm" target="_blank">
+            <i class="bi bi-file-pdf"></i> enregistrer en PDF
+        </a>
+      </div>
+    </header>
   </div>
   <div class="card-ocean-body">
-    
-  
-    <div class="divider"></div>
-
+ 
     {# Tableau des lignes de invoice #}
     <div class="table-card mb-4">
       <div class="table-responsive">
@@ -44,15 +57,15 @@
             </tr>
           </thead>
           <tbody>
-            {% for invoiceLine in invoice.invoicesDetails %}
+            {% for invoiceLine in invoice.invoiceDetails %}
               <tr>
                 <td>
-                  <a href="{{ path('app_devis_details_edit', {'id': invoiceLine.id}) }}">
+                  <a href="{{ path('app_invoice_details_edit', {'id': invoiceLine.id}) }}">
                     {{ invoiceLine.product.reference }}
                   </a>
                 </td>
                 <td>
-                  <a href="{{ path('app_devis_details_edit', {'id': invoiceLine.id}) }}">
+                  <a href="{{ path('app_invoice_details_edit', {'id': invoiceLine.id}) }}">
                     {{ invoiceLine.label }}
                   </a>
                 </td>
@@ -61,7 +74,7 @@
                 <td>{{ invoiceLine.reduce | number_format(2, ',', ' ') }} %</td>
                 <td><strong>{{ invoiceLine.total | number_format(2, ',', ' ') }} €</strong></td>
                 <td>
-                  {{ include('devis_details/_delete_form.html.twig', { devis_detail: invoiceLine }) }}
+                  {{ include('invoice_details/_delete_form.html.twig', { invoice_detail: invoiceLine }) }}
                 </td>
               </tr>
             {% else %}
@@ -80,7 +93,7 @@
     
 
     {# Formulaire d'ajout/édition #}
-    <div class="bg-light p-4 form-edit-detail-invoice editAbsolute" style="border-radius: var(--radius-lg); border: 1.5px solid var(--sky-shell);">
+    <div class="bg-light p-4 form-edit-detail-invoice editAbsolute" style="binvoice-radius: var(--radius-lg); binvoice: 1.5px solid var(--sky-shell);">
       </h3>
 {{ form_start(form) }}
         {{ form_widget(form) }}
@@ -88,6 +101,6 @@
     >{{ button_label|default('Sélectionnez') }}</button>
     {{ form_end(form) }}
     </div>
-<div class="divider"></div>
+
   </div>
 </div>

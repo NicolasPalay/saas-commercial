@@ -1,0 +1,31 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit Invoice{% endblock %}
+
+{% block body %}
+   <main class="d-flex w-100 ">
+{% include('_includes/aside.html.twig') %}
+<div class="w-100 mx-4">
+    <div class="login-card">
+        
+        <div class="login-header">
+            <div class="d-flex justify-content-center mb-2"><a href="{{ path('app_home') }}"><img class="logo" src="{{asset('images/logo.png')}}" alt=""></a></div>
+                 <h1><i class="bi bi-people"></i>Modification de facturation n° {{ invoice.reference }}</h1>
+
+            </div>
+
+            <div class="login-body ">
+                <section>
+                    {{ include('invoice/_form.html.twig', {'button_label': 'Mettre à jour',}) }}
+                </section>
+            </div>    
+        </div>
+    </div>
+
+  </div>
+</div>
+
+
+</div>    
+</main>
+{% endblock %}

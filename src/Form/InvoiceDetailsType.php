@@ -4,6 +4,7 @@ namespace App\Form;
 
 use App\Entity\Invoice;
 use App\Entity\InvoiceDetails;
+use App\Form\Field\ProductAutocompleteField;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -11,20 +12,12 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class InvoiceDetailsType extends AbstractType
 {
+
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder
-            ->add('label')
-            ->add('quantity')
-            ->add('priceUnit')
-            ->add('priceTotalHt')
-            ->add('taxe')
-            ->add('invoice', EntityType::class, [
-                'class' => Invoice::class,
-                'choice_label' => 'id',
-            ])
-        ;
+        $builder->add('product', ProductAutocompleteField::class);
     }
+    
 
     public function configureOptions(OptionsResolver $resolver): void
     {

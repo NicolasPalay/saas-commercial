@@ -1,4 +1,32 @@
 {{ form_start(form) }}
-    {{ form_widget(form) }}
-    <button class="btn">{{ button_label|default('Save') }}</button>
+      {{ form_row(form.nameStreet) }}
+      {{ form_row(form.nameStreet2) }}
+      <div class="d-flex gap-3 col-md-6 justify-between">
+        {{ form_row(form.codePostal) }}
+        {{ form_row(form.ville) }}
+        </div>
+        <div class="d-flex gap-3 col-md-6 justify-between">
+        {{ form_row(form.businessPhone) }}
+        {{ form_row(form.mobilePhone) }}
+</div>
+        {{ form_row(form.email) }}
+        <div class="d-flex col-md-6 justify-center">
+
+        <div class="col-md-5 d-flex justify-center">
+            <div class="form-check form-switch">
+                {{ form_widget(form.isDefault, { attr: { class: 'form-check-input' } }) }}
+                {{ form_label(form.isDefault, 'Adresse principale', { label_attr: { class: 'form-check-label' } }) }}
+            </div>
+        </div>
+
+        <div class="col-md-5 d-flex justify-center">
+            <div class="form-check form-switch">
+                {{ form_widget(form.isDelivery, { attr: { class: 'form-check-input' } }) }}
+                {{ form_label(form.isDelivery, 'Adresse de livraison', { label_attr: { class: 'form-check-label' } }) }}
+            </div>
+        </div>
+
+    </div>
+      
+    <button class="btn-ocean btn-ocean-primary mt-3">{{ button_label|default('Save') }}</button>
 {{ form_end(form) }}

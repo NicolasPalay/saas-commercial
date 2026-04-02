@@ -45,11 +45,25 @@ class Taxe
     #[ORM\OneToMany(targetEntity: Product::class, mappedBy: 'taxe')]
     private Collection $products;
 
+    /**
+     * @var Collection<int, Product>
+     */
+    #[ORM\OneToMany(targetEntity: InvoiceDetails::class, mappedBy: 'taxe')]
+    private Collection $invoiceDetails;
+
+    /**
+     * @var Collection<int, OrderDetail>
+     */
+    #[ORM\OneToMany(targetEntity: OrderDetail::class, mappedBy: 'taxe')]
+    private Collection $orderDetails;
+
 
     public function __construct()
     {
         $this->devisDetails = new ArrayCollection();
         $this->products = new ArrayCollection();
+        $this->invoiceDetails = new ArrayCollection();
+        $this->orderDetails = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -183,6 +197,65 @@ class Taxe
             // set the owning side to null (unless already changed)
             if ($product->getTaxe() === $this) {
                 $product->setTaxe(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, OrderDetail>
+     */
+    public function getOrderDetails(): Collection
+    {
+        return $this->orderDetails;
+    }
+
+    public function addOrderDetail(OrderDetail $orderDetail): static
+    {
+        if (!$this->orderDetails->contains($orderDetail)) {
+            $this->orderDetails->add($orderDetail);
+            $orderDetail->setTaxe($this);
+        }
+
+        return $this;
+    }
+
+    public function removeOrderDetail(OrderDetail $orderDetail): static
+    {
+        if ($this->orderDetails->removeElement($orderDetail)) {
+            // set the owning side to null (unless already changed)
+            if ($orderDetail->getTaxe() === $this) {
+                $orderDetail->setTaxe(null);
+            }
+        }
+
+        return $this;
+    }
+/**
+     * @return Collection<int, InvoiceDetails>
+     */
+    public function getInvoiceDetails(): Collection
+    {
+        return $this->invoiceDetails;
+    }
+
+    public function addInvoiceDetail(InvoiceDetails $invoiceDetails): static
+    {
+        if (!$this->invoiceDetails->contains($invoiceDetails)) {
+            $this->invoiceDetails->add($invoiceDetails);
+            $invoiceDetails->setTaxe($this);
+        }
+
+        return $this;
+    }
+
+    public function removeInvoiceDetail(InvoiceDetails $invoiceDetails): static
+    {
+        if ($this->invoiceDetails->removeElement($invoiceDetails)) {
+            // set the owning side to null (unless already changed)
+            if ($invoiceDetails->getTaxe() === $this) {
+                $invoiceDetails->setTaxe(null);
             }
         }
 
