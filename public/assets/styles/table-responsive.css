@@ -1,0 +1,28 @@
+.table {
+    margin-bottom: 10px;
+}
+
+.header-reference, .header-price, .header-createdAt {
+    width: 10%;
+}
+.header-createdAt div{
+    justify-content: end;
+}
+.header-name
+    {
+    width: 60%;
+}
+.header-reference, .header-name{
+ justify-content: start;
+}
+
+.text-muted, .text-right {
+    text-align: right;
+}
+
+.table-client th:first-child{
+    width:50%
+}
+.table-client th{
+    width:20%
+}

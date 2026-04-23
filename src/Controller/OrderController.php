@@ -6,6 +6,8 @@ use App\Entity\Order;
 use App\Form\OrderType;
 use App\Form\OrderTypeEdit;
 use App\Repository\OrderRepository;
+use App\Services\PdfGeneratorService;
+use App\Services\SendMailService;
 use App\Services\TransfertService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -175,14 +177,69 @@ final class OrderController extends AbstractController
     return $this->redirectToRoute('app_invoice_index');
     }
 
-    #[Route('/{id}', name: 'app_order_show', methods: ['GET'])]
-    public function show(Order $order): Response
-    {
-        return $this->render('order/show.html.twig', [
+    #[Route("devis/send/{id}", name: 'app_devis_send')]
+    public function sendDevis(
+        PdfGeneratorService $pdfGeneratorService,
+        OrderRepository $orderRepository,
+        SendMailService $mailer,
+        string $id
+    ): Response {
+        $order = $orderRepository->find($id);
+
+        if (!$order) {
+            throw $this->createNotFoundException('Devis introuvable');
+        }
+
+        // 1. Génération du PDF
+        $html = $this->renderView('pdf/order_template.html.twig', [
             'order' => $order,
         ]);
-    }
 
+        $pdfContent = $pdfGeneratorService->output($html);
+        $client = $order->getClient();
+        $email = null;
+
+        foreach ($client->getAddress() as $address) {
+            if ($address->isIsDefault()) {
+                $email = $address->getEmail();
+                break;
+            }
+        }
+
+        if(!$email) {
+            $this->addFlash('error', 'Le client n\'a pas d\'adresse email. Veuillez en ajouter une pour pouvoir envoyer la commande.');
+            return $this->redirectToRoute(
+                'app_order_details_new',
+                ['id' => $order->getId()],
+                Response::HTTP_SEE_OTHER
+            );
+        }
+        // 2. Création de l’email
+        $mailer->sendAttachment(
+            $this->getUser()->getEmail(),
+            $email,
+            'Votre commande '.$order->getReference(),
+            'commande',
+            [
+                'order' => $order
+            ],
+            [
+                [
+                    'data' => $pdfContent,
+                    'name' => 'commande-'.$order->getReference().'.pdf',
+                    'type' => 'application/pdf'
+                ]
+            ]
+        );
+        $this->addFlash('success', 'La commande a été envoyée avec succès.');
+
+        return $this->redirectToRoute(
+                'app_order_details_new',
+                ['id' => $order->getId()],
+                Response::HTTP_SEE_OTHER
+            );
+    }
+    
     #[Route('/{id}/edit', name: 'app_order_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Order $order, EntityManagerInterface $entityManager): Response
     {

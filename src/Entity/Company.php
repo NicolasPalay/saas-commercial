@@ -130,6 +130,9 @@ class Company
     #[ORM\OneToMany(targetEntity: Address::class, mappedBy: 'company')]
     private Collection $addresses;
 
+    #[ORM\Column(nullable: true)]
+    private ?int $phone = null;
+
 
 
     public function __construct() {
@@ -677,6 +680,18 @@ class Company
     public function setSiret(?string $siret): static
     {
         $this->siret = $siret;
+
+        return $this;
+    }
+
+    public function getPhone(): ?int
+    {
+        return $this->phone;
+    }
+
+    public function setPhone(?int $phone): static
+    {
+        $this->phone = $phone;
 
         return $this;
     }

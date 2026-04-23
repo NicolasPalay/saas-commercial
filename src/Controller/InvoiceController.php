@@ -6,6 +6,8 @@ use App\Entity\Invoice;
 use App\Form\InvoiceType;
 use App\Form\InvoiceTypeEdit;
 use App\Repository\InvoiceRepository;
+use App\Services\PdfGeneratorService;
+use App\Services\SendMailService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -145,7 +147,73 @@ final class InvoiceController extends AbstractController
             'form' => $form,
         ]);
     }
+    #[Route("invoice/send/{id}", name: 'app_invoice_send')]
+    public function sendInvoice(
+        PdfGeneratorService $pdfGeneratorService,
+        InvoiceRepository $invoiceRepository,
+        SendMailService $mailer,
+        string $id
+    ): Response {
+        $invoice = $invoiceRepository->find($id);
 
+        if (!$invoice) {
+            throw $this->createNotFoundException('Facture introuvable');
+        }
+
+        // 1. Génération du PDF
+        $html = $this->renderView('pdf/invoice.html.twig', [
+            'invoice' => $invoice,
+            'company' => $invoice->getCompany(),
+            'documentType' => 'FACTURE',
+            'reference' => $invoice->getReference(),
+            'date' => $invoice->getCreatedAt(),
+        ]);
+
+        $pdfContent = $pdfGeneratorService->output($html);
+        $client = $invoice->getClient();
+        $email = null;
+
+        foreach ($client->getAddress() as $address) {
+            if ($address->isIsDefault()) {
+                $email = $address->getEmail();
+                break;
+            }
+        }
+
+        if(!$email) {
+            $this->addFlash('error', 'Le client n\'a pas d\'adresse email. Veuillez en ajouter une pour pouvoir envoyer la facture.');
+            return $this->redirectToRoute(
+                'app_invoice_details_new',
+                ['id' => $invoice->getId()],
+                Response::HTTP_SEE_OTHER
+            );
+        }
+        // 2. Création de l’email
+        $mailer->sendAttachment(
+            $this->getUser()->getEmail(),
+            $email,
+            'Votre facture '.$invoice->getReference(),
+            'invoice',
+            [
+                'invoice' => $invoice,
+            ],
+            [
+                [
+                    'data' => $pdfContent,
+                    'name' => 'facture-'.$invoice->getReference().'.pdf',
+                    'type' => 'application/pdf'
+                ]
+            ]
+        );
+        $this->addFlash('success', 'La facture a été envoyée avec succès.');
+
+        return $this->redirectToRoute(
+                'app_invoice_details_new',
+                ['id' => $invoice->getId()],
+                Response::HTTP_SEE_OTHER
+            );
+    }
+    
     #[Route('/{id}', name: 'app_invoice_delete', methods: ['POST'])]
     public function delete(Request $request, Invoice $invoice, EntityManagerInterface $entityManager): Response
     {

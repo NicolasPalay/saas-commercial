@@ -9,6 +9,8 @@ use App\Form\DevisTypeEdit;
 use App\Repository\AddressRepository;
 use App\Repository\DevisRepository;
 use App\Services\DevisAddress;
+use App\Services\PdfGeneratorService;
+use App\Services\SendMailService;
 use App\Services\TransfertService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -174,6 +176,68 @@ final class DevisController extends AbstractController
             'devi' => $devi,
             'form' => $form,
         ]);
+    }
+    #[Route("devis/send/{id}", name: 'app_devis_send')]
+    public function sendDevis(
+        PdfGeneratorService $pdfGeneratorService,
+        DevisRepository $devisRepository,
+        SendMailService $mailer,
+        string $id
+    ): Response {
+        $devis = $devisRepository->find($id);
+
+        if (!$devis) {
+            throw $this->createNotFoundException('Devis introuvable');
+        }
+
+        // 1. Génération du PDF
+        $html = $this->renderView('pdf/devis_template.html.twig', [
+            'devis' => $devis,
+        ]);
+
+        $pdfContent = $pdfGeneratorService->output($html);
+        $client = $devis->getClient();
+        $email = null;
+
+        foreach ($client->getAddress() as $address) {
+            if ($address->isIsDefault()) {
+                $email = $address->getEmail();
+                break;
+            }
+        }
+
+        if(!$email) {
+            $this->addFlash('error', 'Le client n\'a pas d\'adresse email. Veuillez en ajouter une pour pouvoir envoyer le devis.');
+            return $this->redirectToRoute(
+                'app_devis_details_new',
+                ['id' => $devis->getId()],
+                Response::HTTP_SEE_OTHER
+            );
+        }
+        // 2. Création de l’email
+        $mailer->sendAttachment(
+            $this->getUser()->getEmail(),
+            $email,
+            'Votre devis '.$devis->getReference(),
+            'devis',
+            [
+                'devis' => $devis
+            ],
+            [
+                [
+                    'data' => $pdfContent,
+                    'name' => 'devis-'.$devis->getReference().'.pdf',
+                    'type' => 'application/pdf'
+                ]
+            ]
+        );
+        $this->addFlash('success', 'Le devis a été envoyé avec succès.');
+
+        return $this->redirectToRoute(
+                'app_devis_details_new',
+                ['id' => $devis->getId()],
+                Response::HTTP_SEE_OTHER
+            );
     }
 
     #[Route('/{id}', name: 'app_devis_delete', methods: ['POST'])]

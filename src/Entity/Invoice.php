@@ -72,6 +72,9 @@ class Invoice implements OwnedByCompanyInterface
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $email = null;
 
+    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    private ?Order $commande = null;
+
     public function __construct()
     {
         $this->invoiceDetails = new ArrayCollection();
@@ -298,6 +301,18 @@ class Invoice implements OwnedByCompanyInterface
     public function setEmail(?string $email): static
     {
         $this->email = $email;
+
+        return $this;
+    }
+
+    public function getCommande(): ?Order
+    {
+        return $this->commande;
+    }
+
+    public function setCommande(?Order $commande): static
+    {
+        $this->commande = $commande;
 
         return $this;
     }

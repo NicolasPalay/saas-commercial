@@ -7,7 +7,10 @@
      <div class="divider"></div>
     <header class="d-flex justify-content-center gap-5">
       <div class="border px-4 py-2 rounded-3 text-right">
-      Adresse de Livraison
+        <a href="{{ path('app_invoice_edit', {'id': invoice.id}) }}" class="btn-ocean btn-ocean-secondary btn-ocean-sm">
+            <i class="bi bi-pencil"></i> Modifier l'adresse
+        </a>
+      <h1 class="my-4 h4">Adresse de Livraison</h1>
       <hr>
         <h2 class="mb-25 h4 adresse-devis">
           <a href="{{ path('app_invoice_edit', {'id': invoice.id}) }}"  class="mb-25 h4">
@@ -30,11 +33,12 @@
         {# Bouton retour vers l'édition du devis #}
       <div class="action-header">
 
-        <a href="{{ path('app_invoice_edit', {'id': invoice.id}) }}" class="btn-ocean btn-ocean-secondary btn-ocean-sm">
-            <i class="bi bi-pencil"></i> Modifier l'adresse
-        </a>
+       
         <a href="{{ path('app_invoice_output_pdf', {'id': invoice.id}) }}" class="btn-ocean btn-ocean-secondary btn-ocean-sm" target="_blank">
             <i class="bi bi-file-pdf"></i> enregistrer en PDF
+        </a>
+        <a href="{{ path('app_invoice_send', {'id': invoice.id}) }}" class="btn-ocean btn-ocean-secondary btn-ocean-sm">
+          <i class="bi bi-file-pdf"></i> envoyer par email
         </a>
       </div>
     </header>
@@ -92,15 +96,17 @@
 
     
 
-    {# Formulaire d'ajout/édition #}
-    <div class="bg-light p-4 form-edit-detail-invoice editAbsolute" style="binvoice-radius: var(--radius-lg); binvoice: 1.5px solid var(--sky-shell);">
+       {# Formulaire d'ajout/édition #}
+    <div id="addLine" class="bg-light p-4 form-edit-detail-devis editAbsolute" style="border-radius: var(--radius-lg); border: 1.5px solid var(--sky-shell);">
       </h3>
-{{ form_start(form) }}
+      {{ form_start(form, {
+          attr: { 'data-devis-detail': '1' }
+      }) }}
         {{ form_widget(form) }}
         <button class="btn-ocean btn-ocean-secondary btn-ocean-sm" type="submit"
     >{{ button_label|default('Sélectionnez') }}</button>
     {{ form_end(form) }}
     </div>
-
+<div class="divider"></div>
   </div>
 </div>

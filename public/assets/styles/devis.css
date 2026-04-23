@@ -1,0 +1,172 @@
+.input-devis {
+    width: 100%;
+    background-color: white;
+    padding: 10px 10px 10px 40px;
+    border: 0.5px var(--ocean) solid;
+    color: var(--marine);
+    border-radius: 15px;
+}
+
+.input-ocean:focus,
+.input-ocean:focus-visible {
+    border: 3px rgba(48, 84, 92, 0.5) solid;
+    background-color: rgba(222, 208, 190, 0.2);
+}
+
+.new-invoice {
+    background: linear-gradient(135deg, var(--deep-marine) 0%, #3a6672 100%);
+    padding: 20px 30px;
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-lg);
+    position: relative;
+    overflow: hidden;
+}
+
+.table-row {
+    transition: background-color 0.2s ease;
+}
+
+.table-row:hover {
+    background-color: #f8fafc;
+}
+
+/* Boutons de tri */
+.sort-btn {
+    background: transparent;
+    border: none;
+    padding: 2px;
+    line-height: 1;
+    color: #adb5bd;
+    transition: all 0.2s ease;
+}
+
+/* Hover individuel */
+.sort-btn:hover {
+    color: #0d6efd;
+    transform: scale(1.2);
+}
+
+/* Hover global sur la colonne */
+th:hover .sort-btn {
+    color: #6c757d;
+}
+
+.ref {
+    width: 20%;
+    min-width: 100px;
+    text-align: left;
+}
+th,
+td {
+    padding: 10px;
+    border-left: 1px solid #ada8a3;
+    border-right: 1px solid #ada8a3;
+}
+tbody {
+    padding: 10px;
+    border: 1px solid #ada8a3;
+}
+
+/* Effet focus / clic */
+.sort-btn:active {
+    transform: scale(0.95);
+}
+
+.address-ville div:first-child {
+    width: 30%;
+}
+.address-ville div:nth-child(2) {
+    width: 60%;
+}
+
+/* Mobile : icônes plus grandes */
+@media (max-width: 768px) {
+    .sort-btn i {
+        font-size: 1.1rem;
+    }
+}
+
+.adresse-devis a {
+    color: white;
+}
+
+.adresse-devis a:hover {
+    color: var(--sand-dark);
+}
+
+.action-header {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 10px;
+    width: max-content;
+}
+
+/* .form-select{
+    padding: 0!important;
+} */
+
+#devis_details_type_edit div:first-child {
+    width: 100% !important;
+}
+
+#devis_details_type_edit div:nth-child(3),
+#order_details_type_edit div:nth-child(3),
+#invoice_details_type_edit div:nth-child(3) {
+    width: 125px !important;
+}
+
+#devis_type_edit,
+#order_type_edit,
+#invoice_type_edit,
+#employed_form,
+#company,
+.login-body section form,
+#address {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+#devis_type_edit > div:last-child {
+    display: none;
+}
+/* #devis_type_edit_isInvoiced {
+    width:10px !important;
+    height: 10px;
+} */
+
+#devis_type_edit_isInvoiced[type="checkbox"]:checked {
+    background-color: aqua;
+}
+
+/*add product*/
+.input-group
+    > :not(:first-child):not(.dropdown-menu):not(.valid-tooltip):not(
+        .valid-feedback
+    ):not(.invalid-tooltip):not(.invalid-feedback) {
+    border: none;
+}
+
+.ts-wrapper.form-control:not(.disabled) .ts-control,
+.ts-wrapper.form-control:not(.disabled).single.input-active .ts-control,
+.ts-wrapper.form-select:not(.disabled) .ts-control,
+.ts-wrapper.form-select:not(.disabled).single.input-active .ts-control {
+    background: white !important;
+}
+.form-select {
+    border: none;
+    background-image: none !important;
+     background: white !important;
+    padding: 10px 10px 10px 40px;
+    border: 0.5px var(--ocean) solid;
+    color: var(--marine);
+    border-radius: 15px;
+}
+
+.ts-dropdown {
+    top: -116% !important;
+    left: 100% !important;
+    width: max-content !important;
+}

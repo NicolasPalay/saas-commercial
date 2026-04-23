@@ -1,0 +1,20 @@
+{% if devis.company.urlLogo %}
+          <img src="{{ absolute_url('/uploads/' ~ devis.company.id ~ '/' ~ devis.company.urlLogo) }}" alt="{{ devis.company.name }}">
+        {% endif %}
+
+<p>Bonjour,</p>
+
+<p>Veuillez trouver ci-joint votre devis <strong>{{ devis.reference }}</strong>.</p>
+
+<p>Nous restons à votre disposition pour toute question.</p>
+
+<p>Cordialement</p>
+
+<p><strong>{{ devis.company.name }}</strong></p>
+<p>{{ devis.company.street }}</br>
+<p>{{ devis.company.street2 }}</br>
+<p>{{ devis.company.codePostal }} {{ devis.company.ville }}</p>
+
+<p>{{ devis.user.phone }}</br>
+<p>{{ devis.user.email }}</p>
+

@@ -1,0 +1,20 @@
+{% if invoice.company.urlLogo %}
+          <img src="{{ absolute_url('/uploads/' ~ invoice.company.id ~ '/' ~ invoice.company.urlLogo) }}" alt="{{ invoice.company.name }}">
+        {% endif %}
+
+<p>Bonjour,</p>
+
+<p>Veuillez trouver ci-joint votre invoice <strong>{{ invoice.reference }}</strong>.</p>
+
+<p>Nous restons à votre disposition pour toute question.</p>
+
+<p>Cordialement</p>
+
+<p><strong>{{ invoice.company.name }}</strong></p>
+<p>{{ invoice.company.street }}</br>
+<p>{{ invoice.company.street2 }}</br>
+<p>{{ invoice.company.codePostal }} {{ invoice.company.ville }}</p>
+
+<p>{{ invoice.user.phone }}</br>
+<p>{{ invoice.user.email }}</p>
+

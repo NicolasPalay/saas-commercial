@@ -1,236 +1,309 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <title>Devis {{ devis.reference }}</title>
-  <style>
-    @page { margin: 0; }
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: 'DejaVu Sans', Arial, sans-serif; font-size: 10pt; color: #30545c; line-height: 1.45; }
+<meta charset="UTF-8">
+<title>Devis {{ devis.reference }}</title>
 
-    /* Header */
-    .header {
-      background: linear-gradient(135deg, #263f45 0%, #30545c 60%, #3a6672 100%);
-      color: #fff;
-      padding: 32px 40px 28px;
-    }
-    .header-inner { display: table; width: 100%; }
-    .company-block { display: table-cell; width: 55%; vertical-align: top; }
-    .devis-block   { display: table-cell; width: 45%; vertical-align: top; text-align: right; }
-    .company-logo  { max-width: 110px; max-height: 70px; margin-bottom: 8px; }
-    .company-name  { font-size: 17pt; font-weight: bold; margin-bottom: 4px; color: #c4dce1; margin-top:5px}
-    .company-info  { font-size: 8.5pt; color: #c4dce1; line-height: 1.6; }
-    .devis-label   { font-size: 22pt; font-weight: bold; letter-spacing: 1px; color: #c4dce1; }
-    .devis-ref     { font-size: 10pt; color: #c4dce1; margin-top: 4px; }
-    .devis-date    { font-size: 8.5pt; color: #c4dce1; margin-top: 3px; }
+<style>
+@page {
+  margin: 130px 40px 80px 40px;
+}
 
-    /* Addresses */
-    .addresses { margin: 28px 40px; display: table; width: calc(100% - 80px); }
-    .addr-box  {
-      display: table-cell; width: 48%; padding: 14px 16px;
-      background: #f4f0eb; border-left: 4px solid #81aeb9; border-radius: 5px;
-      vertical-align: top;
-    }
-    .addr-right{text-align:right;}
-    .addr-box.right { float: right; }
-    .addr-spacer    { display: table-cell; width: 4%; }
-    .addr-title {
-      font-size: 8pt; font-weight: bold; text-transform: uppercase;
-      letter-spacing: 1px; color: #30545c;
-      border-bottom: 1px solid #c4dce1; padding-bottom: 5px; margin-bottom: 8px;
-    }
-    .addr-content   { font-size: 9pt; line-height: 1.6; color: #30545c; }
-    .addr-content strong { font-weight: bold; }
+body {
+  font-family: DejaVu Sans, Arial, sans-serif;
+  font-size: 10pt;
+  color: #2c3e50;
+}
 
-    /* Meta bar */
-    .meta-bar {
-      margin: 0 40px 24px;
-      background: #e8f0f2;
-      border-radius: 5px;
-      padding: 12px 16px;
-    }
-    .meta-bar table { width: 100%; border-collapse: collapse; }
-    .meta-bar td    { width: 33%; vertical-align: top; padding: 0 8px; }
-    .meta-label     { font-size: 7.5pt; font-weight: bold; text-transform: uppercase; letter-spacing: .5px; color: #30545c; }
-    .meta-value     { font-size: 9.5pt; color: #30545c; margin-top: 2px; }
+/* HEADER */
+.header {
+ position: relative;
+  top: -120px;
+  left: 0;
+  right: 0;
+  height: 100px;
+  border-bottom: 2px solid #e5e5e5;
+}
 
-    /* Items table */
-    .items-wrap  { width: 100%; margin: 0 40px 24px; }
-    .items {width: 90%;}
-    .items table{ width: 100%; border-collapse: collapse; }
-    .items thead tr { background: linear-gradient(135deg, #c4dce1, #d1e5eb); }
-    .items thead th {
-      padding: 10px 9px; font-size: 7.5pt; text-transform: uppercase;
-      letter-spacing: 1px; color: #30545c; font-weight: bold;
-      border-bottom: 2px solid #81aeb9; text-align: left;
-    }
-    .items thead th.r { text-align: right; }
-    .items thead th.c { text-align: center; }
-    .items tbody tr   { border-bottom: 1px solid #f4f0eb; }
-    .items tbody tr:nth-child(even) { background: #fafaf8; }
-    .items tbody td   { padding: 9px 9px; font-size: 9pt; color: #30545c; }
-    .items tbody td.r { text-align: right; }
-    .items tbody td.c { text-align: center; }
-    .product-ref      { color: #81aeb9; font-size: 7.5pt; display: block; }
+.header table {
+  width: 100%;
+}
 
-    /* Totals */
-    .totals-wrap  { margin: 0 40px 28px; text-align: right; position: relative; left:60%}
-    .totals table { display: inline-table; width: 42%; border-collapse: collapse; }
-    .totals tr    { border-bottom: 1px solid #f4f0eb; }
-    .totals td    { padding: 7px 10px; font-size: 9.5pt; }
-    .totals td.lbl { text-align: left; color: #a69580; text-transform: uppercase; font-size: 8pt; letter-spacing: .5px; }
-    .totals td.val { text-align: right; color: #30545c; font-weight: bold; }
-    .totals tr.ttc { background: linear-gradient(135deg, #30545c, #3a6672); }
-    .totals tr.ttc td { padding: 13px 10px; font-size: 13pt; font-weight: bold; color: #30545c; }
+.company-name {
+  font-size: 16pt;
+  font-weight: bold;
+}
 
-    /* Conditions */
-    .conditions {
-      margin: 4px 40px 20px;
-      padding: 13px 16px;
-      background: #f0f9f5;
-      border-left: 4px solid #4a9f7e;
-      border-radius: 5px;
-    }
-    .conditions-title   { font-size: 9pt; font-weight: bold; color: #30545c; margin-bottom: 6px; }
-    .conditions-content { font-size: 7.5pt; line-height: 1.6; color: #30545c; }
+.company-info {
+  font-size: 9pt;
+}
 
-    /* Footer */
-    .footer {
-      position: fixed; bottom: 0; left: 0; right: 0;
-      height: 44px; background: #f4f0eb;
-      border-top: 2px solid #c4dce1;
-      padding: 13px 40px; text-align: center;
-      font-size: 7.5pt; color: #a69580;
-    }
+.company-logo {
+  max-height: 60px;
+  margin-bottom: 5px;
+}
 
-    .clear { clear: both; }
-  </style>
+.title {
+  text-align: right;
+}
+
+.title h1 {
+  margin: 0;
+  font-size: 20pt;
+}
+
+/* FOOTER */
+.footer {
+  position: fixed;
+  bottom: -60px;
+  left: 0;
+  right: 0;
+  height: 50px;
+  border-top: 1px solid #e5e5e5;
+  text-align: center;
+  font-size: 8pt;
+  color: #777;
+}
+
+/* ADDRESSES */
+.addresses {
+  margin-bottom: 20px;
+}
+
+.addresses table {
+  width: 100%;
+}
+
+.box {
+  padding: 10px;
+  background: #f8f9fa;
+  border-left: 4px solid #3498db;
+}
+
+.box-title {
+  font-size: 8pt;
+  text-transform: uppercase;
+  margin-bottom: 5px;
+  color: #7f8c8d;
+}
+
+/* META */
+.meta {
+  margin: 20px 0;
+}
+
+.meta table {
+  width: 100%;
+}
+
+.meta-label {
+  font-size: 8pt;
+  text-transform: uppercase;
+  color: #7f8c8d;
+}
+
+.meta-value {
+  font-size: 10pt;
+  font-weight: bold;
+}
+
+/* TABLE */
+.items table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.items thead {
+  display: table-header-group;
+  background: #ecf0f1;
+}
+
+.items th {
+  padding: 8px;
+  font-size: 8pt;
+  text-transform: uppercase;
+  border-bottom: 2px solid #bdc3c7;
+}
+
+.items td {
+  padding: 6px;
+  border-bottom: 1px solid #ecf0f1;
+}
+
+.items tr {
+  page-break-inside: avoid;
+}
+
+.r { text-align: right; }
+.c { text-align: center; }
+
+.items td.r {
+  font-family: DejaVu Sans, monospace;
+  font-weight: bold;
+}
+
+/* TOTALS */
+.totals {
+  margin-top: 20px;
+}
+
+.totals table {
+  width: 45%;
+  margin-left: auto;
+  border-collapse: collapse;
+  page-break-inside: avoid;
+}
+
+.totals td {
+  padding: 8px;
+}
+
+.total-final {
+  background: #2c3e50;
+  color: white;
+  font-weight: bold;
+}
+
+
+</style>
 </head>
+
 <body>
 
-  {# Header #}
-  <div class="header">
-    <div class="header-inner">
-      <div class="company-block">
+<!-- HEADER -->
+<div class="header">
+  <table>
+    <tr>
+      <td>
+        {% if devis.company.urlLogo %}
+          <img src="{{ absolute_url(asset('uploads/' ~ devis.company.id ~ '/' ~ devis.company.urlLogo)) }}"
+               class="company-logo">
+        {% endif %}
         <div class="company-name">{{ devis.company.name }}</div>
-        <div class="company-info">
-          {% if devis.deliveryStreet %}{{ devis.deliveryStreet }}<br>{% endif %}
-          {% if devis.deliveryPostalCode %}{{ devis.deliveryPostalCode }} {% endif %}
-          {% if devis.deliveryCity %}{{ devis.deliveryCity }}<br>{% endif %}
-          {% if devis.deliveryPhone %}Tél : {{ devis.deliveryPhone }}{% endif %}
+        <div>
+          {{ devis.company.street }}<br>
+          {{ devis.company.street2 }}<br>
+          {{ devis.company.codePostal }} {{ devis.company.ville }}<br>
+           {% if devis.company.phone %}Téléphone de l'agence : {{ devis.company.phone }}{% endif %}
+          {% if devis.user.phone %}Ligne directe : {{ devis.user.phone }}{% endif %}
+
         </div>
-      </div>
-      <div class="devis-block">
-        <div class="devis-label">DEVIS</div>
-        <hr>
-        <div class="devis-ref">N° {{ devis.reference }}</div>
-      </div>
-    </div>
-  </div>
+      </td>
+      <td class="devis-title">
+        <h1>DEVIS</h1>
+        N° {{ devis.reference }} - {{ devis.createdAt|date('d/m/Y') }}
+      </td>
+    </tr>
+  </table>
+</div>
 
-  {# Addresses #}
-  {% if devis.client.address|length > 0 %}
-    {% set addr = devis.client.address[0] %}
-    <div class="addresses">
-      <table width="100%" style="border-collapse:collapse">
-        <tr>
-          <td width="48%" style="background:#f4f0eb;border-left:4px solid #81aeb9;border-radius:5px;padding:14px 16px;vertical-align:top">
-            <div class="addr-title">Adresse de facturation</div>
-            <div class="addr-content">
-              <strong>{{ devis.client.raisonSocial }}</strong><br>
-              {{ addr.nameStreet }}<br>
-              {% if addr.nameStreet2 %}{{ addr.nameStreet2 }}<br>{% endif %}
-              {{ addr.codePostal }} {{ addr.ville }}<br>
-              {% if addr.email %}{{ addr.email }}<br>{% endif %}
-              {% if addr.mobilePhone %}{{ addr.mobilePhone }}{% endif %}
-            </div>
-          </td>
-          <td width="4%"></td>
-          <td width="48%" style="border-right:4px solid #81aeb9;border-radius:5px;padding:14px 16px;vertical-align:top">
-            <div class="addr-title addr-right">Adresse de livraison</div>
-            <div class="addr-content addr-right">
-              <strong>{{ devis.client.raisonSocial }}</strong><br>
-              {% if devis.deliveryStreet %}
-                {{ devis.deliveryStreet }}<br>
-                {% if devis.deliveryStreet2 %}{{ devis.deliveryStreet2 }}<br>{% endif %}
-                {{ devis.deliveryPostalCode }} {{ devis.deliveryCity }}<br>
-                {% if devis.deliveryPhone %}{{ devis.deliveryPhone }}{% endif %}
-              {% else %}
-                {{ addr.nameStreet }}<br>
-                {{ addr.codePostal }} {{ addr.ville }}
-              {% endif %}
-            </div>
-          </td>
-        </tr>
-      </table>
-    </div>
-  {% endif %}
 
-  {# Meta bar #}
-  <div class="meta-bar">
-    <table>
-      <tr>
-        <td><div class="meta-label">Date du devis</div><div class="meta-value">{{ devis.createdAt|date('d/m/Y') }}</div></td>
-        <td><div class="meta-label">Valable jusqu'au</div><div class="meta-value">{{ devis.createdAt|date_modify('+3 months')|date('d/m/Y') }}</div></td>
-        <td><div class="meta-label">Conditions de paiement</div><div class="meta-value">{{ devis.paymentTerms|default('30 jours fin de mois') }}</div></td>
-      </tr>
-    </table>
-  </div>
 
-  {# Items #}
-  <div class="items-wrap">
-    <table class="items">
+<!-- ADDRESSES -->
+<div class="addresses">
+  <table>
+    <tr>
+      <td width="48%">
+        <div class="box">
+          <div class="box-title">Facturation</div>
+          <strong>{{ devis.client.raisonSocial }}</strong><br>
+          {{ devis.client.address[0].nameStreet }}<br>
+          {{ devis.client.address[0].codePostal }} {{ devis.client.address[0].ville }}
+        </div>
+      </td>
+      <td width="4%"></td>
+      <td width="48%">
+        <div class="box">
+          <div class="box-title">Livraison</div>
+          <strong>{{ devis.client.raisonSocial }}</strong><br>
+          {{ devis.deliveryStreet ?? devis.client.address[0].nameStreet }}<br>
+          {{ devis.deliveryPostalCode ?? devis.client.address[0].codePostal }}
+          {{ devis.deliveryCity ?? devis.client.address[0].ville }}
+        </div>
+      </td>
+    </tr>
+  </table>
+</div>
+
+<!-- META -->
+<div class="meta">
+  <table>
+    <tr>
+      <td>
+        <div class="meta-label">Date du devis</div>
+        <div class="meta-value">{{ devis.createdAt|date('d/m/Y') }}</div>
+      </td>
+      <td>
+        <div class="meta-label">Valable jusqu'au</div>
+        <div class="meta-value">{{ devis.createdAt|date_modify('+3 months')|date('d/m/Y') }}</div>
+      </td>
+      <td>
+        <div class="meta-label">Conditions de paiement</div>
+        <div class="meta-value">
+          {{ devis.paymentTerms|default('30 jours fin de mois') }}
+        </div>
+      </td>
+    </tr>
+  </table>
+</div>
+
+<!-- ITEMS -->
+<div class="items">
+  <table>
       <thead>
         <tr>
-          <th style="width:9%">Réf.</th>
-          <th style="width:38%">Désignation</th>
-          <th class="c" style="width:9%">Qté</th>
-          <th class="r" style="width:12%">PU HT</th>
-          <th class="c" style="width:7%">Remise</th>
-          <th class="r" style="width:13%">Total HT</th>
+          <th style="width:7%">Réf</th>
+          <th style="width:39%">Désignation</th>
+          <th class="c" style="width:7%">Qté</th>
+          <th class="r" style="width:13%">PU HT</th>
+          <th class="c" style="width:9%">Remise</th>
+          <th class="r" style="width:15%">Total HT</th>
           <th class="r" style="width:10%">TVA</th>
         </tr>
       </thead>
-      <tbody>
-        {% for line in devis.devisDetails %}
-        {% set taxeRate = line.taxe ? line.taxe.rate : 20 %}
-          <tr>
-            <td><span class="product-ref">{{ line.product.reference }}</span></td>
-            <td><strong>{{ line.label }}</strong></td>
-            <td class="c">{{ line.quantity }}</td>
-            <td class="r">{{ line.price|number_format(2, ',', ' ') }} €</td>
-            <td class="c">{% if line.reduce > 0 %}{{ line.reduce|number_format(2, ',', ' ') }} %{% else %}—{% endif %}</td>
-            
-            <td class="r">{{ line.total|number_format(2, ',', ' ') }} €</td>
-            <td class="r">{{ taxeRate }}%</td>
-
-          </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
-
-  {# Totals #}
-  <div class="totals-wrap">
-    <table class="totals">
+    <tbody>
+      {% for line in devis.devisDetails %}
+      {% set taxeRate = line.taxe ? line.taxe.rate : 20 %}
       <tr>
-        <td class="lbl">Total HT</td>
-        <td class="val">{{ devis.total|number_format(2, ',', ' ') }} €</td>
+        <td>{{ line.product.reference }}</td>
+        <td>{{ line.label }}</td>
+        <td class="c">{{ line.quantity }}</td>
+        <td class="r">{{ line.price|number_format(2, ',', ' ') }} €</td>
+        <td class="c">
+          {% if line.reduce > 0 %}
+            {{ line.reduce|number_format(2, ',', ' ') }}%
+          {% else %}
+            —
+          {% endif %}
+        </td>
+        <td class="r">{{ line.total|number_format(2, ',', ' ') }} €</td>
+        <td class="r">{{ taxeRate }}%</td>
       </tr>
-      <tr>
-        <td class="lbl">TVA</td>
-        <td class="val">{{ devis.taxe|number_format(2, ',', ' ') }} €</td>
-      </tr>
-      <tr class="ttc">
-        <td class="lbl">Total TTC</td>
-        <td class="val">{{ devis.totalTTC|number_format(2, ',', ' ') }} €</td>
-      </tr>
-    </table>
-  </div>
-  <div class="clear"></div>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
 
-  {# Footer #}
-  <div class="footer">{{ devis.company.name }} — devis n°{{ devis.reference }}</div>
-
+<!-- TOTALS -->
+<div class="totals">
+  <table>
+    <tr>
+      <td>Total HT</td>
+      <td class="r">{{ devis.total|number_format(2, ',', ' ') }} €</td>
+    </tr>
+    <tr>
+      <td>TVA</td>
+      <td class="r">{{ devis.taxe|number_format(2, ',', ' ') }} €</td>
+    </tr>
+    <tr class="total-final">
+      <td>Total TTC</td>
+      <td class="r">{{ devis.totalTTC|number_format(2, ',', ' ') }} €</td>
+    </tr>
+  </table>
+</div>
+<!-- FOOTER -->
+<div class="footer">
+  {{ devis.company.name }} — devis n°{{ devis.reference }}
+</div>
 </body>
 </html>

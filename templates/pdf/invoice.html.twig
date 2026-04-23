@@ -1,0 +1,157 @@
+{% extends 'pdf/layout.html.twig' %}
+
+{% block content %}
+
+{% set addr = invoice.client.address[0] %}
+
+<!-- CLIENT -->
+<table width="50%" style="margin-bottom:20px;">
+  <tr>
+    
+    <td width="100%">
+      <div class="box">
+        <div class="box-title">Facturé à</div>
+        <strong>{{ invoice.client.raisonSocial }}</strong><br>
+        {{ addr.nameStreet }}<br>
+        {% if addr.nameStreet2 %}{{ addr.nameStreet2 }}<br>{% endif %}
+        {{ addr.codePostal }} {{ addr.ville }}
+      </div>
+    </td>
+  </tr>
+</table>
+
+<!-- META -->
+<table width="100%" style="margin-bottom:20px;">
+  <tr>
+    <td>
+      <div class="box">
+        <div class="box-title">Informations facture</div>
+        Date : {{ invoice.createdAt|date('d/m/Y') }}<br>
+        {# Échéance : {{ invoice.dueDate|date('d/m/Y') }}<br> #}
+        N° facture : {{ invoice.reference }}<br>
+        {% if invoice.commande %}
+              Commande liée : {{ invoice.commande.reference }}
+        {% endif %}
+        {% if invoice.devis %}
+            Devis lié : {{ invoice.devis.reference }}
+        {% endif %}
+      </div>
+    </td>
+    <td>
+      <div class="box">
+        <div class="box-title">Paiement</div>
+        {{ invoice.paymentTerms|default('30 jours fin de mois') }}<br>
+        {# {% if company.iban %}IBAN : {{ company.iban }}<br>{% endif %}
+        {% if company.bic %}BIC : {{ company.bic }}{% endif %} #}
+      </div>
+    </td>
+  </tr>
+</table>
+
+<!-- ITEMS -->
+<div class="items">
+  <table>
+    <thead>
+      <tr>
+        <th>Réf</th>
+        <th class="l">Désignation</th>
+        <th class="c">Qté</th>
+        <th class="r">PU HT</th>
+        <th class="r">Réduction</th>
+        <th class="r">Total HT</th>
+        <th class="s">TVA</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for line in invoice.invoiceDetails %}
+        {% set rate = line.taxe ? line.taxe.rate : 20 %}
+        <tr>
+          <td>{{ line.product.reference }}</td>
+          <td class="l">{{ line.label }}</td>
+          <td class="c">{{ line.quantity }}</td>
+          <td class="r">{{ line.price|number_format(2, ',', ' ') }} €</td>
+          <td class="r">{{ line.reduce|number_format(2, ',', ' ') }} %</td>
+          <td class="r">{{ line.total|number_format(2, ',', ' ') }} €</td>
+          <td class="s">{{ rate }}%</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<!-- TVA DETAILLEE -->
+<div class="totals">
+  <table>
+    <tr>
+      <th style="text-align:left;">Taux</th>
+      <th class="r">Base HT</th>
+      <th class="r">Montant TVA</th>
+    </tr>
+
+    {% set tvaGroups = {} %}
+
+    {% for line in invoice.invoiceDetails %}
+      {% set rate = line.taxe ? line.taxe.rate : 20 %}
+      {% set base = line.total %}
+      {% set tva = base * rate / 100 %}
+
+      {% if tvaGroups[rate] is not defined %}
+        {% set tvaGroups = tvaGroups|merge({
+          (rate): { base: base, tva: tva }
+        }) %}
+      {% else %}
+        {% set tvaGroups = tvaGroups|merge({
+          (rate): {
+            base: tvaGroups[rate].base + base,
+            tva: tvaGroups[rate].tva + tva
+          }
+        }) %}
+      {% endif %}
+    {% endfor %}
+
+    {% for rate, data in tvaGroups %}
+      <tr>
+        <td>{{ rate }}%</td>
+        <td class="r">{{ data.base|number_format(2, ',', ' ') }} €</td>
+        <td class="r">{{ data.tva|number_format(2, ',', ' ') }} €</td>
+      </tr>
+    {% endfor %}
+  </table>
+</div>
+
+<!-- TOTAL GLOBAL -->
+<div class="totals">
+  <table>
+    <tr>
+      <td>Total HT</td>
+      <td class="r">{{ invoice.total|number_format(2, ',', ' ') }} €</td>
+    </tr>
+    <tr>
+      <td>Total TVA</td>
+      <td class="r">{{ invoice.taxe|number_format(2, ',', ' ') }} €</td>
+    </tr>
+    <tr class="total-final">
+      <td>Total TTC</td>
+      <td class="r">{{ invoice.totalTTC|number_format(2, ',', ' ') }} €</td>
+    </tr>
+  </table>
+</div>
+
+<!-- MENTIONS LEGALES -->
+<div style="margin-top:25px; font-size:8pt; color:#555;">
+  <strong>Mentions légales :</strong><br><br>
+
+  {# {% if not company.tvaIntracom %}
+    TVA non applicable, art. 293B du CGI<br>
+  {% endif %} #}
+
+  En cas de retard de paiement, des pénalités seront exigibles sans rappel au taux légal en vigueur.<br>
+  Indemnité forfaitaire pour frais de recouvrement : 40 € (article D441-5 du code de commerce).<br><br>
+
+  {{ company.name }}<br>
+  {% if company.siret %}SIRET : {{ company.siret }}<br>{% endif %}
+  {# {% if company.tvaIntracom %}TVA intracommunautaire : {{ company.tvaIntracom }}<br>{% endif %} #}
+  {# {% if company.rcs %}RCS : {{ company.rcs }}{% endif %} #}
+</div>
+
+{% endblock %}

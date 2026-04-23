@@ -1,0 +1,21 @@
+{% if order.company.urlLogo %}
+          <img src="{{ absolute_url('/uploads/' ~ order.company.id ~ '/' ~ order.company.urlLogo) }}" alt="{{ order.company.name }}">
+        {% endif %}
+
+<p>Bonjour,</p>
+
+<p>Veuillez trouver ci-joint votre commande <strong>{{ order.reference }}</strong>.</p>
+
+<p>Nous restons à votre disposition pour toute question.</p>
+
+<p>Cordialement</p>
+
+<p><strong>{{ order.company.name }}</strong></p>
+<p>{{ order.company.street }}</br>
+<p>{{ order.company.street2 }}</br>
+<p>{{ order.company.codePostal }} {{ order.company.ville }}</p>
+
+<p>
+{{ order.user.phone }}</br>
+{{ order.user.email }}</p>
+

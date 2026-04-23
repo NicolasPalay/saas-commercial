@@ -81,6 +81,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $siret = null;
 
+    #[ORM\Column(nullable: true)]
+    private ?int $phone = null;
+
     public function __construct()
     {
         $this->conversations = new ArrayCollection();
@@ -354,6 +357,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setSiret(string $siret): static
     {
         $this->siret = $siret;
+
+        return $this;
+    }
+
+    public function getPhone(): ?int
+    {
+        return $this->phone;
+    }
+
+    public function setPhone(?int $phone): static
+    {
+        $this->phone = $phone;
 
         return $this;
     }

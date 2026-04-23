@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+
+<style>
+@page {
+  margin: 40px 40px 60px 40px;
+}
+
+body {
+  font-family: DejaVu Sans, Arial, sans-serif;
+  font-size: 10pt;
+  color: #2c3e50;
+}
+
+/* HEADER / FOOTER via TABLE */
+.header-table {
+  width: 100%;
+  border-bottom: 2px solid #e5e5e5;
+  margin-bottom: 15px;
+}
+
+.footer {
+  position: fixed;
+  bottom: -40px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: 8pt;
+  color: #777;
+}
+
+/* répétition automatique */
+thead { display: table-header-group; }
+tfoot { display: table-footer-group; }
+
+/* BLOCKS */
+.box {
+  padding: 10px;
+  background: #f8f9fa;
+  border-left: 4px solid #3498db;
+}
+
+.box-title {
+  font-size: 8pt;
+  text-transform: uppercase;
+  margin-bottom: 5px;
+  color: #7f8c8d;
+}
+
+/* TABLE ITEMS */
+.items table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.items thead {
+  background: #ecf0f1;
+}
+
+.items th {
+  padding: 8px;
+  font-size: 8pt;
+  text-transform: uppercase;
+  border-bottom: 2px solid #bdc3c7;
+}
+
+.items td {
+  padding: 6px;
+  border-bottom: 1px solid #ecf0f1;
+}
+
+.items tr {
+  page-break-inside: avoid;
+}
+
+.l { text-align: left; width: 35%; }
+.r { text-align: right; width: 11%; }
+.s { text-align: center; width: 6%; }
+.c { text-align: center; width: 10%;}
+
+/* TOTALS */
+.totals {
+  margin-top: 20px;
+}
+
+.totals table {
+  width: 45%;
+  margin-left: auto;
+  border-collapse: collapse;
+}
+
+.total-final {
+  background: #2c3e50;
+  color: #fff;
+  font-weight: bold;
+}
+
+</style>
+</head>
+
+<body>
+
+<table width="100%">
+  <thead>
+    <tr>
+      <td>
+        {% include 'pdf/partials/header.html.twig' %}
+      </td>
+    </tr>
+  </thead>
+
+ 
+  <tbody>
+    <tr>
+      <td>
+
+        {% block content %}{% endblock %}
+
+      </td>
+    </tr>
+  </tbody>
+   <tfoot>
+    <tr>
+      <td>
+        {% include 'pdf/partials/footer.html.twig' %}
+      </td>
+    </tr>
+  </tfoot>
+
+</table>
+
+</body>
+</html>

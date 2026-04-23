@@ -23,9 +23,10 @@ final class DevisDetailsController extends AbstractController
         private readonly DocumentCalculator $calculator
     ) {}
 
-    #[Route('/{id}/new', name: 'app_devis_details_new', methods: ['GET', 'POST'])]
+    #[Route('/{id}/devis/show', name: 'app_devis_details_new', methods: ['GET', 'POST'])]
     public function new(Devis $devis, Request $request): Response
     {
+        $this->denyAccessUnlessGranted('DEVIS_EDIT', $devis);
         $user = $this->getUser();
         if (!$user) return $this->redirectToRoute('app_login');
 
@@ -40,6 +41,9 @@ final class DevisDetailsController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
 
             $product = $devisDetail->getProduct();
+            if ($product->getCompany() !== $devis->getCompany()) {
+                throw $this->createAccessDeniedException();
+            }
 
             if (!$product) {
                 $this->addFlash('error', 'Produit requis.');
@@ -91,7 +95,7 @@ final class DevisDetailsController extends AbstractController
     public function edit(Request $request, DevisDetails $devisDetail): Response
     {
         $devis = $devisDetail->getDevis();
-
+        $this->denyAccessUnlessGranted('DEVIS_EDIT', $devisDetail->getDevis());
         $form = $this->createForm(DevisDetailsTypeEdit::class, $devisDetail);
         $form->handleRequest($request);
 

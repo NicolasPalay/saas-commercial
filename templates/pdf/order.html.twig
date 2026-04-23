@@ -1,0 +1,81 @@
+{% extends 'pdf/layout.html.twig' %}
+
+{% block content %}
+
+{% set addr = order.client.address[0] %}
+
+<!-- ADDRESSES -->
+<table width="100%" style="margin-bottom:20px;">
+  <tr>
+    <td width="48%">
+      <div class="box">
+        <div class="box-title">Facturation</div>
+        <strong>{{ order.client.raisonSocial }}</strong><br>
+        {{ addr.nameStreet }}<br>
+        {{ addr.codePostal }} {{ addr.ville }}
+      </div>
+    </td>
+
+    <td width="4%"></td>
+
+    <td width="48%">
+      <div class="box">
+        <div class="box-title">Livraison</div>
+        <strong>{{ order.client.raisonSocial }}</strong><br>
+        {% if order.deliveryStreet %}
+          {{ order.deliveryStreet }}<br>
+          {{ order.deliveryPostalCode }} {{ order.deliveryCity }}
+        {% else %}
+          {{ addr.nameStreet }}<br>
+          {{ addr.codePostal }} {{ addr.ville }}
+        {% endif %}
+      </div>
+    </td>
+  </tr>
+</table>
+
+<!-- ITEMS -->
+<div class="items">
+  <table>
+    <thead>
+      <tr>
+        <th>Réf</th>
+        <th>Désignation</th>
+        <th class="c">Qté</th>
+        <th class="r">PU HT</th>
+        <th class="r">Total HT</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for line in order.orderDetails %}
+        <tr>
+          <td>{{ line.product.reference }}</td>
+          <td>{{ line.label }}</td>
+          <td class="c">{{ line.quantity }}</td>
+          <td class="r">{{ line.price|number_format(2, ',', ' ') }} €</td>
+          <td class="r">{{ line.total|number_format(2, ',', ' ') }} €</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<!-- TOTALS -->
+<div class="totals">
+  <table>
+    <tr>
+      <td>Total HT</td>
+      <td class="r">{{ order.total|number_format(2, ',', ' ') }} €</td>
+    </tr>
+    <tr>
+      <td>TVA</td>
+      <td class="r">{{ order.taxe|number_format(2, ',', ' ') }} €</td>
+    </tr>
+    <tr class="total-final">
+      <td>Total TTC</td>
+      <td class="r">{{ order.totalTTC|number_format(2, ',', ' ') }} €</td>
+    </tr>
+  </table>
+</div>
+
+{% endblock %}

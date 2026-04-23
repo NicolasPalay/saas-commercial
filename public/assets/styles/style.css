@@ -1,0 +1,149 @@
+
+@import 'form.css';
+@import 'devis.css';
+@import 'landingPage.css';
+@import 'table-responsive.css';
+@import 'dashboard.css';
+@import 'commun.css';
+@import 'login.css';
+
+  :root {
+    --marine: rgb(48, 84, 92);
+    --ocean: #81aeb9;
+    --shell: #c4dce1;
+    --sand: rgb(222, 208, 190);
+    --sand-dark: #a69580;
+
+     --deep-marine:   #30545c;
+    --cloudy-ocean:  #81aeb9;
+    --sky-shell:     #c4dce1;
+    --sunlit-sand:   #ded0be;
+    --dune:          #a69580;
+    --cream:         #f4f0eb;
+    --cream-dark:    #ebe5dc;
+  }
+* {
+    box-sizing: border-box;
+}
+
+body.body {
+    background-color: rgb(222, 208, 190);
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+
+}
+a {
+    color: var(--sand-dark);
+     text-decoration: none;
+}
+
+a:hover {
+    color: var(--marine);
+}
+.logo {
+    width: 150px;
+    height: auto;
+}
+.landing-page nav{ position: absolute !important;z-index: 1000; }
+nav{background-color: rgba(222, 208, 190, 0.5);}
+
+
+.mt-10{
+  margin-top: 100px;
+}
+.mt-15{
+  margin-top: 150px;
+}
+
+
+  .btn-live-action {
+        height: 15px;
+  }
+  .btn-live-action .bi {
+        width: 10px;
+  }
+
+
+.devis_details_edit .editAbsolute {
+    width: 100%;
+    margin: auto;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}    
+
+.editAbsolute form {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+gap: 20px;
+}
+
+#devis_details_type_edit, #order_detail_type_edit, #invoice_details_type_edit{
+  
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  grid-column-gap: 5px;
+  grid-row-gap: 5px;
+  align-items: end;
+}
+
+#devis_details_type_edit div:first-child, 
+#order_detail_type_edit div:first-child, 
+#invoice_details_type_edit div:first-child
+{ grid-area: 1 / 1 / 2 / 4; }
+
+.devis-detail-table .name {
+  width: 75%;
+  border-collapse: collapse;
+}
+.devis-detail-table .qte,
+.devis-detail-table .pri,
+
+.devis-detail-table .tt 
+{
+  width: 10%;
+  border-collapse: collapse;
+  min-width: 50px;
+}
+
+.devis-detail-table .pri,
+.devis-detail-table .tt 
+{
+  text-align: right;
+  width: 10%;
+  min-width: 100px;
+  border-collapse: collapse;
+}
+.devis-detail-table .rem
+{
+  text-align: center;
+  min-width: 50px;
+  width: 5%;
+  border-collapse: collapse;
+}
+
+
+
+
+
+.editDevisDetails {
+  width:100%
+}
+
+#devis_details_product-ts-control, #devis_details,
+#order_detail_product-ts-control, #order_detail,
+#invoice_details_product-ts-control, #invoice_details
+ {
+  width: 35%;
+  padding: 0;
+}
+
+
+#devis_details > div,
+#order_detail > div {
+  margin: 0 !important;
+  width: 100%;
+
+}

@@ -7,7 +7,10 @@
      <div class="divider"></div>
     <header class="d-flex justify-content-center gap-5">
       <div class="border px-4 py-2 rounded-3 text-right">
-      Adresse de Livraison
+      <a href="{{ path('app_order_edit', {'id': order.id}) }}" class="btn-ocean btn-ocean-secondary btn-ocean-sm">
+            <i class="bi bi-pencil"></i> Modifier l'adresse
+        </a>
+     <h1 class="my-4 h4"> Adresse de Livraison</h1>
       <hr>
         <h2 class="mb-25 h4 adresse-devis">
           <a href="{{ path('app_order_edit', {'id': order.id}) }}"  class="mb-25 h4">

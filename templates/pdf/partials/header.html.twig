@@ -1,0 +1,26 @@
+<table class="header-table">
+  <tr>
+    <td>
+      {% if company.urlLogo %}
+        <img src="{{ absolute_url(asset('uploads/' ~ company.id ~ '/' ~ company.urlLogo)) }}"
+             style="max-height:60px;">
+      {% endif %}
+
+      <div style="font-size:16pt; font-weight:bold;">
+        {{ company.name }}
+      </div>
+
+      <div style="font-size:9pt;">
+        {{ company.street }}<br>
+        {% if company.street2 %}{{ company.street2 }}<br>{% endif %}
+        {{ company.codePostal }} {{ company.ville }}
+      </div>
+    </td>
+
+    <td style="text-align:right;">
+      <h1 style="margin:0;">{{ documentType }}</h1>
+      N° {{ reference }}<br>
+      {{ date|date('d/m/Y') }}
+    </td>
+  </tr>
+</table>

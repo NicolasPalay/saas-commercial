@@ -55,9 +55,12 @@ class PdfController extends AbstractController
             throw $this->createNotFoundException('Commande introuvable');
         }
 
-        $html = $this->renderView('pdf/order_template.html.twig', [
+        $html = $this->renderView('pdf/order.html.twig', [
             'order' => $order,
-            'public_path' => $this->getParameter('kernel.project_dir') . '/public/'
+            'company' => $order->getCompany(),
+            'documentType' => 'COMMANDE',
+            'reference' => $order->getReference(),
+            'date' => $order->getCreatedAt(),
         ]);
        $content = $pdfGeneratorService->output($html);
 
@@ -84,9 +87,12 @@ class PdfController extends AbstractController
             throw $this->createNotFoundException('Devis introuvable');
         }
 
-        $html = $this->renderView('pdf/invoice_template.html.twig', [
+        $html = $this->renderView('pdf/invoice.html.twig', [
             'invoice' => $invoice,
-            'public_path' => $this->getParameter('kernel.project_dir') . '/public/'
+            'company' => $invoice->getCompany(),
+            'documentType' => 'FACTURE',
+            'reference' => $invoice->getReference(),
+            'date' => $invoice->getCreatedAt(),
         ]);
         $result = iconv('UTF-8', "ISO-8859-1//IGNORE", $html);
         $content = $pdfGeneratorService->output($result );$content = $pdfGeneratorService->output($html);
