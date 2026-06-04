@@ -12,10 +12,10 @@
 
   {# Actions #}
   <div class="d-flex gap-3 mt-4">
-    <a href="{{ path('app_order_details_new', {'id': orderDetail.commande.id}) }}" class="btn-ocean btn-ocean-secondary">
+    <a href="{{ path('app_order_details_new', {uuid: orderDetail.commande.company.uuid, reference: orderDetail.commande.reference}) }}" class="btn-ocean btn-ocean-secondary">
       <i class="bi bi-arrow-left"></i> Retour à la liste
     </a>
-    <form method="post" action="{{ path('app_order_detail_delete', {'id': orderDetail.id}) }}" onsubmit="return confirm('Are you sure you want to delete this item?');">
+    <form method="post" action="{{ path('app_order_detail_delete', {uuid: orderDetail.commande.company.uuid, reference: orderDetail.commande.reference, id: orderDetail.id}) }}" onsubmit="return confirm('Are you sure you want to delete this item?');">
     <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ orderDetail.id) }}">
     <button class="btn-ocean btn-ocean-secondary">Delete</button>
 </form>

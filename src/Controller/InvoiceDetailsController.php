@@ -24,11 +24,17 @@ final class InvoiceDetailsController extends AbstractController
         private readonly DocumentCalculator $calculator
     ) {}
 
-    #[Route('/{reference}/new', name: 'app_invoice_details_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, 
-                        #[MapEntity(mapping: ['reference' => 'reference'])] Invoice $invoice
+    #[Route('/{uuid}/{reference}/show', name: 'app_invoice_details_new', methods: ['GET', 'POST'])]
+    public function new(Request $request,
+                        string $uuid,
+                        string $reference,
+                        InvoiceRepository $invoiceRepository
                         ): Response
     {
+        $invoice = $invoiceRepository->findOneByReferenceAndCompanyUuid($reference, $uuid);
+        if (!$invoice) {
+            throw $this->createNotFoundException('Facture introuvable');
+        }
         $user = $this->getUser();
         if (!$user) return $this->redirectToRoute('app_login');
 
@@ -77,8 +83,11 @@ final class InvoiceDetailsController extends AbstractController
             $this->entityManager->flush();
 
             return $this->redirectToRoute(
-                'app_invoice_details_edit',
-                ['reference' => $invoice->getReference()],
+                'app_invoice_details_new',
+                [
+                    'uuid' => $invoice->getCompany()->getUuid(),
+                    'reference' => $invoice->getReference()
+                ],
                 Response::HTTP_SEE_OTHER
             );
         }
@@ -90,10 +99,16 @@ final class InvoiceDetailsController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}/edit', name: 'app_invoice_details_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, InvoiceDetails $invoiceDetail): Response
+    #[Route('/{uuid}/{reference}/line/{id}/edit', name: 'app_invoice_details_edit', methods: ['GET', 'POST'])]
+    public function edit(Request $request,
+                         string $uuid,
+                         string $reference,
+                         InvoiceDetails $invoiceDetail): Response
     {
         $invoice = $invoiceDetail->getInvoice();
+        if ($uuid !== (string) $invoice->getCompany()->getUuid() || $reference !== $invoice->getReference()) {
+            throw $this->createAccessDeniedException();
+        }
 
         $form = $this->createForm(InvoiceDetailsTypeEdit::class, $invoiceDetail);
         $form->handleRequest($request);
@@ -116,7 +131,10 @@ final class InvoiceDetailsController extends AbstractController
 
             return $this->redirectToRoute(
                 'app_invoice_details_new',
-                 ['reference' => $invoice->getReference()],
+                 [
+                     'uuid' => $invoice->getCompany()->getUuid(),
+                     'reference' => $invoice->getReference()
+                 ],
                 Response::HTTP_SEE_OTHER
             );
         }
@@ -128,10 +146,16 @@ final class InvoiceDetailsController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'app_invoice_details_delete', methods: ['POST'])]
-    public function delete(Request $request, InvoiceDetails $invoiceDetail): Response
+    #[Route('/{uuid}/{reference}/line/{id}/delete', name: 'app_invoice_details_delete', methods: ['POST'])]
+    public function delete(Request $request,
+                           string $uuid,
+                           string $reference,
+                           InvoiceDetails $invoiceDetail): Response
     {
         $invoice = $invoiceDetail->getInvoice();
+        if ($uuid !== (string) $invoice->getCompany()->getUuid() || $reference !== $invoice->getReference()) {
+            throw $this->createAccessDeniedException();
+        }
 
         if ($this->isCsrfTokenValid('delete' . $invoiceDetail->getId(), $request->getPayload()->getString('_token'))) {
             $this->entityManager->remove($invoiceDetail);
@@ -144,7 +168,10 @@ final class InvoiceDetailsController extends AbstractController
 
         return $this->redirectToRoute(
             'app_invoice_details_new',
-            ['id' => $invoice->getId()],
+            [
+                'uuid' => $invoice->getCompany()->getUuid(),
+                'reference' => $invoice->getReference()
+            ],
             Response::HTTP_SEE_OTHER
         );
     }

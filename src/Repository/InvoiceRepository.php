@@ -157,4 +157,19 @@ class InvoiceRepository extends ServiceEntityRepository
     {
         return $this->findCountPaidThisYear($company);
     }
+
+    /**
+     * Trouver par reference et UUID de la company
+     */
+    public function findOneByReferenceAndCompanyUuid(string $reference, string $uuid): ?Invoice
+    {
+        return $this->createQueryBuilder('i')
+            ->join('i.company', 'c')
+            ->where('i.reference = :reference')
+            ->andWhere('c.uuid = :uuid')
+            ->setParameter('reference', $reference)
+            ->setParameter('uuid', $uuid)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
 }

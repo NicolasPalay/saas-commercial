@@ -102,19 +102,27 @@ final class InvoiceController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'app_invoice_show', methods: ['GET'])]
-    public function show(Invoice $invoice): Response
+    #[Route('/{uuid}/{reference}/show', name: 'app_invoice_show', methods: ['GET'])]
+    public function show(string $uuid, string $reference, InvoiceRepository $invoiceRepository): Response
     {
+        $invoice = $invoiceRepository->findOneByReferenceAndCompanyUuid($reference, $uuid);
+        if (!$invoice) {
+            throw $this->createNotFoundException('Facture introuvable');
+        }
         return $this->render('invoice/show.html.twig', [
             'invoice' => $invoice,
         ]);
     }
 
-    #[Route('/{id}/edit', name: 'app_invoice_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Invoice $invoice, EntityManagerInterface $entityManager): Response
+    #[Route('/{uuid}/{reference}/edit', name: 'app_invoice_edit', methods: ['GET', 'POST'])]
+    public function edit(Request $request, string $uuid, string $reference, InvoiceRepository $invoiceRepository, EntityManagerInterface $entityManager): Response
     {
         $user = $this->getUser();
         if (!$user) return $this->redirectToRoute('app_login');
+        $invoice = $invoiceRepository->findOneByReferenceAndCompanyUuid($reference, $uuid);
+        if (!$invoice) {
+            throw $this->createNotFoundException('Facture introuvable');
+        }
         $this->denyAccessUnlessGranted('EDIT', $invoice);
         $form = $this->createForm(InvoiceTypeEdit::class, $invoice, [
             'company' => $invoice->getCompany(),
@@ -137,7 +145,10 @@ final class InvoiceController extends AbstractController
 
              return $this->redirectToRoute(
                 'app_invoice_details_new',
-                ['id' => $invoice->getId()],
+                [
+                    'uuid' => $invoice->getCompany()->getUuid(),
+                    'reference' => $invoice->getReference()
+                ],
                 Response::HTTP_SEE_OTHER
             );
         }
@@ -147,14 +158,15 @@ final class InvoiceController extends AbstractController
             'form' => $form,
         ]);
     }
-    #[Route("invoice/send/{id}", name: 'app_invoice_send')]
+    #[Route("/send/{uuid}/{reference}", name: 'app_invoice_send')]
     public function sendInvoice(
         PdfGeneratorService $pdfGeneratorService,
         InvoiceRepository $invoiceRepository,
         SendMailService $mailer,
-        string $id
+        string $uuid,
+        string $reference
     ): Response {
-        $invoice = $invoiceRepository->find($id);
+        $invoice = $invoiceRepository->findOneByReferenceAndCompanyUuid($reference, $uuid);
 
         if (!$invoice) {
             throw $this->createNotFoundException('Facture introuvable');
@@ -184,7 +196,10 @@ final class InvoiceController extends AbstractController
             $this->addFlash('error', 'Le client n\'a pas d\'adresse email. Veuillez en ajouter une pour pouvoir envoyer la facture.');
             return $this->redirectToRoute(
                 'app_invoice_details_new',
-                ['id' => $invoice->getId()],
+                [
+                    'uuid' => $invoice->getCompany()->getUuid(),
+                    'reference' => $invoice->getReference()
+                ],
                 Response::HTTP_SEE_OTHER
             );
         }
@@ -209,14 +224,21 @@ final class InvoiceController extends AbstractController
 
         return $this->redirectToRoute(
                 'app_invoice_details_new',
-                ['id' => $invoice->getId()],
+                [
+                    'uuid' => $invoice->getCompany()->getUuid(),
+                    'reference' => $invoice->getReference()
+                ],
                 Response::HTTP_SEE_OTHER
             );
     }
     
-    #[Route('/{id}', name: 'app_invoice_delete', methods: ['POST'])]
-    public function delete(Request $request, Invoice $invoice, EntityManagerInterface $entityManager): Response
+    #[Route('/{uuid}/{reference}/delete', name: 'app_invoice_delete', methods: ['POST'])]
+    public function delete(Request $request, string $uuid, string $reference, InvoiceRepository $invoiceRepository, EntityManagerInterface $entityManager): Response
     {
+        $invoice = $invoiceRepository->findOneByReferenceAndCompanyUuid($reference, $uuid);
+        if (!$invoice) {
+            throw $this->createNotFoundException('Facture introuvable');
+        }
         $this->denyAccessUnlessGranted('DELETE', $invoice);
         if ($this->isCsrfTokenValid('delete'.$invoice->getId(), $request->getPayload()->getString('_token'))) {
             $entityManager->remove($invoice);

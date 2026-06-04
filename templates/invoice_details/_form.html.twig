@@ -7,13 +7,13 @@
      <div class="divider"></div>
     <header class="d-flex justify-content-center gap-5">
       <div class="border px-4 py-2 rounded-3 text-right">
-        <a href="{{ path('app_invoice_edit', {'id': invoice.id}) }}" class="btn-ocean btn-ocean-secondary btn-ocean-sm">
+        <a href="{{ path('app_invoice_edit', {uuid: invoice.company.uuid, reference: invoice.reference}) }}" class="btn-ocean btn-ocean-secondary btn-ocean-sm">
             <i class="bi bi-pencil"></i> Modifier l'adresse
         </a>
       <h1 class="my-4 h4">Adresse de Livraison</h1>
       <hr>
         <h2 class="mb-25 h4 adresse-devis">
-          <a href="{{ path('app_invoice_edit', {'id': invoice.id}) }}"  class="mb-25 h4">
+          <a href="{{ path('app_invoice_edit', {uuid: invoice.company.uuid, reference: invoice.reference}) }}"  class="mb-25 h4">
             {{ invoice.raisonSocial }}
           </a>
         </h2>
@@ -34,10 +34,10 @@
       <div class="action-header">
 
        
-        <a href="{{ path('app_invoice_output_pdf', {'id': invoice.id}) }}" class="btn-ocean btn-ocean-secondary btn-ocean-sm" target="_blank">
+        <a href="{{ path('app_invoice_output_pdf', {uuid: invoice.company.uuid, reference: invoice.reference}) }}" class="btn-ocean btn-ocean-secondary btn-ocean-sm" target="_blank">
             <i class="bi bi-file-pdf"></i> enregistrer en PDF
         </a>
-        <a href="{{ path('app_invoice_send', {'id': invoice.id}) }}" class="btn-ocean btn-ocean-secondary btn-ocean-sm">
+        <a href="{{ path('app_invoice_send', {uuid: invoice.company.uuid, reference: invoice.reference}) }}" class="btn-ocean btn-ocean-secondary btn-ocean-sm">
           <i class="bi bi-file-pdf"></i> envoyer par email
         </a>
       </div>
@@ -64,12 +64,12 @@
             {% for invoiceLine in invoice.invoiceDetails %}
               <tr>
                 <td>
-                  <a href="{{ path('app_invoice_details_edit', {'id': invoiceLine.id}) }}">
+                  <a href="{{ path('app_invoice_details_edit', {uuid: invoice.company.uuid, reference: invoice.reference, id: invoiceLine.id}) }}">
                     {{ invoiceLine.product.reference }}
                   </a>
                 </td>
                 <td>
-                  <a href="{{ path('app_invoice_details_edit', {'id': invoiceLine.id}) }}">
+                  <a href="{{ path('app_invoice_details_edit', {uuid: invoice.company.uuid, reference: invoice.reference, id: invoiceLine.id}) }}">
                     {{ invoiceLine.label }}
                   </a>
                 </td>

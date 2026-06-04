@@ -15,8 +15,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
-#[Route('/order/detail')]
-final class OrderDetailController extends AbstractController
+#[Route('/order/details')]
+final class OrderDetailsController extends AbstractController
 {
     public function __construct(
         private readonly ProductRepository $productRepository,
@@ -24,9 +24,17 @@ final class OrderDetailController extends AbstractController
         private readonly DocumentCalculator $calculator
     ) {}
 
-    #[Route('/{id}/new', name: 'app_order_details_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, Order $order): Response
+    #[Route('/{uuid}/{reference}/show', name: 'app_order_details_new', methods: ['GET', 'POST'])]
+    public function new(Request $request,
+                        string $uuid,
+                        string $reference,
+                        OrderRepository $orderRepository
+                        ): Response
     {
+        $order = $orderRepository->findOneByReferenceAndCompanyUuid($reference, $uuid);
+        if (!$order) {
+            throw $this->createNotFoundException('Commande introuvable');
+        }
         $user = $this->getUser();
         if (!$user) return $this->redirectToRoute('app_login');
 
@@ -76,8 +84,11 @@ final class OrderDetailController extends AbstractController
             $this->entityManager->flush();
 
             return $this->redirectToRoute(
-                'app_order_details_edit',
-                ['id' => $orderDetail->getId()],
+                'app_order_details_new',
+                [
+                    'uuid' => $order->getCompany()->getUuid(),
+                    'reference' => $order->getReference()
+                ],
                 Response::HTTP_SEE_OTHER
             );
         }
@@ -89,10 +100,16 @@ final class OrderDetailController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}/edit', name: 'app_order_details_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, OrderDetail $orderDetail): Response
+    #[Route('/{uuid}/{reference}/line/{id}/edit', name: 'app_order_details_edit', methods: ['GET', 'POST'])]
+    public function edit(Request $request,
+                         string $uuid,
+                         string $reference,
+                         OrderDetail $orderDetail): Response
     {
         $order = $orderDetail->getCommande();
+        if ($uuid !== (string) $order->getCompany()->getUuid() || $reference !== $order->getReference()) {
+            throw $this->createAccessDeniedException();
+        }
 
         $form = $this->createForm(OrderDetailTypeEdit::class, $orderDetail);
         $form->handleRequest($request);
@@ -115,7 +132,10 @@ final class OrderDetailController extends AbstractController
 
             return $this->redirectToRoute(
                 'app_order_details_new',
-                ['id' => $order->getId()],
+                [
+                    'uuid' => $order->getCompany()->getUuid(),
+                    'reference' => $order->getReference()
+                ],
                 Response::HTTP_SEE_OTHER
             );
         }
@@ -127,10 +147,16 @@ final class OrderDetailController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'app_order_detail_delete', methods: ['POST'])]
-    public function delete(Request $request, OrderDetail $orderDetail): Response
+    #[Route('/{uuid}/{reference}/line/{id}/delete', name: 'app_order_detail_delete', methods: ['POST'])]
+    public function delete(Request $request,
+                           string $uuid,
+                           string $reference,
+                           OrderDetail $orderDetail): Response
     {
         $order = $orderDetail->getCommande();
+        if ($uuid !== (string) $order->getCompany()->getUuid() || $reference !== $order->getReference()) {
+            throw $this->createAccessDeniedException();
+        }
 
         if ($this->isCsrfTokenValid('delete' . $orderDetail->getId(), $request->getPayload()->getString('_token'))) {
             $this->entityManager->remove($orderDetail);
@@ -143,7 +169,10 @@ final class OrderDetailController extends AbstractController
 
         return $this->redirectToRoute(
             'app_order_details_new',
-            ['id' => $order->getId()],
+            [
+                'uuid' => $order->getCompany()->getUuid(),
+                'reference' => $order->getReference()
+            ],
             Response::HTTP_SEE_OTHER
         );
     }
