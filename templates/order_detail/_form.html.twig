@@ -7,13 +7,13 @@
      <div class="divider"></div>
     <header class="d-flex justify-content-center gap-5">
       <div class="border px-4 py-2 rounded-3 text-right">
-      <a href="{{ path('app_order_edit', {'id': order.id}) }}" class="btn-ocean btn-ocean-secondary btn-ocean-sm">
+      <a href="{{ path('app_order_edit', {'uuid': order.company.uuid, 'reference': order.reference}) }}" class="btn-ocean btn-ocean-secondary btn-ocean-sm">
             <i class="bi bi-pencil"></i> Modifier l'adresse
         </a>
      <h1 class="my-4 h4"> Adresse de Livraison</h1>
       <hr>
         <h2 class="mb-25 h4 adresse-devis">
-          <a href="{{ path('app_order_edit', {'id': order.id}) }}"  class="mb-25 h4">
+          <a href="{{ path('app_order_edit', {'uuid': order.company.uuid, 'reference': order.reference}) }}"  class="mb-25 h4">
             {{ order.deliveryLabel }}
           </a>
         </h2>
@@ -33,13 +33,13 @@
         {# Bouton retour vers l'édition du devis #}
       <div class="action-header">
 
-        <a href="{{ path('app_order_edit', {'id': order.id}) }}" class="btn-ocean btn-ocean-secondary btn-ocean-sm">
+        <a href="{{ path('app_order_edit', {'uuid': order.company.uuid, 'reference': order.reference}) }}" class="btn-ocean btn-ocean-secondary btn-ocean-sm">
             <i class="bi bi-pencil"></i> Modifier l'adresse
         </a>
-        <a href="{{ path('app_orderInInvoice', {'id': order.id}) }}" class="btn-ocean btn-ocean-secondary btn-ocean-sm">
+        <a href="{{ path('app_orderInInvoice', {'uuid': order.company.uuid, 'reference': order.reference}) }}" class="btn-ocean btn-ocean-secondary btn-ocean-sm">
             <i class="bi bi-pencil"></i> Transfert en facture
         </a>
-        <a href="{{ path('app_order_output_pdf', {'id': order.id}) }}" class="btn-ocean btn-ocean-secondary btn-ocean-sm" target="_blank">
+        <a href="{{ path('app_order_output_pdf', {'uuid': order.company.uuid, 'reference': order.reference}) }}" class="btn-ocean btn-ocean-secondary btn-ocean-sm" target="_blank">
             <i class="bi bi-file-pdf"></i> enregistrer en PDF
         </a>
       </div>
@@ -70,12 +70,12 @@
             {% for orderLine in order.orderDetails %}
               <tr>
                 <td>
-                  <a href="{{ path('app_order_details_edit', {'id': orderLine.id}) }}">
+                  <a href="{{ path('app_order_details_edit', {'uuid': order.company.uuid, 'reference': order.reference, 'id': orderLine.id}) }}">
                     {{ orderLine.product.reference }}
                   </a>
                 </td>
                 <td>
-                  <a href="{{ path('app_order_details_edit', {'id': orderLine.id}) }}">
+                  <a href="{{ path('app_order_details_edit', {'uuid': order.company.uuid, 'reference': order.reference, 'id': orderLine.id}) }}">
                     {{ orderLine.label }}
                   </a>
                 </td>

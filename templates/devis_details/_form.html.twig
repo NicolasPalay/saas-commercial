@@ -7,12 +7,12 @@
     <hr>
     <header class="d-flex justify-content-center gap-5">
       <div class="border px-4 py-2 rounded-3 text-right">
-      <a href="{{ path('app_devis_edit', {'id': devis.id}) }}" class="btn-ocean btn-ocean-secondary btn-ocean-sm mb-3">
+      <a href="{{ path('app_devis_edit', {'uuid': devis.company.uuid, 'reference': devis.reference}) }}" class="btn-ocean btn-ocean-secondary btn-ocean-sm mb-3">
         <i class="bi bi-pencil"></i> Modifier l'adresse
       </a>
       <h1 class="my-4 h4"> Adresse de Livraison</h1>
         <h2 class="mb-25 h4 adresse-devis">
-          <a href="{{ path('app_devis_edit', {'id': devis.id}) }}"  class="mb-25 h4">
+          <a href="{{ path('app_devis_edit', {'uuid': devis.company.uuid, 'reference': devis.reference}) }}"  class="mb-25 h4">
             {{ devis.deliveryLabel }}
           </a>
         </h2>
@@ -32,17 +32,17 @@
         {# Bouton retour vers l'édition du devis #}
       <div class="action-header">
         {% if devis.status.label() == 'Accepté' %} 
-          <a href="{{ path('app_toOrder', {'id': devis.id}) }}" class="btn-ocean btn-ocean-secondary btn-ocean-sm">
+          <a href="{{ path('app_toOrder', {'uuid': devis.company.uuid, 'reference': devis.reference}) }}" class="btn-ocean btn-ocean-secondary btn-ocean-sm">
             <i class="bi bi-pencil"></i> Transfert en Commande
           </a>
-          <a href="{{ path('app_devis_toInvoice', {'id': devis.id}) }}" class="btn-ocean btn-ocean-secondary btn-ocean-sm">
+          <a href="{{ path('app_devis_toInvoice', {'uuid': devis.company.uuid, 'reference': devis.reference}) }}" class="btn-ocean btn-ocean-secondary btn-ocean-sm">
             <i class="bi bi-pencil"></i> Transfert en Facture
           </a>
         {% endif %}
-        <a href="{{ path('app_devis_output_pdf', {'id': devis.id}) }}" class="btn-ocean btn-ocean-secondary btn-ocean-sm" target="_blank">
+        <a href="{{ path('app_devis_output_pdf', {'uuid': devis.company.uuid, 'reference': devis.reference}) }}" class="btn-ocean btn-ocean-secondary btn-ocean-sm" target="_blank">
             <i class="bi bi-file-pdf"></i> enregistrer en PDF
         </a>
-        <a href="{{ path('app_devis_send', {'id': devis.id}) }}" class="btn-ocean btn-ocean-secondary btn-ocean-sm">
+        <a href="{{ path('app_devis_send', {'uuid': devis.company.uuid, 'reference': devis.reference}) }}" class="btn-ocean btn-ocean-secondary btn-ocean-sm">
             <i class="bi bi-file-pdf"></i> envoyer par email
         </a>
       </div>
@@ -50,7 +50,7 @@
   </div>
   <div class="card-ocean-body">
     
-  <a href="#addLine" class="btn-ocean btn-ocean-secondary btn-ocean-sm">Ajouter une ligne</a> <a href="{{ path('app_devis_edit', {'id': devis.id}) }}" class="btn-ocean btn-ocean-sm {{ devis.status.label() }}">Mettre à jour le statut : {{ devis.status.label() }}</a>
+  <a href="#addLine" class="btn-ocean btn-ocean-secondary btn-ocean-sm">Ajouter une ligne</a> <a href="{{ path('app_devis_edit', {'uuid': devis.company.uuid, 'reference': devis.reference}) }}" class="btn-ocean btn-ocean-sm {{ devis.status.label() }}">Mettre à jour le statut : {{ devis.status.label() }}</a>
     <div class="divider"></div>
 
     {# Tableau des lignes de devis #}
@@ -72,12 +72,12 @@
             {% for devisLine in devis.devisDetails %}
               <tr>
                 <td>
-                  <a href="{{ path('app_devis_details_edit', {'id': devisLine.id}) }}">
+                  <a href="{{ path('app_devis_details_edit', {'uuid': devis.company.uuid, 'reference': devis.reference, 'id': devisLine.id}) }}">
                     {{ devisLine.product.reference }}
                   </a>
                 </td>
                 <td>
-                  <a href="{{ path('app_devis_details_edit', {'id': devisLine.id}) }}">
+                  <a href="{{ path('app_devis_details_edit', {'uuid': devis.company.uuid, 'reference': devis.reference, 'id': devisLine.id}) }}">
                     {{ devisLine.label }}
                   </a>
                 </td>
