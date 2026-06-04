@@ -1,0 +1,25 @@
+{# templates/message/_list.html.twig #}
+<div class="messages-list" id="messages-list">
+    {% if conversation.message | length > 0 %}
+        {% for message in conversation.message %}
+        <div class="message-item {% if message.user.id == app.user.id %}sent{% else %}received{% endif %}" data-message-id="{{ message.id }}">
+            {% if message.user.id != app.user.id %}
+                <div class="message-author">
+                    {{ message.user.email | split('@')[0] }}
+                </div>
+            {% endif %}
+            
+            <div>{{ message.content }}</div>
+            
+            <div class="message-time">
+                {{ message.createdAt ? message.createdAt | date('H:i') : '' }}
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div style="text-align: center; color: var(--dune); padding: 40px 20px;">
+            <div style="font-size: 48px; margin-bottom: 16px;">💬</div>
+            <p>Aucun message pour l'instant. Commencez la conversation !</p>
+        </div>
+    {% endif %}
+</div>

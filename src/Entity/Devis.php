@@ -7,7 +7,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use App\Contract\OwnedByCompanyInterface;
-
+use App\Enum\StatusEnum;
 
 #[ORM\Entity(repositoryClass: DevisRepository::class)]
 class Devis implements OwnedByCompanyInterface
@@ -74,6 +74,8 @@ class Devis implements OwnedByCompanyInterface
     #[ORM\OneToMany(targetEntity: Order::class, mappedBy: 'devis')]
     private Collection $orders;
 
+    #[ORM\Column(enumType: StatusEnum::class)]
+    private StatusEnum $status = StatusEnum::DRAFT;
 
     public function __construct()
     {
@@ -320,4 +322,17 @@ class Devis implements OwnedByCompanyInterface
 
         return $this;
     }   
+
+    public function getStatus(): StatusEnum
+    {
+        return $this->status;
+    }
+
+    public function setStatus(StatusEnum $status): self
+    {
+        $this->status = $status;
+
+        return $this;
+    }
+
 }

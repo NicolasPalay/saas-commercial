@@ -16,13 +16,62 @@ class DevisRepository extends ServiceEntityRepository
         parent::__construct($registry, Devis::class);
     }
 
-  public function CountDevisByCompany($companyId): int
+    /**
+     * Compter les devis créés ce mois
+     */
+    public function findCountThisMonth($company): int
     {
-        $qb = $this->createQueryBuilder('d')
-            ->select('COUNT(d.id)')
-            ->where('d.company = :companyId')
-            ->setParameter('companyId', $companyId);
+        $now = new \DateTime();
+        $firstDayOfMonth = new \DateTime($now->format('Y-m-01'));
+        $lastDayOfMonth = new \DateTime($now->format('Y-m-t'));
 
-        return (int) $qb->getQuery()->getSingleScalarResult();
+        return (int) $this->createQueryBuilder('d')
+            ->select('COUNT(d.id)')
+            ->where('d.company = :company')
+            ->andWhere('d.createdAt >= :start')
+            ->andWhere('d.createdAt <= :end')
+            ->setParameter('company', $company)
+            ->setParameter('start', $firstDayOfMonth)
+            ->setParameter('end', $lastDayOfMonth)
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
+    /**
+     * Trouver les devis récents
+     */
+    public function findRecentByCompany($company, int $limit = 5): array
+    {
+        return $this->createQueryBuilder('d')
+            ->where('d.company = :company')
+            ->setParameter('company', $company)
+            ->orderBy('d.createdAt', 'DESC')
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * Compter tous les devis par entreprise
+     */
+    public function CountDevisByCompany($company): int
+    {
+        return (int) $this->createQueryBuilder('d')
+            ->select('COUNT(d.id)')
+            ->where('d.company = :company')
+            ->setParameter('company', $company)
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
+    /**
+     * Trouver par reference et company (pour les routes UUID)
+     */
+    public function findByReferenceAndCompany(string $reference, $company): ?Devis
+    {
+        return $this->findOneBy([
+            'reference' => $reference,
+            'company' => $company
+        ]);
     }
 }

@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Commande {{ order.reference }}</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            color: #333;
+            line-height: 1.6;
+            font-size: 14px;
+        }
+
+        .container {
+            max-width: 210mm;
+            height: 297mm;
+            margin: 0 auto;
+            padding: 20mm;
+            background: white;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 40px;
+            border-bottom: 2px solid #4a7a8a;
+            padding-bottom: 20px;
+        }
+
+        .company-info h1 {
+            color: #1a2f36;
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .company-info p {
+            margin: 5px 0;
+            font-size: 12px;
+        }
+
+        .document-title {
+            text-align: right;
+        }
+
+        .document-title h2 {
+            color: #1a2f36;
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .document-meta {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .meta-section h3 {
+            color: #4a7a8a;
+            font-size: 12px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        .meta-section p {
+            font-size: 13px;
+            margin: 3px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+        }
+
+        thead {
+            background-color: #4a7a8a;
+            color: white;
+        }
+
+        th {
+            padding: 12px;
+            text-align: left;
+            font-weight: bold;
+            font-size: 12px;
+        }
+
+        td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #e0d4c8;
+        }
+
+        tbody tr:nth-child(even) {
+            background-color: #faf5f0;
+        }
+
+        .price {
+            text-align: right;
+        }
+
+        .hidden-price {
+            display: {% if not showPrices %}none{% else %}table-cell{% endif %};
+        }
+
+        .totals {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 40px;
+        }
+
+        .totals-table {
+            width: 40%;
+        }
+
+        .totals-table .label {
+            display: flex;
+            justify-content: space-between;
+            font-weight: bold;
+            color: #4a7a8a;
+            padding: 8px 0;
+            border-bottom: 1px solid #e0d4c8;
+        }
+
+        .totals-table .total-ttc {
+            background-color: #4a7a8a;
+            color: white;
+            font-weight: bold;
+            padding: 12px;
+            border-radius: 4px;
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+        }
+
+        .delivery-info {
+            background-color: #faf5f0;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            font-size: 12px;
+        }
+
+        .delivery-info h4 {
+            color: #1a2f36;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .footer {
+            margin-top: 50px;
+            padding-top: 20px;
+            border-top: 1px solid #e0d4c8;
+            font-size: 11px;
+            color: #666;
+            text-align: center;
+        }
+
+        .notes {
+            background-color: #faf5f0;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            font-size: 12px;
+        }
+
+        .notes h4 {
+            color: #1a2f36;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="company-info">
+                <h1>{{ order.company.raisonSocial }}</h1>
+                <p>📧 {{ order.company.email }}</p>
+                <p>📞 {{ order.company.phoneNumber }}</p>
+                <p>SIRET: {{ order.company.siret }}</p>
+            </div>
+            <div class="document-title">
+                <h2>COMMANDE</h2>
+                <p style="font-size: 16px; color: #4a7a8a;">{{ order.reference }}</p>
+            </div>
+        </div>
+
+        <!-- Métadonnées -->
+        <div class="document-meta">
+            <div class="meta-section">
+                <h3>Commandé par</h3>
+                <p><strong>{{ order.company.raisonSocial }}</strong></p>
+                <p>{{ order.company.email }}</p>
+            </div>
+            <div class="meta-section">
+                <h3>Commandé à</h3>
+                <p><strong>{{ order.client.raisonSocial }}</strong></p>
+                <p>{{ order.client.email }}</p>
+            </div>
+            <div class="meta-section">
+                <h3>Dates</h3>
+                <p><strong>Commandée:</strong> {{ order.createdAt | date('d/m/Y') }}</p>
+                <p><strong>Livraison:</strong> {% if order.deliveryDate %}{{ order.deliveryDate | date('d/m/Y') }}{% else %}À convenir{% endif %}</p>
+            </div>
+            <div class="meta-section">
+                <h3>Référence</h3>
+                <p><strong>{{ order.reference }}</strong></p>
+            </div>
+        </div>
+
+        <!-- Tableau articles -->
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 50%;">Article</th>
+                    <th style="width: 15%;">Quantité</th>
+                    <th class="hidden-price" style="width: 17.5%;">Prix Unitaire</th>
+                    <th class="hidden-price" style="width: 17.5%;">Montant</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for detail in order.orderDetails %}
+                <tr>
+                    <td>
+                        <strong>{{ detail.product.name }}</strong>
+                        {% if detail.product.description %}
+                        <br><small>{{ detail.product.description }}</small>
+                        {% endif %}
+                    </td>
+                    <td class="price">{{ detail.quantite }}</td>
+                    <td class="price hidden-price">{{ detail.prixUnitaire | number_format(2, ',', ' ') }} €</td>
+                    <td class="price hidden-price">{{ (detail.quantite * detail.prixUnitaire) | number_format(2, ',', ' ') }} €</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <!-- Totaux -->
+        {% if showPrices %}
+        <div class="totals">
+            <div class="totals-table">
+                <div class="label">
+                    <span>Sous-total HT:</span>
+                    <span>{{ order.total | number_format(2, ',', ' ') }} €</span>
+                </div>
+                <div class="label">
+                    <span>TVA (20%):</span>
+                    <span>{{ order.taxe | number_format(2, ',', ' ') }} €</span>
+                </div>
+                <div class="total-ttc">
+                    <span>TOTAL TTC:</span>
+                    <span>{{ order.totalTTC | number_format(2, ',', ' ') }} €</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Informations de livraison -->
+        <div class="delivery-info">
+            <h4>🚚 Informations de livraison</h4>
+            <p><strong>Lieu de livraison:</strong> {{ order.deliveryAddress | default('À définir') }}</p>
+            <p><strong>Date souhaitée:</strong> {{ order.deliveryDate | date('d/m/Y') if order.deliveryDate else 'À convenir' }}</p>
+            <p><strong>Conditions de livraison:</strong> Selon nos conditions générales</p>
+        </div>
+        {% endif %}
+
+        <!-- Notes -->
+        {% if order.notes %}
+        <div class="notes">
+            <h4>Notes</h4>
+            <p>{{ order.notes }}</p>
+        </div>
+        {% endif %}
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>Merci de confirmer la réception de cette commande.</p>
+            <p>Généré le {{ "now" | date('d/m/Y à H:i') }}</p>
+        </div>
+    </div>
+</body>
+</html>

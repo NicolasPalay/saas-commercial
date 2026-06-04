@@ -227,7 +227,6 @@ small,
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-md);
   transition: transform var(--transition-base), box-shadow var(--transition-base);
-  overflow: hidden;
 }
 
 .card-ocean:hover {

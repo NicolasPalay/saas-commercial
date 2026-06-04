@@ -6,7 +6,7 @@ use App\Repository\CompanyRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-
+use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity(repositoryClass: CompanyRepository::class)]
 class Company
@@ -15,6 +15,9 @@ class Company
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
+
+    #[ORM\Column(type: 'uuid', unique: true, nullable: true, options: ['length' => 36])]
+    private Uuid $uuid;
 
     #[ORM\Column(length: 255)]
     private ?string $name = null;
@@ -133,9 +136,16 @@ class Company
     #[ORM\Column(nullable: true)]
     private ?int $phone = null;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $iban = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $tvaIntra = null;
+
 
 
     public function __construct() {
+        $this->uuid = Uuid::v4();
         $this->createdAt = new \DateTimeImmutable();
         $this->user = new ArrayCollection();
         $this->clients = new ArrayCollection();
@@ -155,6 +165,17 @@ class Company
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function getUuid(): Uuid
+    {
+        return $this->uuid;
+    }
+
+    public function setUuid(Uuid $uuid): static
+    {
+        $this->uuid = $uuid;
+        return $this;
     }
 
     public function getName(): ?string
@@ -692,6 +713,30 @@ class Company
     public function setPhone(?int $phone): static
     {
         $this->phone = $phone;
+
+        return $this;
+    }
+
+    public function getIban(): ?string
+    {
+        return $this->iban;
+    }
+
+    public function setIban(?string $iban): static
+    {
+        $this->iban = $iban;
+
+        return $this;
+    }
+
+    public function getTvaIntra(): ?string
+    {
+        return $this->tvaIntra;
+    }
+
+    public function setTvaIntra(?string $tvaIntra): static
+    {
+        $this->tvaIntra = $tvaIntra;
 
         return $this;
     }

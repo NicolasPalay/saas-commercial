@@ -3,7 +3,6 @@
 namespace App\Repository;
 
 use App\Entity\Conversation;
-use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -17,39 +16,77 @@ class ConversationRepository extends ServiceEntityRepository
         parent::__construct($registry, Conversation::class);
     }
 
-   public function findAllByUser(User $user): array
-{
-    return $this->createQueryBuilder('c')
-        ->join('c.users', 'u')
-        ->where('u = :user')
-        ->setParameter('user', $user)
-        ->orderBy('c.updatedAt', 'DESC')
-        ->getQuery()
-        ->getResult();
-}
+    /**
+     * Trouver les conversations récentes pour un utilisateur
+     */
+    public function findRecentByUser($user, int $limit = 5): array
+    {
+        return $this->createQueryBuilder('c')
+            ->innerJoin('c.users', 'u')
+            ->where('u.id = :userId')
+            ->setParameter('userId', $user->getId())
+            ->orderBy('c.updatedAt', 'DESC')
+            ->addOrderBy('c.createdAt', 'DESC')
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult();
+    }
 
-    //    /**
-    //     * @return Conversation[] Returns an array of Conversation objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('c')
-    //            ->andWhere('c.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('c.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
+    /**
+     * Compter les conversations par entreprise
+     */
+    public function countByCompany($company): int
+    {
+        return (int) $this->createQueryBuilder('c')
+            ->select('COUNT(c.id)')
+            ->where('c.company = :company')
+            ->setParameter('company', $company)
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
 
-    //    public function findOneBySomeField($value): ?Conversation
-    //    {
-    //        return $this->createQueryBuilder('c')
-    //            ->andWhere('c.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+    /**
+     * Compter les conversations actives (avec messages) de la semaine dernière
+     */
+    public function findCountActiveLastWeek($company): int
+    {
+        $weekAgo = new \DateTime('-7 days');
+
+        return (int) $this->createQueryBuilder('c')
+            ->select('COUNT(DISTINCT c.id)')
+            ->innerJoin('c.message', 'm')
+            ->where('c.company = :company')
+            ->andWhere('m.createdAt >= :weekAgo')
+            ->setParameter('company', $company)
+            ->setParameter('weekAgo', $weekAgo)
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
+    /**
+     * Trouver toutes les conversations par utilisateur
+     */
+    public function findAllByUser($user): array
+    {
+        return $this->createQueryBuilder('c')
+            ->innerJoin('c.users', 'u')
+            ->where('u.id = :userId')
+            ->setParameter('userId', $user->getId())
+            ->orderBy('c.updatedAt', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * Trouver les conversations par entreprise
+     */
+    public function findByCompany($company): array
+    {
+        return $this->createQueryBuilder('c')
+            ->where('c.company = :company')
+            ->setParameter('company', $company)
+            ->orderBy('c.updatedAt', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
 }

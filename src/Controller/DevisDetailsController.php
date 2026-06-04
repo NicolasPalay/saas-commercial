@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Company;
 use App\Entity\Devis;
 use App\Entity\DevisDetails;
 use App\Form\DevisDetailsType;
@@ -13,6 +14,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 
 #[Route('/devis/details')]
 final class DevisDetailsController extends AbstractController
@@ -23,10 +25,17 @@ final class DevisDetailsController extends AbstractController
         private readonly DocumentCalculator $calculator
     ) {}
 
-    #[Route('/{id}/devis/show', name: 'app_devis_details_new', methods: ['GET', 'POST'])]
-    public function new(Devis $devis, Request $request): Response
+    #[Route('/{uuid}/{reference}/devis/show', name: 'app_devis_details_new', methods: ['GET', 'POST'])]
+    public function new(#[MapEntity(mapping: ['reference' => 'reference'])] Devis $devis,
+                        string $uuid,
+                        Request $request
+                        ): Response
     {
         $this->denyAccessUnlessGranted('DEVIS_EDIT', $devis);
+        $uuid = $devis->getCompany()->getUuid();
+        if ($uuid !== $devis->getCompany()->getUuid()) {
+            throw $this->createAccessDeniedException();
+        }
         $user = $this->getUser();
         if (!$user) return $this->redirectToRoute('app_login');
 
@@ -79,7 +88,7 @@ final class DevisDetailsController extends AbstractController
 
             return $this->redirectToRoute(
                 'app_devis_details_edit',
-                ['id' => $devisDetail->getId()],
+                ['reference' => $devis->getReference()],
                 Response::HTTP_SEE_OTHER
             );
         }
@@ -92,9 +101,11 @@ final class DevisDetailsController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'app_devis_details_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, DevisDetails $devisDetail): Response
+    public function edit(Request $request,
+                         DevisDetails $devisDetail): Response
     {
         $devis = $devisDetail->getDevis();
+
         $this->denyAccessUnlessGranted('DEVIS_EDIT', $devisDetail->getDevis());
         $form = $this->createForm(DevisDetailsTypeEdit::class, $devisDetail);
         $form->handleRequest($request);

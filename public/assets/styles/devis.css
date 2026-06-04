@@ -97,7 +97,7 @@ tbody {
 .action-header {
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    justify-content: flex-start;
     gap: 10px;
     width: max-content;
 }
@@ -170,3 +170,32 @@ tbody {
     left: 100% !important;
     width: max-content !important;
 }
+
+.Brouillon {
+    background-color: #6c757d;
+    color: white;
+}
+
+.Accepté {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.Refusé {
+    background-color: #f44336;
+    color: white;
+}
+.draft {
+    color: #6c757d !important;
+}
+.accepted {
+
+    color: #4CAF50 !important;
+    
+}
+.refused {
+    color: #f44336 !important;
+}
+
+
+

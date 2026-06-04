@@ -79,7 +79,7 @@ final class DevisController extends AbstractController
             'form' => $form,
             'entity' => Devis::class,
             'entityText' => 'devis',
-            'headers'=>["reference", "client", "total", "createdAt"],
+            'headers'=>["reference", "client", "total", "createdAt","status"],
         ]);
     }
 
@@ -184,7 +184,8 @@ final class DevisController extends AbstractController
         SendMailService $mailer,
         string $id
     ): Response {
-        $devis = $devisRepository->find($id);
+        $user = $this->getUser();
+        $devis = $devisRepository->findOneBy(['id' => $id, 'company' => $user?->getCompany()]);
 
         if (!$devis) {
             throw $this->createNotFoundException('Devis introuvable');

@@ -16,35 +16,43 @@ class ClientRepository extends ServiceEntityRepository
         parent::__construct($registry, Client::class);
     }
 
-    public function getAllClientsByCompany($company) : array
+    /**
+     * Compter les clients par entreprise
+     */
+    public function countByCompany($company): int
+    {
+        return (int) $this->createQueryBuilder('c')
+            ->select('COUNT(c.id)')
+            ->where('c.company = :company')
+            ->setParameter('company', $company)
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
+    /**
+     * Trouver les clients récents
+     */
+    public function findRecentByCompany($company, int $limit = 10): array
     {
         return $this->createQueryBuilder('c')
-            ->andWhere('c.company = :company')
+            ->where('c.company = :company')
+            ->setParameter('company', $company)
+            ->orderBy('c.createdAt', 'DESC')
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * Trouver tous les clients par entreprise
+     */
+    public function findAllByCompany($company): array
+    {
+        return $this->createQueryBuilder('c')
+            ->where('c.company = :company')
             ->setParameter('company', $company)
             ->orderBy('c.raisonSocial', 'ASC')
             ->getQuery()
-            ->getResult()
-        ;
-    }
-
-    public function findByCompanySortedByAddress($company, $field = 'raison_social', $direction = 'asc'): array
-    {
-        $qb = $this->createQueryBuilder('c')
-            ->leftJoin('c.address', 'a')
-            ->addSelect('a')
-            ->where('c.company = :company')
-            ->setParameter('company', $company);
-
-        $addressFields = ['codePostal', 'ville', 'mobilePhone'];
-
-        if (in_array($field, $addressFields)) {
-            $qb->orderBy('a.' . $field, $direction);
-        } else {
-            $qb->orderBy('c.' . $field, $direction);
-        }
-
-        return $qb->getQuery()
-            ->setHint(\Doctrine\ORM\Query::HINT_REFRESH, true)
             ->getResult();
     }
 }

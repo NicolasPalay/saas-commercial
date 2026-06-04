@@ -4,7 +4,8 @@
     'reference': 'Référence',
     'client': 'Client',
     'total': 'Total HT',
-    'createdAt': 'Date de création'
+    'createdAt': 'Date de création',
+    'status': 'Statut'
 } %}
   <div class="table-card">
     <div class="table-responsive">
@@ -52,13 +53,19 @@
 
             <tr>
               <td>
-                <a href="{{ path('app_' ~ entityText ~ '_details_new', {'id': line.id}) }}">
+                <a href="{{ path('app_' ~ entityText ~ '_details_new', {
+                  'uuid': line.company.uuid,
+                  'reference': line.reference
+                }) }}">
                   <strong>{{ line.reference }}</strong>
                 </a>
               </td>
 
               <td>
-                <a href="{{ path('app_' ~ entityText ~ '_details_new', {'id': line.id}) }}">
+                <a href="{{ path('app_' ~ entityText ~ '_details_new', {
+                  'uuid': line.company.uuid,
+                  'reference': line.reference
+                }) }}">
                   <strong>{{ line.client.raisonSocial }}</strong>
                 </a>
               </td>
@@ -72,10 +79,15 @@
               <td style="color: var(--dune); font-size: 13px;">
                 {{ line.createdAt|date('d/m/Y') }}
               </td>
-
+              <td style="font-size: 13px; font-weight: 400;" class="{{ line.status.value }}">
+                {{ line.status.label() }}
+              </td>
               <td>
                 <div class="d-flex gap-2">
-                  <a href="{{ path('app_' ~ entityText ~ '_details_edit', {'id': line.id}) }}" 
+                   <a href="{{ path('app_' ~ entityText ~ '_details_new', {
+                      'uuid': line.company.uuid,
+                      'reference': line.reference
+                    }) }}"
                      class="btn-ocean btn-ocean-secondary" 
                      style="padding: 6px 12px; font-size: 11px;"
                      title="Éditer">

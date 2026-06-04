@@ -32,6 +32,9 @@ class CompanyType extends AbstractType
             ->add('codePostal')
             ->add('ville')
             ->add('siret')
+            ->add('tvaIntra')
+            ->add('iban')
+
             ->add('urlLogo', FileType::class, [
                 'label' => 'Logo de l\'entreprise',
                 'mapped' => false,

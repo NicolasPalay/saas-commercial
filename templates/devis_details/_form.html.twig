@@ -31,13 +31,14 @@
       
         {# Bouton retour vers l'édition du devis #}
       <div class="action-header">
-       
+        {% if devis.status.label() == 'Accepté' %} 
           <a href="{{ path('app_toOrder', {'id': devis.id}) }}" class="btn-ocean btn-ocean-secondary btn-ocean-sm">
             <i class="bi bi-pencil"></i> Transfert en Commande
           </a>
           <a href="{{ path('app_devis_toInvoice', {'id': devis.id}) }}" class="btn-ocean btn-ocean-secondary btn-ocean-sm">
             <i class="bi bi-pencil"></i> Transfert en Facture
           </a>
+        {% endif %}
         <a href="{{ path('app_devis_output_pdf', {'id': devis.id}) }}" class="btn-ocean btn-ocean-secondary btn-ocean-sm" target="_blank">
             <i class="bi bi-file-pdf"></i> enregistrer en PDF
         </a>
@@ -49,7 +50,7 @@
   </div>
   <div class="card-ocean-body">
     
-  <a href="#addLine" class="btn-ocean btn-ocean-secondary btn-ocean-sm">Ajouter une ligne</a>
+  <a href="#addLine" class="btn-ocean btn-ocean-secondary btn-ocean-sm">Ajouter une ligne</a> <a href="{{ path('app_devis_edit', {'id': devis.id}) }}" class="btn-ocean btn-ocean-sm {{ devis.status.label() }}">Mettre à jour le statut : {{ devis.status.label() }}</a>
     <div class="divider"></div>
 
     {# Tableau des lignes de devis #}

@@ -44,13 +44,26 @@ security:
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
     access_control:
-    - { path: ^/, roles: PUBLIC_ACCESS }
+    # Routes publiques explicites
+    - { path: ^/$, roles: PUBLIC_ACCESS }
     - { path: ^/login, roles: PUBLIC_ACCESS }
     - { path: ^/register, roles: PUBLIC_ACCESS }
     - { path: ^/mot-de-passe-oublie, roles: PUBLIC_ACCESS }
     - { path: ^/verif, roles: PUBLIC_ACCESS }
     - { path: ^/stripe/webhook, roles: PUBLIC_ACCESS }
-    - { path: ^/dashboard, roles: [ROLE_DIRIGEANT, ROLE_EMPLOYE] } 
+
+    # Assets publics (images, css, js)
+    - { path: ^/images, roles: PUBLIC_ACCESS }
+
+    # Zones protégées par rôle
+    - { path: ^/dashboard, roles: [ROLE_DIRIGEANT, ROLE_EMPLOYE] }
+    - { path: ^/devis, roles: [ROLE_DIRIGEANT, ROLE_EMPLOYE] }
+    - { path: ^/order, roles: [ROLE_DIRIGEANT, ROLE_EMPLOYE] }
+    - { path: ^/invoice, roles: [ROLE_DIRIGEANT, ROLE_EMPLOYE] }
+    - { path: ^/company, roles: [ROLE_DIRIGEANT, ROLE_EMPLOYE] }
+
+    # Tout le reste = connecté minimum
+    - { path: ^/, roles: ROLE_USER }
 
 when@test:
     security:

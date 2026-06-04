@@ -9,7 +9,10 @@
   @media (min-width: 768px) {
     .mobile-topbar { display: none; }
   }
-
+.employees-card{
+  overflow: auto;
+    height: 295px;
+}
   #openMenu {
     background: var(--white);
     border: 1.5px solid var(--sky-shell);

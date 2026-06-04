@@ -8,6 +8,8 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use App\Contract\OwnedByCompanyInterface;
+use App\Enum\InvoiceEnum;
+use App\Enum\InvoiceTypeEnum;
 
 #[ORM\Entity(repositoryClass: InvoiceRepository::class)]
 class Invoice implements OwnedByCompanyInterface
@@ -72,13 +74,19 @@ class Invoice implements OwnedByCompanyInterface
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $email = null;
 
+    #[ORM\Column(enumType: InvoiceTypeEnum::class)]
+    private InvoiceTypeEnum $type = InvoiceTypeEnum::INVOICE;
+
+     #[ORM\Column(enumType: InvoiceEnum::class)]
+    private InvoiceEnum $status = InvoiceEnum::DRAFT;
+
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
     private ?Order $commande = null;
 
     public function __construct()
     {
         $this->invoiceDetails = new ArrayCollection();
-                $this->createdAt = new \DateTimeImmutable();
+        $this->createdAt = new \DateTimeImmutable();
     }
 
     public function getId(): ?int
@@ -313,6 +321,30 @@ class Invoice implements OwnedByCompanyInterface
     public function setCommande(?Order $commande): static
     {
         $this->commande = $commande;
+
+        return $this;
+    }
+
+    public function getType(): InvoiceTypeEnum
+    {
+        return $this->type;
+    }
+
+    public function setType(InvoiceTypeEnum $type): self
+    {
+        $this->type = $type;
+
+        return $this;
+    }
+
+    public function getStatus(): InvoiceEnum
+    {
+        return $this->status;
+    }
+
+    public function setStatus(InvoiceEnum $status): self
+    {
+        $this->status = $status;
 
         return $this;
     }

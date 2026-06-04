@@ -9,6 +9,7 @@ use App\Form\InvoiceDetailsTypeEdit;
 use App\Repository\ProductRepository;
 use App\Services\DocumentCalculator;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -23,8 +24,10 @@ final class InvoiceDetailsController extends AbstractController
         private readonly DocumentCalculator $calculator
     ) {}
 
-    #[Route('/{id}/new', name: 'app_invoice_details_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, Invoice $invoice): Response
+    #[Route('/{reference}/new', name: 'app_invoice_details_new', methods: ['GET', 'POST'])]
+    public function new(Request $request, 
+                        #[MapEntity(mapping: ['reference' => 'reference'])] Invoice $invoice
+                        ): Response
     {
         $user = $this->getUser();
         if (!$user) return $this->redirectToRoute('app_login');
@@ -75,7 +78,7 @@ final class InvoiceDetailsController extends AbstractController
 
             return $this->redirectToRoute(
                 'app_invoice_details_edit',
-                ['id' => $invoiceDetail->getId()],
+                ['reference' => $invoice->getReference()],
                 Response::HTTP_SEE_OTHER
             );
         }
@@ -113,7 +116,7 @@ final class InvoiceDetailsController extends AbstractController
 
             return $this->redirectToRoute(
                 'app_invoice_details_new',
-                ['id' => $invoice->getId()],
+                 ['reference' => $invoice->getReference()],
                 Response::HTTP_SEE_OTHER
             );
         }

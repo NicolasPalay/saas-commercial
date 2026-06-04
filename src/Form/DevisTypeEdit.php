@@ -4,6 +4,7 @@ namespace App\Form;
 
 use App\Entity\Address;
 use App\Entity\Devis;
+use App\Enum\StatusEnum;
 use App\Form\Field\ClientAutocompleteField;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
@@ -14,6 +15,7 @@ use Symfony\Component\Form\Extension\Core\Type\TelType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Form\Extension\Core\Type\EnumType;
 
 class DevisTypeEdit extends AbstractType
 {
@@ -32,15 +34,31 @@ class DevisTypeEdit extends AbstractType
                 'label' => 'Référence du devis',
                 'label_attr' => ['class' => 'd-block mb-1'],
                 'attr' => ['class' => 'form-control mb-3']])
+            ->add('status', EnumType::class, [
+                'class' => StatusEnum::class,
+                'placeholder' => 'Choisir un statut',
+                'required' => false,
+                'choice_label' => fn(StatusEnum $status) => $status->label(),
+                'label' => 'Statut du devis',
+                'label_attr' => [
+                    'class' => 'd-block mb-1',
+
+                ],
+                'attr' => [
+                    'class' => 'form-control mb-3',
+
+                ]
+            ])
             ->add('deliveryLabel', TextType::class, [    
                 'label' => 'Libellé de facturation',
+               
                 'label_attr' => ['class' => 'd-block mb-1'],
                 'required' => false,
                 'attr' => ['class' => 'form-control mb-3']])
             ->add('address', EntityType::class, [
             'class' => Address::class,
-            'choice_label' => 'nameStreet', // ou fullname
-            'multiple' => false,
+            'choice_label' => 'nameStreet',  
+            'placeholder' => 'Choisir une adresse existante',
             'required' => false,
             'mapped' => false,
             'query_builder' => function (EntityRepository $er) use ($company, $currentClient) {

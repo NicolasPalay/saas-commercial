@@ -9,6 +9,7 @@ use App\Services\PdfGeneratorService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 class PdfController extends AbstractController
 {
@@ -19,7 +20,8 @@ class PdfController extends AbstractController
         string $id
     ): Response
     {
-        $devis = $devisRepository->find($id);
+        $user = $this->getUser();
+        $devis = $devisRepository->findOneBy(['id' => $id, 'company' => $user?->getCompany()]);
 
         if (!$devis) {
             throw $this->createNotFoundException('Devis introuvable');
@@ -49,7 +51,8 @@ class PdfController extends AbstractController
         string $id
     ): Response
     {
-        $order = $orderRepository->find($id);
+        $user = $this->getUser();
+        $order = $orderRepository->findOneBy(['id' => $id, 'company' => $user?->getCompany()]);
 
         if (!$order) {
             throw $this->createNotFoundException('Commande introuvable');
@@ -81,7 +84,8 @@ class PdfController extends AbstractController
         string $id
     ): Response
     {
-        $invoice = $invoiceRepository->find($id);
+        $user = $this->getUser();
+        $invoice = $invoiceRepository->findOneBy(['id' => $id, 'company' => $user?->getCompany()]);
 
         if (!$invoice) {
             throw $this->createNotFoundException('Devis introuvable');
@@ -95,7 +99,7 @@ class PdfController extends AbstractController
             'date' => $invoice->getCreatedAt(),
         ]);
         $result = iconv('UTF-8', "ISO-8859-1//IGNORE", $html);
-        $content = $pdfGeneratorService->output($result );$content = $pdfGeneratorService->output($html);
+        $content = $pdfGeneratorService->output($html);
 
         return new Response(
             $content,
@@ -110,7 +114,8 @@ class PdfController extends AbstractController
     #[Route("/stream-pdf/{id}", name: 'app_stream_pdf')]
     public function streamPdf(PdfGeneratorService $pdfGeneratorService, DevisRepository $devisRepository,string $id): Response
     {
-        $devis = $devisRepository->findOneBy(['id'=> $id]);
+        $user = $this->getUser();
+        $devis = $devisRepository->findOneBy(['id'=> $id, 'company' => $user?->getCompany()]);
         $html = $this->renderView('devis/devis_template.html.twig', ['devis' => $devis]);
         return $pdfGeneratorService->getStreamResponse($html, 'hello.pdf');
     }
