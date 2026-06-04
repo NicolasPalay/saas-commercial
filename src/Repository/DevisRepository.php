@@ -74,4 +74,19 @@ class DevisRepository extends ServiceEntityRepository
             'company' => $company
         ]);
     }
+
+    /**
+     * Trouver par reference et UUID de la company
+     */
+    public function findOneByReferenceAndCompanyUuid(string $reference, string $uuid): ?Devis
+    {
+        return $this->createQueryBuilder('d')
+            ->join('d.company', 'c')
+            ->where('d.reference = :reference')
+            ->andWhere('c.uuid = :uuid')
+            ->setParameter('reference', $reference)
+            ->setParameter('uuid', $uuid)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
 }

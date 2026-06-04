@@ -17,6 +17,21 @@ class OrderRepository extends ServiceEntityRepository
     }
 
     /**
+     * Trouver par reference et UUID de la company
+     */
+    public function findOneByReferenceAndCompanyUuid(string $reference, string $uuid): ?Order
+    {
+        return $this->createQueryBuilder('o')
+            ->join('o.company', 'c')
+            ->where('o.reference = :reference')
+            ->andWhere('c.uuid = :uuid')
+            ->setParameter('reference', $reference)
+            ->setParameter('uuid', $uuid)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
+    /**
      * Compter les commandes créées ce mois
      */
     public function findCountThisMonth($company): int

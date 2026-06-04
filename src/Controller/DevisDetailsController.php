@@ -25,15 +25,14 @@ final class DevisDetailsController extends AbstractController
         private readonly DocumentCalculator $calculator
     ) {}
 
-    #[Route('/{uuid}/{reference}/devis/show', name: 'app_devis_details_new', methods: ['GET', 'POST'])]
+    #[Route('/{uuid}/{reference}/show', name: 'app_devis_details_new', methods: ['GET', 'POST'])]
     public function new(#[MapEntity(mapping: ['reference' => 'reference'])] Devis $devis,
                         string $uuid,
                         Request $request
                         ): Response
     {
         $this->denyAccessUnlessGranted('DEVIS_EDIT', $devis);
-        $uuid = $devis->getCompany()->getUuid();
-        if ($uuid !== $devis->getCompany()->getUuid()) {
+        if ($uuid !== (string) $devis->getCompany()->getUuid()) {
             throw $this->createAccessDeniedException();
         }
         $user = $this->getUser();
@@ -87,8 +86,11 @@ final class DevisDetailsController extends AbstractController
             $this->entityManager->flush();
 
             return $this->redirectToRoute(
-                'app_devis_details_edit',
-                ['reference' => $devis->getReference()],
+                'app_devis_details_new',
+                [
+                    'uuid' => $devis->getCompany()->getUuid(),
+                    'reference' => $devis->getReference()
+                ],
                 Response::HTTP_SEE_OTHER
             );
         }
@@ -100,11 +102,16 @@ final class DevisDetailsController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}/edit', name: 'app_devis_details_edit', methods: ['GET', 'POST'])]
+    #[Route('/{uuid}/{reference}/line/{id}/edit', name: 'app_devis_details_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request,
+                         string $uuid,
+                         string $reference,
                          DevisDetails $devisDetail): Response
     {
         $devis = $devisDetail->getDevis();
+        if ($uuid !== (string) $devis->getCompany()->getUuid() || $reference !== $devis->getReference()) {
+            throw $this->createAccessDeniedException();
+        }
 
         $this->denyAccessUnlessGranted('DEVIS_EDIT', $devisDetail->getDevis());
         $form = $this->createForm(DevisDetailsTypeEdit::class, $devisDetail);
@@ -128,7 +135,10 @@ final class DevisDetailsController extends AbstractController
 
             return $this->redirectToRoute(
                 'app_devis_details_new',
-                ['id' => $devis->getId()],
+                [
+                    'uuid' => $devis->getCompany()->getUuid(),
+                    'reference' => $devis->getReference()
+                ],
                 Response::HTTP_SEE_OTHER
             );
         }
@@ -140,10 +150,16 @@ final class DevisDetailsController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'app_devis_details_delete', methods: ['POST'])]
-    public function delete(Request $request, DevisDetails $devisDetail): Response
+    #[Route('/{uuid}/{reference}/line/{id}/delete', name: 'app_devis_details_delete', methods: ['POST'])]
+    public function delete(Request $request,
+                           string $uuid,
+                           string $reference,
+                           DevisDetails $devisDetail): Response
     {
         $devis = $devisDetail->getDevis();
+        if ($uuid !== (string) $devis->getCompany()->getUuid() || $reference !== $devis->getReference()) {
+            throw $this->createAccessDeniedException();
+        }
 
         if ($this->isCsrfTokenValid('delete' . $devisDetail->getId(), $request->getPayload()->getString('_token'))) {
             $this->entityManager->remove($devisDetail);
@@ -156,7 +172,10 @@ final class DevisDetailsController extends AbstractController
 
         return $this->redirectToRoute(
             'app_devis_details_new',
-            ['id' => $devis->getId()],
+            [
+                'uuid' => $devis->getCompany()->getUuid(),
+                'reference' => $devis->getReference()
+            ],
             Response::HTTP_SEE_OTHER
         );
     }

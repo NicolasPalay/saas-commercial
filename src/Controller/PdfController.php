@@ -13,15 +13,16 @@ use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 class PdfController extends AbstractController
 {
-   #[Route("devis/output-pdf/{id}", name: 'app_devis_output_pdf')]
+   #[Route("devis/output-pdf/{uuid}/{reference}", name: 'app_devis_output_pdf')]
     public function outputDevis(
         PdfGeneratorService $pdfGeneratorService,
         DevisRepository $devisRepository,
-        string $id
+        string $uuid,
+        string $reference
     ): Response
     {
         $user = $this->getUser();
-        $devis = $devisRepository->findOneBy(['id' => $id, 'company' => $user?->getCompany()]);
+        $devis = $devisRepository->findOneByReferenceAndCompanyUuid($reference, $uuid);
 
         if (!$devis) {
             throw $this->createNotFoundException('Devis introuvable');
@@ -44,15 +45,16 @@ class PdfController extends AbstractController
         );
     }
 
-    #[Route("order/output-pdf/{id}", name: 'app_order_output_pdf')]
+    #[Route("order/output-pdf/{uuid}/{reference}", name: 'app_order_output_pdf')]
     public function outputOrder(
         PdfGeneratorService $pdfGeneratorService,
         OrderRepository $orderRepository,
-        string $id
+        string $uuid,
+        string $reference
     ): Response
     {
         $user = $this->getUser();
-        $order = $orderRepository->findOneBy(['id' => $id, 'company' => $user?->getCompany()]);
+        $order = $orderRepository->findOneByReferenceAndCompanyUuid($reference, $uuid);
 
         if (!$order) {
             throw $this->createNotFoundException('Commande introuvable');
@@ -77,18 +79,19 @@ class PdfController extends AbstractController
         );
     }
 
-    #[Route("invoice/output-pdf/{id}", name: 'app_invoice_output_pdf')]
+    #[Route("invoice/output-pdf/{uuid}/{reference}", name: 'app_invoice_output_pdf')]
     public function outputInvoice(
         PdfGeneratorService $pdfGeneratorService,
         InvoiceRepository $invoiceRepository,
-        string $id
+        string $uuid,
+        string $reference
     ): Response
     {
         $user = $this->getUser();
-        $invoice = $invoiceRepository->findOneBy(['id' => $id, 'company' => $user?->getCompany()]);
+        $invoice = $invoiceRepository->findOneByReferenceAndCompanyUuid($reference, $uuid);
 
         if (!$invoice) {
-            throw $this->createNotFoundException('Devis introuvable');
+            throw $this->createNotFoundException('Facture introuvable');
         }
 
         $html = $this->renderView('pdf/invoice.html.twig', [
