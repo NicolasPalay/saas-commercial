@@ -14,6 +14,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 
 #[Route('/commande')]
 final class OrderController extends AbstractController
@@ -78,13 +79,17 @@ final class OrderController extends AbstractController
             }
             $order->setReference($prefix . $number);
             $order->setCompany($company);
+            $order->setUser($user);
 
             $entityManager->persist($order);
             $entityManager->flush();
 
             return $this->redirectToRoute(
                 'app_order_details_new',
-                ['id' => $order->getId()]
+                [
+                    'uuid' => $company->getUuid(),
+                    'reference' => $order->getReference()
+                ]
             );
         }
 
@@ -151,11 +156,18 @@ final class OrderController extends AbstractController
 
             $order->setReference($prefix . $number);
             $order->setCompany($company);
+            $order->setUser($user);
 
             $entityManager->persist($order);
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_order_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute(
+                'app_order_details_new',
+                [
+                    'uuid' => $company->getUuid(),
+                    'reference' => $order->getReference()
+                ]
+            );
         }
 
         return $this->render('order/new.html.twig', [
@@ -164,30 +176,30 @@ final class OrderController extends AbstractController
         ]);
     }
 
-#[Route('/toinvoice/{id}', name: 'app_orderInInvoice', methods: ['GET'])]
-    public function inInvoice(OrderRepository $orderRepository, int $id, TransfertService $orderVsInvoiceService): Response
-    {
-    $user = $this->getUser();
-    if(!$user) return $this->redirectToRoute('app_login');
-    
-    $order = $orderRepository->findOneBy(['id' => $id]);
-    $this->denyAccessUnlessGranted('EDIT', $order);
-    $orderVsInvoiceService->transferToInvoice($order);
+#[Route('/toinvoice/{uuid}/{reference}', name: 'app_orderInInvoice', methods: ['GET'])]
+    public function inInvoice(
+        #[MapEntity(mapping: ['reference' => 'reference'])] Order $order,
+        string $uuid,
+        TransfertService $orderVsInvoiceService
+    ): Response {
+        if ($uuid !== (string) $order->getCompany()->getUuid()) {
+            throw $this->createAccessDeniedException();
+        }
+        $this->denyAccessUnlessGranted('EDIT', $order);
+        $orderVsInvoiceService->transferToInvoice($order);
 
-    return $this->redirectToRoute('app_invoice_index');
+        return $this->redirectToRoute('app_invoice_index');
     }
 
-    #[Route("devis/send/{id}", name: 'app_devis_send')]
-    public function sendDevis(
+    #[Route("/send/{uuid}/{reference}", name: 'app_order_send')]
+    public function sendOrder(
         PdfGeneratorService $pdfGeneratorService,
-        OrderRepository $orderRepository,
-        SendMailService $mailer,
-        string $id
+        #[MapEntity(mapping: ['reference' => 'reference'])] Order $order,
+        string $uuid,
+        SendMailService $mailer
     ): Response {
-        $order = $orderRepository->find($id);
-
-        if (!$order) {
-            throw $this->createNotFoundException('Devis introuvable');
+        if ($uuid !== (string) $order->getCompany()->getUuid()) {
+            throw $this->createAccessDeniedException();
         }
 
         // 1. Génération du PDF
@@ -210,7 +222,10 @@ final class OrderController extends AbstractController
             $this->addFlash('error', 'Le client n\'a pas d\'adresse email. Veuillez en ajouter une pour pouvoir envoyer la commande.');
             return $this->redirectToRoute(
                 'app_order_details_new',
-                ['id' => $order->getId()],
+                [
+                    'uuid' => $order->getCompany()->getUuid(),
+                    'reference' => $order->getReference()
+                ],
                 Response::HTTP_SEE_OTHER
             );
         }
@@ -235,14 +250,25 @@ final class OrderController extends AbstractController
 
         return $this->redirectToRoute(
                 'app_order_details_new',
-                ['id' => $order->getId()],
+                [
+                    'uuid' => $order->getCompany()->getUuid(),
+                    'reference' => $order->getReference()
+                ],
                 Response::HTTP_SEE_OTHER
             );
     }
     
-    #[Route('/{id}/edit', name: 'app_order_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Order $order, EntityManagerInterface $entityManager): Response
-    {
+    #[Route('/{uuid}/{reference}/edit', name: 'app_order_edit', methods: ['GET', 'POST'])]
+    public function edit(
+        Request $request,
+        #[MapEntity(mapping: ['reference' => 'reference'])] Order $order,
+        string $uuid,
+        EntityManagerInterface $entityManager
+    ): Response {
+        if ($uuid !== (string) $order->getCompany()->getUuid()) {
+            throw $this->createAccessDeniedException();
+        }
+
         $form = $this->createForm(OrderTypeEdit::class, $order, [
             'company' => $order->getCompany(),
             'currentClient' => $order->getClient(),
@@ -266,7 +292,10 @@ final class OrderController extends AbstractController
 
              return $this->redirectToRoute(
                 'app_order_details_new',
-                ['id' => $order->getId()],
+                [
+                    'uuid' => $order->getCompany()->getUuid(),
+                    'reference' => $order->getReference()
+                ],
                 Response::HTTP_SEE_OTHER
             );
         }
@@ -277,9 +306,17 @@ final class OrderController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'app_order_delete', methods: ['POST'])]
-    public function delete(Request $request, Order $order, EntityManagerInterface $entityManager): Response
-    {
+    #[Route('/{uuid}/{reference}/delete', name: 'app_order_delete', methods: ['POST'])]
+    public function delete(
+        Request $request,
+        #[MapEntity(mapping: ['reference' => 'reference'])] Order $order,
+        string $uuid,
+        EntityManagerInterface $entityManager
+    ): Response {
+        if ($uuid !== (string) $order->getCompany()->getUuid()) {
+            throw $this->createAccessDeniedException();
+        }
+
         if ($this->isCsrfTokenValid('delete'.$order->getId(), $request->getPayload()->getString('_token'))) {
             $entityManager->remove($order);
             $entityManager->flush();

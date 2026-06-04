@@ -20,8 +20,9 @@
       <a href="#"><i class="bi bi-plus-square"></i> Ajouter un produit</a>
       <a href="{{ path('app_devis_index') }}"><i class="bi bi-file-text"></i> Voir tous les devis</a>
       <a href="#" class="openModal" data-action="click->modal#open"><i class="bi bi-plus-square"></i> Ajouter un devis</a>
-      <a href="#"><i class="bi bi-receipt"></i> Voir toutes les factures</a>
-      <a href="#"><i class="bi bi-plus-square"></i> Ajouter une facture</a>
+      <a href="{{ path('app_order_index') }}"><i class="bi bi-cart"></i> Voir toutes les commandes</a>
+      <a href="{{ path('app_invoice_index') }}"><i class="bi bi-receipt"></i> Voir toutes les factures</a>
+      <a href="{{ path('app_invoice_new') }}"><i class="bi bi-plus-square"></i> Ajouter une facture</a>
     {# 
       <hr>
 

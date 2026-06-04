@@ -1,26 +1,19 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Edit OrderDetails{% endblock %}
-{% block class %}devis_details_edit{% endblock %}
+{% block title %}Edit OrderDetail{% endblock %}
+
 {% block body %}
-<div class="page-container">
-    {# Contenu principal #}
-  {{ include('order_detail/_form.html.twig', {
-    'button_label': 'Mettre à jour',
-    'commande': orderDetail.commande
-  }) }}
+<main class="d-flex w-100 ">
+{% include('_includes/aside.html.twig') %}
+<div class="w-100 mx-4">
+    <h1>Edit OrderDetail</h1>
 
-  {# Actions #}
-  <div class="d-flex gap-3 mt-4">
-    <a href="{{ path('app_order_details_new', {'id': orderDetail.commande.id}) }}" class="btn-ocean btn-ocean-secondary">
-      <i class="bi bi-arrow-left"></i> Retour à la liste
+    {{ include('order_detail/_form.html.twig', {'button_label': 'Update'}) }}
+
+    <a href="{{ path('app_order_details_new', {'uuid': orderDetail.commande.company.uuid, 'reference': orderDetail.commande.reference}) }}" class="btn-ocean btn-ocean-secondary">
+        <i class="bi bi-arrow-left"></i> back to list
     </a>
-    <form method="post" action="{{ path('app_order_detail_delete', {'id': orderDetail.id}) }}" onsubmit="return confirm('Are you sure you want to delete this item?');">
-    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ orderDetail.id) }}">
-    <button class="btn-ocean btn-ocean-secondary">Delete</button>
-</form>
-
-  </div>
 
 </div>
+</main>
 {% endblock %}

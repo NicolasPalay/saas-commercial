@@ -96,9 +96,9 @@
             <div class="d-flex justify-content-between align-items-center mb-3 mt-0.5">
               <h2 class="card-title-ocean m-0">
                 <i class="bi bi-file-text"></i>
-                <a href="{{ path('app_devis_index') }}" style="color: var(--deep-marine); text-decoration: none;">3 dernières factures</a>
+                <a href="{{ path('app_invoice_index') }}" style="color: var(--deep-marine); text-decoration: none;">3 dernières factures</a>
               </h2>
-              <a href="{{ path('app_devis_index') }}" style="color: var(--deep-marine); text-decoration: none;">Voir plus de factures</a>
+              <a href="{{ path('app_invoice_index') }}" style="color: var(--deep-marine); text-decoration: none;">Voir plus de factures</a>
             </div>
             <div class="table-responsive">
               <table class="table-ocean mb-0">
@@ -114,8 +114,8 @@
                 <tbody>
                   {% for invoice in invoices %}
                     <tr>
-                      <td><a href="{{ path('app_invoice_details_new', {'reference': invoice.reference}) }}">{{ invoice.reference }}</a></td>
-                      <td><a href="{{ path('app_invoice_details_new', {'reference': invoice.reference}) }}">{{ invoice.client.raisonSocial }}</a></td>
+                      <td><a href="{{ path('app_invoice_details_new', {uuid: invoice.company.uuid, 'reference': invoice.reference}) }}">{{ invoice.reference }}</a></td>
+                      <td><a href="{{ path('app_invoice_details_new', {uuid: invoice.company.uuid, 'reference': invoice.reference}) }}">{{ invoice.client.raisonSocial }}</a></td>
                       <td>{{ invoice.total|number_format(2, ',', ' ') }} €</td>
                       <td>{{ invoice.isPay ? 'Payée' : 'Non payée' }}</td>
                       <td>{{ invoice.createdAt|date('d/m/Y') }}</td>

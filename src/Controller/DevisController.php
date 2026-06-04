@@ -17,6 +17,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 
 #[Route('/devis')]
 final class DevisController extends AbstractController
@@ -69,7 +70,10 @@ final class DevisController extends AbstractController
 
             return $this->redirectToRoute(
                 'app_devis_details_new',
-                ['id' => $devis->getId()]
+                [
+                    'uuid' => $company->getUuid(),
+                    'reference' => $devis->getReference()
+                ]
             );
         }
 
@@ -89,17 +93,25 @@ final class DevisController extends AbstractController
         
         $user = $this->getUser();
         if(!$user) return $this->redirectToRoute('app_login');
+        $company = $user->getCompany();
         $devis = new Devis();
         $form = $this->createForm(DevisType::class, $devis);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $devis->setUser($user);
-            $devis->setCompany($user->getCompany());
+            $devis->setCompany($company);
             $entityManager->persist($devis);
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_devis_details_new', ['id' => $devis->getId()], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute(
+                'app_devis_details_new',
+                [
+                    'uuid' => $company->getUuid(),
+                    'reference' => $devis->getReference()
+                ],
+                Response::HTTP_SEE_OTHER
+            );
         }
 
         return $this->render('devis/new.html.twig', [
@@ -108,14 +120,15 @@ final class DevisController extends AbstractController
         ]);
     }
 
-    #[Route('/toorder/{id}', name: 'app_toOrder', methods: ['GET'])]
-    public function toOrder(DevisRepository $devisRepository, int $id, TransfertService $transfertService): Response
-    {
-        $user = $this->getUser();
-        $devis = $devisRepository->findOneBy([
-            'id' => $id,
-            'company' => $user->getCompany()
-        ]);
+    #[Route('/toorder/{uuid}/{reference}', name: 'app_toOrder', methods: ['GET'])]
+    public function toOrder(
+        #[MapEntity(mapping: ['reference' => 'reference'])] Devis $devis,
+        string $uuid,
+        TransfertService $transfertService
+    ): Response {
+        if ($uuid !== (string) $devis->getCompany()->getUuid()) {
+            throw $this->createAccessDeniedException();
+        }
         $this->denyAccessUnlessGranted('EDIT', $devis);
         if($devis) {  
             $transfertService->devisToOrder($devis);
@@ -123,25 +136,33 @@ final class DevisController extends AbstractController
     return $this->redirectToRoute('app_order_index');
     }
 
-    #[Route('/toinvoice/{id}', name: 'app_devis_toInvoice', methods: ['GET'])]
-    public function devisToInvoice(DevisRepository $devisRepository, int $id, TransfertService $devisVsInvoiceService): Response
-    {
-    $user = $this->getUser();
-
-    $devis = $devisRepository->findOneBy([
-        'id' => $id,
-        'company' => $user->getCompany()
-    ]);
-    $this->denyAccessUnlessGranted('EDIT', $devis);
-    if($devis) {
-        $devisVsInvoiceService->devisToInvoice($devis);
-    }
+    #[Route('/toinvoice/{uuid}/{reference}', name: 'app_devis_toInvoice', methods: ['GET'])]
+    public function devisToInvoice(
+        #[MapEntity(mapping: ['reference' => 'reference'])] Devis $devis,
+        string $uuid,
+        TransfertService $devisVsInvoiceService
+    ): Response {
+        if ($uuid !== (string) $devis->getCompany()->getUuid()) {
+            throw $this->createAccessDeniedException();
+        }
+        $this->denyAccessUnlessGranted('EDIT', $devis);
+        if($devis) {
+            $devisVsInvoiceService->devisToInvoice($devis);
+        }
     return $this->redirectToRoute('app_invoice_index');
     }
 
-    #[Route('/{id}/edit', name: 'app_devis_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Devis $devi, EntityManagerInterface $entityManager): Response
-    {
+    #[Route('/{uuid}/{reference}/edit', name: 'app_devis_edit', methods: ['GET', 'POST'])]
+    public function edit(
+        Request $request,
+        #[MapEntity(mapping: ['reference' => 'reference'])] Devis $devi,
+        string $uuid,
+        EntityManagerInterface $entityManager
+    ): Response {
+        if ($uuid !== (string) $devi->getCompany()->getUuid()) {
+            throw $this->createAccessDeniedException();
+        }
+
         $this->denyAccessUnlessGranted('EDIT', $devi);
         $form = $this->createForm(DevisTypeEdit::class, $devi, [
             'company' => $devi->getCompany(),
@@ -167,7 +188,10 @@ final class DevisController extends AbstractController
 
             return $this->redirectToRoute(
                 'app_devis_details_new',
-                ['id' => $devi->getId()]
+                [
+                    'uuid' => $devi->getCompany()->getUuid(),
+                    'reference' => $devi->getReference()
+                ]
             );
         
         }
@@ -177,18 +201,16 @@ final class DevisController extends AbstractController
             'form' => $form,
         ]);
     }
-    #[Route("devis/send/{id}", name: 'app_devis_send')]
+
+    #[Route("/send/{uuid}/{reference}", name: 'app_devis_send')]
     public function sendDevis(
         PdfGeneratorService $pdfGeneratorService,
-        DevisRepository $devisRepository,
-        SendMailService $mailer,
-        string $id
+        #[MapEntity(mapping: ['reference' => 'reference'])] Devis $devis,
+        string $uuid,
+        SendMailService $mailer
     ): Response {
-        $user = $this->getUser();
-        $devis = $devisRepository->findOneBy(['id' => $id, 'company' => $user?->getCompany()]);
-
-        if (!$devis) {
-            throw $this->createNotFoundException('Devis introuvable');
+        if ($uuid !== (string) $devis->getCompany()->getUuid()) {
+            throw $this->createAccessDeniedException();
         }
 
         // 1. Génération du PDF
@@ -211,7 +233,10 @@ final class DevisController extends AbstractController
             $this->addFlash('error', 'Le client n\'a pas d\'adresse email. Veuillez en ajouter une pour pouvoir envoyer le devis.');
             return $this->redirectToRoute(
                 'app_devis_details_new',
-                ['id' => $devis->getId()],
+                [
+                    'uuid' => $devis->getCompany()->getUuid(),
+                    'reference' => $devis->getReference()
+                ],
                 Response::HTTP_SEE_OTHER
             );
         }
@@ -236,15 +261,26 @@ final class DevisController extends AbstractController
 
         return $this->redirectToRoute(
                 'app_devis_details_new',
-                ['id' => $devis->getId()],
+                [
+                    'uuid' => $devis->getCompany()->getUuid(),
+                    'reference' => $devis->getReference()
+                ],
                 Response::HTTP_SEE_OTHER
             );
     }
 
-    #[Route('/{id}', name: 'app_devis_delete', methods: ['POST'])]
-    public function delete(Request $request, Devis $devi, EntityManagerInterface $entityManager): Response
-    {
-            $this->denyAccessUnlessGranted('DELETE', $devi);
+    #[Route('/{uuid}/{reference}/delete', name: 'app_devis_delete', methods: ['POST'])]
+    public function delete(
+        Request $request,
+        #[MapEntity(mapping: ['reference' => 'reference'])] Devis $devi,
+        string $uuid,
+        EntityManagerInterface $entityManager
+    ): Response {
+        if ($uuid !== (string) $devi->getCompany()->getUuid()) {
+            throw $this->createAccessDeniedException();
+        }
+
+        $this->denyAccessUnlessGranted('DELETE', $devi);
         if ($this->isCsrfTokenValid('delete'.$devi->getId(), $request->getPayload()->getString('_token'))) {
 
             $entityManager->remove($devi);
