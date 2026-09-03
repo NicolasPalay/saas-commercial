@@ -25,7 +25,7 @@ final class DevisDetailsController extends AbstractController
         private readonly DocumentCalculator $calculator
     ) {}
 
-    #[Route('/{uuid}/{reference}/devis/show', name: 'app_devis_details_new', methods: ['GET', 'POST'])]
+    #[Route('/{uuid}/{reference}/show', name: 'app_devis_details_new', methods: ['GET', 'POST'])]
     public function new(#[MapEntity(mapping: ['reference' => 'reference'])] Devis $devis,
                         string $uuid,
                         Request $request
@@ -88,7 +88,8 @@ final class DevisDetailsController extends AbstractController
 
             return $this->redirectToRoute(
                 'app_devis_details_edit',
-                ['reference' => $devis->getReference()],
+                ['uuid' => $devis->getCompany()->getUuid(),
+                'reference' => $devis->getReference()],
                 Response::HTTP_SEE_OTHER
             );
         }
@@ -128,8 +129,8 @@ final class DevisDetailsController extends AbstractController
 
             return $this->redirectToRoute(
                 'app_devis_details_new',
-                ['id' => $devis->getId()],
-                Response::HTTP_SEE_OTHER
+                ['uuid' => $devis->getCompany()->getUuid(),
+                'reference' => $devis->getReference()]
             );
         }
 
@@ -156,7 +157,8 @@ final class DevisDetailsController extends AbstractController
 
         return $this->redirectToRoute(
             'app_devis_details_new',
-            ['id' => $devis->getId()],
+            ['uuid' => $devis->getCompany()->getUuid(),
+                'reference' => $devis->getReference()],
             Response::HTTP_SEE_OTHER
         );
     }

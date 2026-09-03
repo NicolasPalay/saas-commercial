@@ -24,13 +24,18 @@ final class InvoiceDetailsController extends AbstractController
         private readonly DocumentCalculator $calculator
     ) {}
 
-    #[Route('/{reference}/new', name: 'app_invoice_details_new', methods: ['GET', 'POST'])]
+    #[Route('/{uuid}/{reference}/show', name: 'app_invoice_details_new', methods: ['GET', 'POST'])]
     public function new(Request $request, 
+                        string $uuid,
                         #[MapEntity(mapping: ['reference' => 'reference'])] Invoice $invoice
                         ): Response
     {
         $user = $this->getUser();
         if (!$user) return $this->redirectToRoute('app_login');
+        $uuid = $invoice->getCompany()->getUuid();
+        if ($uuid !== $invoice->getCompany()->getUuid()) {
+            throw $this->createAccessDeniedException();
+        }
 
         $products = $this->productRepository->findBy(['company' => $invoice->getCompany()]);
         if (!$products) return $this->redirectToRoute('app_product_new');
@@ -78,7 +83,8 @@ final class InvoiceDetailsController extends AbstractController
 
             return $this->redirectToRoute(
                 'app_invoice_details_edit',
-                ['reference' => $invoice->getReference()],
+                ['uuid' => $invoice->getCompany()->getUuid(),
+                'reference' => $invoice->getReference()],
                 Response::HTTP_SEE_OTHER
             );
         }
@@ -116,7 +122,10 @@ final class InvoiceDetailsController extends AbstractController
 
             return $this->redirectToRoute(
                 'app_invoice_details_new',
-                 ['reference' => $invoice->getReference()],
+                 [
+                    'uuid' => $invoice->getCompany()->getUuid(),
+                    'reference' => $invoice->getReference()
+                 ],
                 Response::HTTP_SEE_OTHER
             );
         }
@@ -144,7 +153,8 @@ final class InvoiceDetailsController extends AbstractController
 
         return $this->redirectToRoute(
             'app_invoice_details_new',
-            ['id' => $invoice->getId()],
+            ['uuid' => $invoice->getCompany()->getUuid(),
+            'reference' => $invoice->getReference()],
             Response::HTTP_SEE_OTHER
         );
     }

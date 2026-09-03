@@ -54,7 +54,7 @@ class OrderRepository extends ServiceEntityRepository
     /**
      * Compter toutes les commandes par entreprise
      */
-    public function countByCompany($company): int
+    public function CountOrderByCompany($company): int
     {
         return (int) $this->createQueryBuilder('o')
             ->select('COUNT(o.id)')

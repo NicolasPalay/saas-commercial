@@ -10,6 +10,7 @@ use App\Repository\OrderDetailRepository;
 use App\Repository\ProductRepository;
 use App\Services\DocumentCalculator;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -24,9 +25,13 @@ final class OrderDetailController extends AbstractController
         private readonly DocumentCalculator $calculator
     ) {}
 
-    #[Route('/{id}/new', name: 'app_order_details_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, Order $order): Response
+    #[Route('/{uuid}/{reference}/show', name: 'app_order_details_new', methods: ['GET', 'POST'])]
+    public function new(Request $request,
+                        #[MapEntity(mapping: ['reference' => 'reference'])] Order $order,
+                        string $uuid ): Response
     {
+        $this->denyAccessUnlessGranted('ORDER_EDIT', $order);
+        $uuid = $order->getCompany()->getUuid();
         $user = $this->getUser();
         if (!$user) return $this->redirectToRoute('app_login');
 
@@ -77,7 +82,8 @@ final class OrderDetailController extends AbstractController
 
             return $this->redirectToRoute(
                 'app_order_details_edit',
-                ['id' => $orderDetail->getId()],
+                ['uuid' => $order->getCompany()->getUuid(),
+                'reference' => $order->getReference()],
                 Response::HTTP_SEE_OTHER
             );
         }
@@ -115,7 +121,8 @@ final class OrderDetailController extends AbstractController
 
             return $this->redirectToRoute(
                 'app_order_details_new',
-                ['id' => $order->getId()],
+                ['uuid' => $order->getCompany()->getUuid(),
+                'reference' => $order->getReference()],
                 Response::HTTP_SEE_OTHER
             );
         }
@@ -143,7 +150,8 @@ final class OrderDetailController extends AbstractController
 
         return $this->redirectToRoute(
             'app_order_details_new',
-            ['id' => $order->getId()],
+            ['uuid' => $order->getCompany()->getUuid(),
+            'reference' => $order->getReference()],
             Response::HTTP_SEE_OTHER
         );
     }
